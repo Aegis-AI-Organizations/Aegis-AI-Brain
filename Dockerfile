@@ -14,4 +14,4 @@ COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
 COPY . .
 # Replace 'main.py' with your entrypoint module if different
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]

@@ -3,13 +3,13 @@ from config.db import get_db_connection
 
 
 @activity.defn
-async def update_scan_status(args: list) -> str:
+async def update_scan_status(scan_id: str, new_status: str) -> str:
     """
     Updates the status of a specific scan in the PostgreSQL database.
-    Args format: [scan_id, new_status]
+
+    :param scan_id: The ID of the scan to update.
+    :param new_status: The new status value to set for the scan.
     """
-    scan_id = args[0]
-    new_status = args[1]
 
     conn = get_db_connection()
     if not conn:

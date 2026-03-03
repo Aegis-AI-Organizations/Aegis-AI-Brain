@@ -19,7 +19,6 @@ async def update_scan_status(args: list) -> str:
         cur = conn.cursor()
         cur.execute("UPDATE scans SET status = %s WHERE id = %s", (new_status, scan_id))
         if cur.rowcount == 0:
-            conn.rollback()
             raise Exception(f"Scan ID {scan_id} not found to update")
 
         conn.commit()

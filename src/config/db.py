@@ -13,7 +13,12 @@ def get_db_connection() -> Optional[psycopg.Connection]:
 
     dbname = os.getenv("POSTGRES_DB", "aegis_db")
     user = os.getenv("POSTGRES_USER", "aegis_admin")
-    password = os.getenv("POSTGRES_PASSWORD", "secret")
+    password = os.getenv("POSTGRES_PASSWORD")
+    if not password:
+        raise ValueError(
+            "POSTGRES_PASSWORD environment variable is not set; "
+            "database password must be provided via environment variables."
+        )
 
     try:
         conn = psycopg.connect(

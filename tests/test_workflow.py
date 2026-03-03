@@ -8,8 +8,7 @@ from workflows.pentest_workflow import PentestWorkflow
 
 
 @activity.defn(name="update_scan_status")
-async def mock_update_scan_status(args: list) -> str:
-    scan_id, new_status = args
+async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
     return f"Successfully updated scan {scan_id} to status {new_status}"
 
 
@@ -39,8 +38,7 @@ async def test_pentest_workflow_success():
 
 # Create a failing mock activity
 @activity.defn(name="update_scan_status")
-async def failing_update_scan_status(args: list) -> str:
-    scan_id, status = args
+async def failing_update_scan_status(scan_id: str, status: str) -> str:
     if status == "COMPLETED":
         raise Exception("Failed midway")
     return "ok"

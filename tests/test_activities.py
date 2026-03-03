@@ -14,7 +14,7 @@ async def test_update_scan_status_success():
     with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
         activity_env = ActivityEnvironment()
         result = await activity_env.run(
-            update_scan_status, ["test-scan-123", "COMPLETED"]
+            update_scan_status, "test-scan-123", "COMPLETED"
         )
 
         assert "Successfully updated scan test-scan-123 to status COMPLETED" in result
@@ -36,7 +36,7 @@ async def test_update_scan_status_not_found():
         with pytest.raises(
             Exception, match="Scan ID test-scan-123 not found to update"
         ):
-            await activity_env.run(update_scan_status, ["test-scan-123", "IN_PROGRESS"])
+            await activity_env.run(update_scan_status, "test-scan-123", "IN_PROGRESS")
         mock_conn.rollback.assert_called_once()
 
 
@@ -46,4 +46,4 @@ async def test_update_scan_status_db_fail():
     with patch("activities.db_activities.get_db_connection", return_value=None):
         activity_env = ActivityEnvironment()
         with pytest.raises(Exception, match="Database connection failed"):
-            await activity_env.run(update_scan_status, ["test-scan-123", "FAILED"])
+            await activity_env.run(update_scan_status, "test-scan-123", "FAILED")

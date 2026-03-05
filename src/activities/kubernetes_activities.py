@@ -39,8 +39,12 @@ def deploy_sandbox_target(scan_id: str, target_image: str) -> str:
     try:
         k8s.create_namespace(body=ns_manifest)
         logger.info(f"Creation of namespace {namespace_name}")
-    except Exception as e:
-        logger.warning(f"Namespace {namespace_name} may already exist: {e}")
+    except client.rest.ApiException as e:
+        if e.status == 409:
+            logger.info(f"Namespace {namespace_name} already exists.")
+        else:
+            logger.error(f"Failed to create namespace {namespace_name}: {e}")
+            raise e
 
     pod_name = f"target-{scan_id}"
     pod_manifest = client.V1Pod(
@@ -89,8 +93,11 @@ def cleanup_sandbox(scan_id: str) -> str:
     logger.info(f"Deletion of namespace {namespace_name}")
     try:
         k8s.delete_namespace(name=namespace_name)
-    except Exception as e:
-        logger.error(f"Error during deletion of {namespace_name}: {e}")
-        return "FAILED"
+    except client.rest.ApiException as e:
+        if e.status == 404:
+            logger.info(f"Namespace {namespace_name} not found, already deleted.")
+        else:
+            logger.error(f"Error during deletion of {namespace_name}: {e}")
+            return "FAILED"
 
     return "CLEANED"

@@ -32,10 +32,10 @@ def _create_namespace(k8s: client.CoreV1Api, namespace_name: str, scan_id: str):
     )
     try:
         k8s.create_namespace(body=ns_manifest)
-        logger.info(f"Created namespace: {namespace_name}")
+        logger.debug(f"Created namespace: {namespace_name}")
     except client.rest.ApiException as e:
         if e.status == 409:
-            logger.info(f"Namespace {namespace_name} already exists.")
+            logger.debug(f"Namespace {namespace_name} already exists.")
         else:
             logger.error(f"Failed to create namespace {namespace_name}: {e}")
             raise e
@@ -62,10 +62,10 @@ def _create_pod(
     )
     try:
         k8s.create_namespaced_pod(namespace=namespace, body=pod_manifest)
-        logger.info(f"Created Pod {pod_name} in namespace {namespace}")
+        logger.debug(f"Created Pod {pod_name} in namespace {namespace}")
     except client.rest.ApiException as e:
         if e.status == 409:
-            logger.info(f"Pod {pod_name} already exists in {namespace}.")
+            logger.debug(f"Pod {pod_name} already exists in {namespace}.")
         else:
             logger.error(f"Failed to create Pod {pod_name}: {e}")
             raise e
@@ -84,10 +84,10 @@ def _create_service(
     )
     try:
         k8s.create_namespaced_service(namespace=namespace, body=svc_manifest)
-        logger.info(f"Created Service {service_name} in namespace {namespace}")
+        logger.debug(f"Created Service {service_name} in namespace {namespace}")
     except client.rest.ApiException as e:
         if e.status == 409:
-            logger.info(f"Service {service_name} already exists.")
+            logger.debug(f"Service {service_name} already exists.")
         else:
             logger.error(f"Failed to create Service {service_name}: {e}")
             raise e
@@ -113,7 +113,7 @@ def _wait_for_pod_ready(
 ):
     """Waits for the pod to reach the 'Ready' state."""
     start_time = time.time()
-    logger.info(f"Waiting for Pod {pod_name} to be Ready...")
+    logger.debug(f"Waiting for Pod {pod_name} to be Ready...")
 
     while time.time() - start_time < timeout:
         pod = k8s.read_namespaced_pod(name=pod_name, namespace=namespace)
@@ -125,7 +125,7 @@ def _wait_for_pod_ready(
         )
 
         if is_ready:
-            logger.info(f"Pod {pod_name} is Ready!")
+            logger.debug(f"Pod {pod_name} is Ready!")
             return
 
         time.sleep(2)
@@ -139,7 +139,7 @@ def deploy_sandbox_target(scan_id: str, target_image: str) -> str:
     Orchestrates the deployment of a sandbox environment for a scan.
     """
     k8s = _get_k8s_client()
-    ns_name = f"sandbox-{scan_id}"
+    ns_name = f"aegis-war-room-{scan_id}"
     pod_name = f"target-{scan_id}"
     svc_name = f"svc-{scan_id}"
 
@@ -158,14 +158,14 @@ def cleanup_sandbox(scan_id: str) -> str:
     Cleans up the sandbox environment by deleting its namespace.
     """
     k8s = _get_k8s_client()
-    ns_name = f"sandbox-{scan_id}"
+    ns_name = f"aegis-war-room-{scan_id}"
 
-    logger.info(f"Deleting namespace: {ns_name}")
     try:
         k8s.delete_namespace(name=ns_name)
+        logger.debug(f"Namespace {ns_name} deleted.")
     except client.rest.ApiException as e:
         if e.status == 404:
-            logger.info(f"Namespace {ns_name} already deleted.")
+            logger.debug(f"Namespace {ns_name} already deleted.")
         else:
             logger.error(f"Error deleting namespace {ns_name}: {e}")
             return "FAILED"

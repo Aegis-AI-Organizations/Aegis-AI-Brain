@@ -12,6 +12,16 @@ async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
     return f"Successfully updated scan {scan_id} to status {new_status}"
 
 
+@activity.defn(name="deploy_sandbox_target")
+async def mock_deploy_sandbox_target(scan_id: str, target_image: str) -> str:
+    return f"http://svc-{scan_id}.sandbox-{scan_id}.svc.cluster.local:80"
+
+
+@activity.defn(name="cleanup_sandbox")
+async def mock_cleanup_sandbox(scan_id: str) -> str:
+    return "CLEANED"
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""
@@ -21,7 +31,11 @@ async def test_pentest_workflow_success():
             env.client,
             task_queue="TEST_QUEUE",
             workflows=[PentestWorkflow],
-            activities=[mock_update_scan_status],
+            activities=[
+                mock_update_scan_status,
+                mock_deploy_sandbox_target,
+                mock_cleanup_sandbox,
+            ],
         ):
             scan_id = str(uuid.uuid4())
             result = await env.client.execute_workflow(
@@ -52,7 +66,11 @@ async def test_pentest_workflow_failure():
             env.client,
             task_queue="TEST_QUEUE_FAIL",
             workflows=[PentestWorkflow],
-            activities=[failing_update_scan_status],
+            activities=[
+                failing_update_scan_status,
+                mock_deploy_sandbox_target,
+                mock_cleanup_sandbox,
+            ],
         ):
             scan_id = str(uuid.uuid4())
             with pytest.raises(Exception):

@@ -3,8 +3,11 @@ import logging
 
 try:
     from kubernetes import client, config
-except ImportError:
-    pass
+except ImportError as exc:
+    raise ImportError(
+        "The 'kubernetes' package is required to use kubernetes_activities "
+        "but could not be imported. Ensure it is installed and available."
+    ) from exc
 
 logger = logging.getLogger(__name__)
 

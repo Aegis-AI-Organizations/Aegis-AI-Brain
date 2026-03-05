@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 from workflows.pentest_workflow import PentestWorkflow
 from activities.db_activities import update_scan_status
+from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sandbox
 
 
 async def init_brain():
@@ -31,7 +32,7 @@ async def init_brain():
         client,
         task_queue="PENTEST_TASK_QUEUE",
         workflows=[PentestWorkflow],
-        activities=[update_scan_status],
+        activities=[update_scan_status, deploy_sandbox_target, cleanup_sandbox],
     )
 
     logger.info("🚀 Worker ready to process tasks on queue PENTEST_TASK_QUEUE...")

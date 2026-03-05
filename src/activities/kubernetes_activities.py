@@ -64,7 +64,14 @@ def deploy_sandbox_target(scan_id: str, target_image: str) -> str:
     )
 
     logger.info(f"Deployment of Pod {pod_name} ({target_image})")
-    k8s.create_namespaced_pod(namespace=namespace_name, body=pod_manifest)
+    try:
+        k8s.create_namespaced_pod(namespace=namespace_name, body=pod_manifest)
+    except client.rest.ApiException as e:
+        if e.status == 409:
+            logger.info(f"Pod {pod_name} already exists.")
+        else:
+            logger.error(f"Failed to create Pod {pod_name}: {e}")
+            raise e
 
     service_name = f"svc-{scan_id}"
     svc_manifest = client.V1Service(
@@ -76,7 +83,14 @@ def deploy_sandbox_target(scan_id: str, target_image: str) -> str:
     )
 
     logger.info(f"Creation of Service {service_name}")
-    k8s.create_namespaced_service(namespace=namespace_name, body=svc_manifest)
+    try:
+        k8s.create_namespaced_service(namespace=namespace_name, body=svc_manifest)
+    except client.rest.ApiException as e:
+        if e.status == 409:
+            logger.info(f"Service {service_name} already exists.")
+        else:
+            logger.error(f"Failed to create Service {service_name}: {e}")
+            raise e
 
     target_endpoint = f"http://{service_name}.{namespace_name}.svc.cluster.local:80"
     return target_endpoint

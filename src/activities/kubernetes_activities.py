@@ -1,4 +1,5 @@
 from temporalio import activity
+from temporalio.exceptions import ApplicationError
 import logging
 import time
 
@@ -104,7 +105,7 @@ def _check_image_errors(pod: client.V1Pod):
             ]:
                 error_msg = f"Failed to deploy target: {state.reason} - {state.message}"
                 logger.error(error_msg)
-                raise Exception(error_msg)
+                raise ApplicationError(error_msg, non_retryable=True)
 
 
 def _wait_for_pod_ready(

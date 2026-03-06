@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 
 from workflows.pentest_workflow import PentestWorkflow
-from activities.db_activities import update_scan_status
+from activities.db_activities import update_scan_status, save_vulnerabilities
 from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sandbox
 
 
@@ -36,7 +36,12 @@ async def init_brain():
         client,
         task_queue=brain_queue,
         workflows=[PentestWorkflow],
-        activities=[update_scan_status, deploy_sandbox_target, cleanup_sandbox],
+        activities=[
+            update_scan_status,
+            save_vulnerabilities,
+            deploy_sandbox_target,
+            cleanup_sandbox,
+        ],
         activity_executor=ThreadPoolExecutor(max_workers=10),
     )
 

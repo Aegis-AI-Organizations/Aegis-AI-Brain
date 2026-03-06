@@ -54,6 +54,7 @@ def _create_pod(
                 client.V1Container(
                     name="target-container",
                     image=image,
+                    image_pull_policy="IfNotPresent",
                     ports=[client.V1ContainerPort(container_port=80)],
                 )
             ],

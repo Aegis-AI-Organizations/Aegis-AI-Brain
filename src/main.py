@@ -30,15 +30,17 @@ async def init_brain():
         logger.error(f"❌ Failed to connect to Temporal: {e}")
         return
 
+    brain_queue = os.getenv("BRAIN_TASK_QUEUE", "BRAIN_TASK_QUEUE")
+
     worker = Worker(
         client,
-        task_queue="PENTEST_TASK_QUEUE",
+        task_queue=brain_queue,
         workflows=[PentestWorkflow],
         activities=[update_scan_status, deploy_sandbox_target, cleanup_sandbox],
         activity_executor=ThreadPoolExecutor(max_workers=10),
     )
 
-    logger.info("🚀 Worker ready to process tasks on queue PENTEST_TASK_QUEUE...")
+    logger.info(f"🚀 Worker ready to process tasks on queue {brain_queue}...")
     await worker.run()
 
 

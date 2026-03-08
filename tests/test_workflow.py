@@ -22,6 +22,16 @@ async def mock_cleanup_sandbox(scan_id: str) -> str:
     return "CLEANED"
 
 
+@activity.defn(name="save_vulnerabilities")
+async def mock_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
+    return f"Saved {len(vulnerabilities)} vulnerabilities for {scan_id}"
+
+
+@activity.defn(name="generate_and_store_pdf_report")
+async def mock_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list) -> str:
+    return f"Stored PDF report for {scan_id}"
+
+
 @activity.defn(name="run_pentest")
 async def mock_run_pentest(target_ip: str, port: int) -> dict:
     return {"status": "COMPLETED", "vulnerabilities": []}
@@ -40,6 +50,8 @@ async def test_pentest_workflow_success():
                 mock_update_scan_status,
                 mock_deploy_sandbox_target,
                 mock_cleanup_sandbox,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
                 mock_run_pentest,
             ],
         ):
@@ -81,6 +93,8 @@ async def test_pentest_workflow_failure():
                 failing_update_scan_status,
                 mock_deploy_sandbox_target,
                 mock_cleanup_sandbox,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
                 mock_run_pentest,
             ],
         ):

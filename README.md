@@ -8,6 +8,7 @@ The **Aegis AI Brain** lies at the heart of the DECISION CENTER in the Aegis Cor
 * **Tech Stack:** Python (Temporal-SDK).
 * **Role:**
   * Executes long-running penetration testing workflows, sagas, and state retries.
+  * Generates structured PDF scan reports and persists them in PostgreSQL (`scans.report_pdf`).
   * Interacts with Neo4j (Topology Graph) to calculate real-time attack vectors.
   * Emits commands to the Infinite Worker Pools (Ingest, Pentest, Deployer/Fixer).
 * **Architecture Justification:** Python offers rapid integration with bleeding-edge AI logic ecosystems and Temporal provides durable, resilient workflows capable of surviving pod crashes (< 2s RTO).

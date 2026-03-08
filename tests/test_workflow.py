@@ -28,7 +28,9 @@ async def mock_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
 
 
 @activity.defn(name="generate_and_store_pdf_report")
-async def mock_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list) -> str:
+async def mock_generate_and_store_pdf_report(
+    scan_id: str, vulnerabilities: list
+) -> str:
     return f"Stored PDF report for {scan_id}"
 
 

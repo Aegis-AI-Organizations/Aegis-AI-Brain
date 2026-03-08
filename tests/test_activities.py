@@ -119,7 +119,9 @@ async def test_generate_and_store_pdf_report_success():
             generate_and_store_pdf_report, "scan-123", vulnerabilities
         )
 
-        assert "Successfully generated and stored PDF report for scan scan-123" in result
+        assert (
+            "Successfully generated and stored PDF report for scan scan-123" in result
+        )
         mock_cursor.execute.assert_called_once()
         sql_query, query_params = mock_cursor.execute.call_args[0]
         assert "UPDATE scans SET report_pdf = %s WHERE id = %s" in sql_query

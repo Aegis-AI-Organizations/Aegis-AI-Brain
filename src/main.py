@@ -5,8 +5,15 @@ from temporalio.client import Client
 from temporalio.worker import Worker
 from dotenv import load_dotenv
 
+from concurrent.futures import ThreadPoolExecutor
+
 from workflows.pentest_workflow import PentestWorkflow
-from activities.db_activities import update_scan_status
+from activities.db_activities import (
+    update_scan_status,
+    save_vulnerabilities,
+    generate_and_store_pdf_report,
+)
+from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sandbox
 
 
 async def init_brain():
@@ -27,14 +34,23 @@ async def init_brain():
         logger.error(f"❌ Failed to connect to Temporal: {e}")
         return
 
+    brain_queue = os.getenv("BRAIN_TASK_QUEUE", "BRAIN_TASK_QUEUE")
+
     worker = Worker(
         client,
-        task_queue="PENTEST_TASK_QUEUE",
+        task_queue=brain_queue,
         workflows=[PentestWorkflow],
-        activities=[update_scan_status],
+        activities=[
+            update_scan_status,
+            save_vulnerabilities,
+            generate_and_store_pdf_report,
+            deploy_sandbox_target,
+            cleanup_sandbox,
+        ],
+        activity_executor=ThreadPoolExecutor(max_workers=10),
     )
 
-    logger.info("🚀 Worker ready to process tasks on queue PENTEST_TASK_QUEUE...")
+    logger.info(f"🚀 Worker ready to process tasks on queue {brain_queue}...")
     await worker.run()
 
 

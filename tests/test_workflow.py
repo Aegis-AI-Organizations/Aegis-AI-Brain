@@ -12,6 +12,33 @@ async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
     return f"Successfully updated scan {scan_id} to status {new_status}"
 
 
+@activity.defn(name="deploy_sandbox_target")
+async def mock_deploy_sandbox_target(scan_id: str, target_image: str) -> str:
+    return f"http://svc-{scan_id}.sandbox-{scan_id}.svc.cluster.local:80"
+
+
+@activity.defn(name="cleanup_sandbox")
+async def mock_cleanup_sandbox(scan_id: str) -> str:
+    return "CLEANED"
+
+
+@activity.defn(name="save_vulnerabilities")
+async def mock_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
+    return f"Saved {len(vulnerabilities)} vulnerabilities for {scan_id}"
+
+
+@activity.defn(name="generate_and_store_pdf_report")
+async def mock_generate_and_store_pdf_report(
+    scan_id: str, vulnerabilities: list
+) -> str:
+    return f"Stored PDF report for {scan_id}"
+
+
+@activity.defn(name="run_pentest")
+async def mock_run_pentest(target_ip: str, port: int) -> dict:
+    return {"status": "COMPLETED", "vulnerabilities": []}
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""
@@ -21,19 +48,31 @@ async def test_pentest_workflow_success():
             env.client,
             task_queue="TEST_QUEUE",
             workflows=[PentestWorkflow],
-            activities=[mock_update_scan_status],
+            activities=[
+                mock_update_scan_status,
+                mock_deploy_sandbox_target,
+                mock_cleanup_sandbox,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_run_pentest,
+            ],
         ):
-            scan_id = str(uuid.uuid4())
-            result = await env.client.execute_workflow(
-                PentestWorkflow.run,
-                args=[scan_id, "nginx:latest"],
-                id=f"test-pentest-{scan_id}",
-                task_queue="TEST_QUEUE",
-            )
-            assert (
-                f"Scan {scan_id} on target nginx:latest successfully completed"
-                in result
-            )
+            async with Worker(
+                env.client,
+                task_queue="PENTEST_TASK_QUEUE",
+                activities=[mock_run_pentest],
+            ):
+                scan_id = str(uuid.uuid4())
+                result = await env.client.execute_workflow(
+                    PentestWorkflow.run,
+                    args=[scan_id, "nginx:latest"],
+                    id=f"test-pentest-{scan_id}",
+                    task_queue="TEST_QUEUE",
+                )
+                assert (
+                    f"Scan {scan_id} on target nginx:latest successfully completed"
+                    in result
+                )
 
 
 # Create a failing mock activity
@@ -52,13 +91,25 @@ async def test_pentest_workflow_failure():
             env.client,
             task_queue="TEST_QUEUE_FAIL",
             workflows=[PentestWorkflow],
-            activities=[failing_update_scan_status],
+            activities=[
+                failing_update_scan_status,
+                mock_deploy_sandbox_target,
+                mock_cleanup_sandbox,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_run_pentest,
+            ],
         ):
-            scan_id = str(uuid.uuid4())
-            with pytest.raises(Exception):
-                await env.client.execute_workflow(
-                    PentestWorkflow.run,
-                    args=[scan_id, "target"],
-                    id=f"test-pentest-fail-{scan_id}",
-                    task_queue="TEST_QUEUE_FAIL",
-                )
+            async with Worker(
+                env.client,
+                task_queue="PENTEST_TASK_QUEUE",
+                activities=[mock_run_pentest],
+            ):
+                scan_id = str(uuid.uuid4())
+                with pytest.raises(Exception):
+                    await env.client.execute_workflow(
+                        PentestWorkflow.run,
+                        args=[scan_id, "target"],
+                        id=f"test-pentest-fail-{scan_id}",
+                        task_queue="TEST_QUEUE_FAIL",
+                    )

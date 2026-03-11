@@ -1,7 +1,10 @@
 from temporalio import activity
 from config.db import get_db_connection
 import logging
-from reports.engine import build_report
+from datetime import datetime, timezone
+from io import BytesIO
+from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 logger = logging.getLogger(__name__)
 
@@ -106,13 +109,110 @@ async def save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
     )
 
 
+def _build_pdf_report_bytes(scan_id: str, vulnerabilities: list) -> bytes:
+    """Builds a PDF vulnerability report and returns it as bytes."""
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.cell(0, 10, "Aegis AI - Scan Report", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    pdf.set_font("Helvetica", size=11)
+    pdf.cell(0, 8, f"Scan ID: {scan_id}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    pdf.cell(0, 8, f"Generated at: {generated_at}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.cell(
+        0,
+        8,
+        f"Total vulnerabilities: {len(vulnerabilities)}",
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+    pdf.ln(3)
+
+    if not vulnerabilities:
+        pdf.set_font("Helvetica", "I", 11)
+        pdf.multi_cell(0, 7, "No vulnerabilities were reported for this scan.")
+    else:
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.cell(0, 8, "Vulnerabilities", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.ln(1)
+
+        for idx, vuln in enumerate(vulnerabilities, start=1):
+            pdf.set_font("Helvetica", "B", 11)
+            vuln_type = vuln.get("vuln_type", "UNKNOWN")
+            severity = vuln.get("severity", "UNKNOWN")
+            pdf.multi_cell(
+                0,
+                7,
+                f"{idx}. [{severity}] {vuln_type}",
+                border=0,
+                align="L",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
+
+            pdf.set_font("Helvetica", size=10)
+            target_endpoint = vuln.get("target_endpoint", "N/A")
+            description = vuln.get("description", "N/A")
+            pdf.multi_cell(
+                0,
+                6,
+                f"Target endpoint: {target_endpoint}",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
+            pdf.multi_cell(
+                0,
+                6,
+                f"Description: {description}",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
+
+            evidences = vuln.get("evidences", [])
+            if evidences:
+                pdf.multi_cell(
+                    0,
+                    6,
+                    f"Evidences ({len(evidences)}):",
+                    new_x=XPos.LMARGIN,
+                    new_y=YPos.NEXT,
+                )
+                for evidence_index, evidence in enumerate(evidences, start=1):
+                    payload = evidence.get("payload_used", "N/A")
+                    loot_data = evidence.get("loot_data")
+                    loot_repr = str(loot_data) if loot_data is not None else "N/A"
+                    pdf.multi_cell(
+                        0,
+                        6,
+                        (
+                            f"  - #{evidence_index} payload={payload}; "
+                            f"loot_data={loot_repr}"
+                        ),
+                        new_x=XPos.LMARGIN,
+                        new_y=YPos.NEXT,
+                    )
+            else:
+                pdf.multi_cell(
+                    0, 6, "Evidences: none", new_x=XPos.LMARGIN, new_y=YPos.NEXT
+                )
+
+            pdf.ln(2)
+
+    buffer = BytesIO()
+    pdf.output(buffer)
+    return buffer.getvalue()
+
+
 def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
     """Generates PDF bytes in memory and stores them in scans.report_pdf."""
     conn = get_db_connection()
     if not conn:
         raise Exception("Database connection failed")
 
-    report_pdf = build_report(scan_id, vulnerabilities)
+    report_pdf = _build_pdf_report_bytes(scan_id, vulnerabilities)
 
     try:
         cur = conn.cursor()

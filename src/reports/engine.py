@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timezone
 from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 from io import BytesIO
 
 
@@ -39,16 +40,37 @@ class AegisReport(FPDF):
         self.set_y(60)
         self.set_font("helvetica", "B", 40)
         self.set_text_color(33, 37, 41)
-        self.cell(0, 20, "AEGIS AI", align="C", ln=True)
+        self.cell(0, 20, "AEGIS AI", align="C", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
         self.set_font("helvetica", "", 24)
-        self.cell(0, 20, "Vulnerability Assessment Report", align="C", ln=True)
+        self.cell(
+            0,
+            20,
+            "Vulnerability Assessment Report",
+            align="C",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
 
         self.ln(40)
         self.set_font("helvetica", "B", 14)
-        self.cell(0, 10, f"Scan ID: {self.scan_id}", align="C", ln=True)
+        self.cell(
+            0,
+            10,
+            f"Scan ID: {self.scan_id}",
+            align="C",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
         self.set_font("helvetica", "", 12)
-        self.cell(0, 10, f"Generated on: {self.generated_at}", align="C", ln=True)
+        self.cell(
+            0,
+            10,
+            f"Generated on: {self.generated_at}",
+            align="C",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
 
         self.set_y(-60)
         self.set_font("helvetica", "I", 10)
@@ -62,7 +84,7 @@ class AegisReport(FPDF):
     def management_summary(self, vulnerabilities):
         self.add_page()
         self.set_font("helvetica", "B", 20)
-        self.cell(0, 15, "1. Management Summary", ln=True)
+        self.cell(0, 15, "1. Management Summary", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.ln(5)
 
         self.set_font("helvetica", "", 11)
@@ -109,7 +131,13 @@ class AegisReport(FPDF):
         if total == 0:
             self.set_font("helvetica", "B", 12)
             self.set_text_color(0, 128, 0)
-            self.cell(0, 10, "SUCCESS: No vulnerabilities detected.", ln=True)
+            self.cell(
+                0,
+                10,
+                "SUCCESS: No vulnerabilities detected.",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
         else:
             self.set_font("helvetica", "B", 12)
             self.set_text_color(150, 0, 0)
@@ -117,14 +145,15 @@ class AegisReport(FPDF):
                 0,
                 10,
                 f"WARNING: {total} security findings require your attention.",
-                ln=True,
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
             )
         self.set_text_color(0)
 
     def vulnerability_details(self, vulnerabilities):
         self.add_page()
         self.set_font("helvetica", "B", 20)
-        self.cell(0, 15, "2. Detailed Findings", ln=True)
+        self.cell(0, 15, "2. Detailed Findings", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.ln(5)
 
         colors = {
@@ -150,7 +179,8 @@ class AegisReport(FPDF):
                 0,
                 10,
                 f"Finding #{idx}: {v.get('vuln_type', 'Unknown')}",
-                ln=True,
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
                 fill=True,
             )
 
@@ -160,35 +190,64 @@ class AegisReport(FPDF):
             self.cell(40, 8, "Severity:", border="B")
             self.set_font("helvetica", "", 10)
             self.set_text_color(*color)
-            self.cell(0, 8, sev, border="B", ln=True)
+            self.cell(0, 8, sev, border="B", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
             self.set_text_color(0)
             self.set_font("helvetica", "B", 10)
             self.cell(40, 8, "Target Endpoint:", border="B")
             self.set_font("helvetica", "", 10)
-            self.cell(0, 8, v.get("target_endpoint", "N/A"), border="B", ln=True)
+            self.cell(
+                0,
+                8,
+                v.get("target_endpoint", "N/A"),
+                border="B",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
 
             # Description
             self.ln(2)
             self.set_font("helvetica", "B", 10)
-            self.cell(0, 8, "Description:", ln=True)
+            self.cell(0, 8, "Description:", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             self.set_font("helvetica", "", 10)
-            self.multi_cell(0, 6, v.get("description", "No description provided."))
+            self.multi_cell(
+                0,
+                6,
+                v.get("description", "No description provided."),
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
 
             # Evidences
             evidences = v.get("evidences", [])
             if evidences:
                 self.ln(2)
                 self.set_font("helvetica", "B", 10)
-                self.cell(0, 8, "Technical Evidence:", ln=True)
+                self.cell(
+                    0, 8, "Technical Evidence:", new_x=XPos.LMARGIN, new_y=YPos.NEXT
+                )
                 for ev in evidences:
                     self.set_font("helvetica", "I", 9)
-                    self.multi_cell(0, 5, f"Payload: {ev.get('payload_used', 'N/A')}")
+                    self.multi_cell(
+                        0,
+                        5,
+                        f"Payload: {ev.get('payload_used', 'N/A')}",
+                        new_x=XPos.LMARGIN,
+                        new_y=YPos.NEXT,
+                    )
                     loot = ev.get("loot_data")
                     if loot:
                         self.set_fill_color(240, 240, 240)
                         self.set_font("courier", "", 8)
-                        self.multi_cell(0, 4, str(loot), border=1, fill=True)
+                        self.multi_cell(
+                            0,
+                            4,
+                            str(loot),
+                            border=1,
+                            fill=True,
+                            new_x=XPos.LMARGIN,
+                            new_y=YPos.NEXT,
+                        )
                         self.ln(2)
 
             self.ln(10)

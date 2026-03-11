@@ -1,6 +1,7 @@
 from temporalio import activity
 from config.db import get_db_connection
 import logging
+from reports.engine import build_report
 
 logger = logging.getLogger(__name__)
 
@@ -103,3 +104,40 @@ async def save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
     return (
         f"Successfully saved {len(vulnerabilities)} vulnerabilities for scan {scan_id}"
     )
+
+
+def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
+    """Generates PDF bytes in memory and stores them in scans.report_pdf."""
+    conn = get_db_connection()
+    if not conn:
+        raise Exception("Database connection failed")
+
+    report_pdf = build_report(scan_id, vulnerabilities)
+
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE scans SET report_pdf = %s WHERE id = %s", (report_pdf, scan_id)
+        )
+
+        if cur.rowcount == 0:
+            raise Exception(f"Scan ID {scan_id} not found to store PDF report")
+
+        conn.commit()
+        cur.close()
+        logger.info(f"Stored PDF report for scan {scan_id} ({len(report_pdf)} bytes)")
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error storing PDF report for scan {scan_id}: {e}")
+        raise e
+    finally:
+        conn.close()
+
+
+@activity.defn
+async def generate_and_store_pdf_report(scan_id: str, vulnerabilities: list) -> str:
+    """
+    Generates a structured PDF report in memory and stores it in scans.report_pdf.
+    """
+    _execute_generate_and_store_pdf_report(scan_id, vulnerabilities)
+    return f"Successfully generated and stored PDF report for scan {scan_id}"

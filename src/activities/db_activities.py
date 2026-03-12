@@ -1,6 +1,7 @@
 from temporalio import activity
 from config.db import get_db_connection
 import logging
+import json
 from reports.engine import build_report
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,6 @@ async def update_scan_status(scan_id: str, new_status: str) -> str:
 
 def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list):
     """Internal helper to insert vulnerabilities and their evidences."""
-    import json
 
     conn = get_db_connection()
     if not conn:

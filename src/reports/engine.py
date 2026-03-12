@@ -1,266 +1,430 @@
+import json
 import os
 from datetime import datetime, timezone
-from fpdf import FPDF
-from fpdf.enums import XPos, YPos
 from io import BytesIO
+from urllib.parse import urlparse
+
+from fpdf import FPDF, FontFace
+from fpdf.enums import XPos, YPos
+
+SEVERITY_DISPLAY_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO", "UNKNOWN"]
+SEVERITY_COLORS = {
+    "CRITICAL": (153, 27, 27),
+    "HIGH": (194, 65, 12),
+    "MEDIUM": (180, 83, 9),
+    "LOW": (22, 101, 52),
+    "INFO": (30, 64, 175),
+    "UNKNOWN": (75, 85, 99),
+}
+REPORT_PRIMARY_COLOR = (16, 44, 84)
+SECTION_FILL_COLOR = (232, 240, 251)
+CONTENT_BOX_FILL_COLOR = (246, 249, 253)
+MUTED_TEXT_COLOR = (107, 114, 128)
 
 
-class AegisReport(FPDF):
-    def __init__(self, scan_id, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.scan_id = scan_id
-        self.generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-        self.logo_path = "/Users/enzogaggiotti/Documents/Epitech/EIP/Aegis AI/Repository/Aegis-AI-Brain/logo/logo.svg"
+def _safe_text(value, default: str = "N/A") -> str:
+    """Normalizes raw values into clean text for PDF rendering."""
+    if value is None:
+        return default
 
-    def header(self):
-        if self.page_no() > 1:
-            self.set_font("helvetica", "I", 8)
-            self.set_text_color(128)
-            self.cell(
-                0, 10, f"Aegis AI - Scan Report {self.scan_id}", border=0, align="L"
+    text = str(value).strip()
+    return text if text else default
+
+
+def _normalize_severity(severity) -> str:
+    """Returns an uppercase severity in the supported range."""
+    raw = _safe_text(severity, default="UNKNOWN").upper()
+    severity_aliases = {"INFORMATIONAL": "INFO", "MED": "MEDIUM"}
+    normalized = severity_aliases.get(raw, raw)
+    return normalized if normalized in SEVERITY_COLORS else "UNKNOWN"
+
+
+def _severity_fill_color(severity) -> tuple:
+    return SEVERITY_COLORS[_normalize_severity(severity)]
+
+
+def _count_by_severity(vulnerabilities: list) -> dict:
+    counts = {severity: 0 for severity in SEVERITY_DISPLAY_ORDER}
+    for vulnerability in vulnerabilities:
+        normalized = _normalize_severity(vulnerability.get("severity"))
+        counts[normalized] = counts.get(normalized, 0) + 1
+    return counts
+
+
+def _truncate_text(text, max_len: int = 120) -> str:
+    normalized = _safe_text(text)
+    if len(normalized) <= max_len:
+        return normalized
+    return f"{normalized[: max_len - 3]}..."
+
+
+def _format_loot_data(loot_data) -> str:
+    if loot_data in (None, ""):
+        return "No loot captured."
+    if isinstance(loot_data, (dict, list)):
+        return json.dumps(loot_data, indent=2, ensure_ascii=True)
+    return str(loot_data)
+
+
+def _extract_target_name(vulnerabilities: list) -> str:
+    for vulnerability in vulnerabilities:
+        for key in ("target_name", "target", "target_image"):
+            value = vulnerability.get(key)
+            if value:
+                return str(value)
+
+    for vulnerability in vulnerabilities:
+        endpoint = _safe_text(vulnerability.get("target_endpoint"), default="")
+        if not endpoint:
+            continue
+
+        parsed = urlparse(endpoint if "://" in endpoint else f"http://{endpoint}")
+        host = parsed.netloc or parsed.path.split("/")[0]
+        if host:
+            return host
+
+    return "Unknown target"
+
+
+def _extract_target_image_path(vulnerabilities: list):
+    for vulnerability in vulnerabilities:
+        for key in ("target_image_path", "target_image_file", "target_image"):
+            candidate = vulnerability.get(key)
+            if (
+                isinstance(candidate, str)
+                and candidate.strip()
+                and os.path.isfile(candidate)
+            ):
+                return candidate
+    return None
+
+
+def _ensure_space(pdf: FPDF, required_space: float):
+    if pdf.get_y() + required_space > pdf.h - pdf.b_margin:
+        pdf.add_page()
+
+
+def _render_section_header(pdf: FPDF, title: str):
+    pdf.set_draw_color(206, 221, 240)
+    pdf.set_fill_color(*SECTION_FILL_COLOR)
+    pdf.set_text_color(20, 20, 20)
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.cell(0, 10, title, border=1, fill=True, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(2)
+
+
+def _render_cover_page(
+    pdf: FPDF, scan_id: str, vulnerabilities: list, generated_at: str
+):
+    target_name = _extract_target_name(vulnerabilities)
+    target_image_path = _extract_target_image_path(vulnerabilities)
+
+    pdf.add_page()
+    pdf.set_fill_color(*REPORT_PRIMARY_COLOR)
+    pdf.rect(0, 0, pdf.w, 60, style="F")
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_xy(pdf.l_margin, 17)
+    pdf.set_font("Helvetica", "B", 24)
+    pdf.cell(0, 11, "Aegis AI Pentest Report", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font("Helvetica", size=12)
+    pdf.cell(
+        0,
+        7,
+        "Security Assessment Summary",
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_y(76)
+    pdf.set_font("Helvetica", "B", 15)
+    pdf.cell(0, 8, "Target Snapshot", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(2)
+
+    image_box_x = pdf.l_margin
+    image_box_y = pdf.get_y()
+    image_box_w = 64
+    image_box_h = 48
+    pdf.set_draw_color(207, 216, 224)
+    pdf.set_fill_color(*CONTENT_BOX_FILL_COLOR)
+    pdf.rect(image_box_x, image_box_y, image_box_w, image_box_h, style="FD")
+
+    if target_image_path:
+        try:
+            pdf.image(
+                target_image_path,
+                x=image_box_x + 1.5,
+                y=image_box_y + 1.5,
+                w=image_box_w - 3,
+                h=image_box_h - 3,
+                keep_aspect_ratio=True,
             )
-            self.ln(10)
+        except Exception:
+            pdf.set_font("Helvetica", "I", 9)
+            pdf.set_text_color(*MUTED_TEXT_COLOR)
+            pdf.set_xy(image_box_x, image_box_y + 21)
+            pdf.cell(image_box_w, 6, "Target image unavailable", align="C")
+            pdf.set_text_color(0, 0, 0)
+    else:
+        pdf.set_font("Helvetica", "I", 9)
+        pdf.set_text_color(*MUTED_TEXT_COLOR)
+        pdf.set_xy(image_box_x, image_box_y + 21)
+        pdf.cell(image_box_w, 6, "No target image provided", align="C")
+        pdf.set_text_color(0, 0, 0)
 
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("helvetica", "I", 8)
-        self.set_text_color(128)
-        self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", align="C")
+    info_x = image_box_x + image_box_w + 10
+    info_w = pdf.w - pdf.r_margin - info_x
+    pdf.set_xy(info_x, image_box_y)
 
-    def cover_page(self):
-        self.add_page()
-        # Aegis AI Branding
-        if os.path.exists(self.logo_path):
-            try:
-                # Centering a 40mm wide logo
-                self.image(self.logo_path, x=85, y=20, w=40)
-            except Exception as e:
-                print(f"Warning: Could not draw logo: {e}")
+    cover_fields = [
+        ("Target Name", target_name),
+        ("Scan ID", scan_id),
+        ("Generation Date", generated_at),
+    ]
+    for label, value in cover_fields:
+        pdf.set_font("Helvetica", "B", 11)
+        pdf.set_x(info_x)
+        pdf.cell(info_w, 6, label, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.set_font("Helvetica", size=11)
+        pdf.set_x(info_x)
+        pdf.multi_cell(
+            info_w, 6, _safe_text(value), new_x=XPos.LMARGIN, new_y=YPos.NEXT
+        )
+        pdf.ln(1)
 
-        self.set_y(60)
-        self.set_font("helvetica", "B", 40)
-        self.set_text_color(33, 37, 41)
-        self.cell(0, 20, "AEGIS AI", align="C", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_y(max(pdf.get_y(), image_box_y + image_box_h + 10))
+    pdf.set_fill_color(236, 243, 252)
+    pdf.set_draw_color(206, 221, 240)
+    pdf.set_font("Helvetica", "B", 13)
+    pdf.cell(
+        0,
+        11,
+        f"Total vulnerabilities detected: {len(vulnerabilities)}",
+        border=1,
+        fill=True,
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
 
-        self.set_font("helvetica", "", 24)
-        self.cell(
+
+def _render_summary(pdf: FPDF, vulnerabilities: list):
+    counts = _count_by_severity(vulnerabilities)
+    total = len(vulnerabilities)
+
+    pdf.add_page()
+    _render_section_header(pdf, "Executive Summary")
+
+    pdf.set_font("Helvetica", size=11)
+    summary_text = (
+        "This report consolidates the automated pentest findings collected for the "
+        "current scan target. Prioritize remediation from CRITICAL to LOW severity "
+        "and validate fixes with a follow-up scan."
+    )
+    pdf.multi_cell(0, 7, summary_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(2)
+
+    pdf.set_fill_color(237, 244, 253)
+    pdf.set_draw_color(206, 221, 240)
+    pdf.set_font("Helvetica", "B", 13)
+    pdf.cell(
+        0,
+        11,
+        f"Total vulnerabilities: {total}",
+        border=1,
+        fill=True,
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+    pdf.ln(3)
+
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, "Severity Breakdown", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(1)
+
+    for severity in SEVERITY_DISPLAY_ORDER:
+        severity_color = _severity_fill_color(severity)
+        pdf.set_font("Helvetica", "B", 10)
+        pdf.set_fill_color(*severity_color)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(
+            38, 8, severity, align="C", fill=True, new_x=XPos.RIGHT, new_y=YPos.TOP
+        )
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font("Helvetica", size=10)
+        pdf.cell(
             0,
-            20,
-            "Vulnerability Assessment Report",
-            align="C",
+            8,
+            f"{counts.get(severity, 0)} finding(s)",
             new_x=XPos.LMARGIN,
             new_y=YPos.NEXT,
         )
 
-        self.ln(40)
-        self.set_font("helvetica", "B", 14)
-        self.cell(
-            0,
-            10,
-            f"Scan ID: {self.scan_id}",
-            align="C",
-            new_x=XPos.LMARGIN,
-            new_y=YPos.NEXT,
+
+def _render_vulnerability_table(pdf: FPDF, vulnerabilities: list):
+    pdf.add_page()
+    _render_section_header(pdf, "Vulnerability Summary")
+
+    if not vulnerabilities:
+        pdf.set_font("Helvetica", "I", 11)
+        pdf.multi_cell(0, 7, "No vulnerabilities were reported for this scan.")
+        return
+
+    heading_style = FontFace(emphasis="BOLD", fill_color=(235, 241, 249))
+    epw = pdf.epw
+    col_widths = (epw * 0.24, epw * 0.14, epw * 0.27, epw * 0.35)
+
+    with pdf.table(
+        width=epw,
+        col_widths=col_widths,
+        line_height=6,
+        text_align=("L", "C", "L", "L"),
+        first_row_as_headings=True,
+        headings_style=heading_style,
+    ) as table:
+        heading = table.row()
+        heading.cell("Vulnerability Type")
+        heading.cell("Severity")
+        heading.cell("Endpoint")
+        heading.cell("Short Description")
+
+        for vulnerability in vulnerabilities:
+            severity = _normalize_severity(vulnerability.get("severity"))
+            severity_style = FontFace(
+                emphasis="BOLD",
+                color=(255, 255, 255),
+                fill_color=_severity_fill_color(severity),
+            )
+
+            row = table.row()
+            row.cell(_safe_text(vulnerability.get("vuln_type"), default="Unknown"))
+            row.cell(severity, style=severity_style)
+            row.cell(_safe_text(vulnerability.get("target_endpoint")))
+            row.cell(_truncate_text(vulnerability.get("description"), max_len=110))
+
+
+def _render_boxed_block(pdf: FPDF, title: str, content: str):
+    _ensure_space(pdf, required_space=22)
+    pdf.set_fill_color(*SECTION_FILL_COLOR)
+    pdf.set_draw_color(206, 221, 240)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.multi_cell(
+        0, 7, title, border=1, fill=True, new_x=XPos.LMARGIN, new_y=YPos.NEXT
+    )
+    pdf.set_font("Courier", size=9)
+    pdf.multi_cell(
+        0,
+        5.5,
+        _safe_text(content, default="N/A"),
+        border=1,
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+    pdf.ln(1)
+
+
+def _render_vulnerability_detail(pdf: FPDF, index: int, vulnerability: dict):
+    _ensure_space(pdf, required_space=50)
+
+    title = _safe_text(
+        vulnerability.get("title") or vulnerability.get("vuln_type"),
+        default="Untitled vulnerability",
+    )
+    severity = _normalize_severity(vulnerability.get("severity"))
+    endpoint = _safe_text(vulnerability.get("target_endpoint"))
+    description = _safe_text(
+        vulnerability.get("description"), default="No description provided."
+    )
+    evidences = vulnerability.get("evidences", []) or []
+
+    pdf.set_fill_color(245, 248, 252)
+    pdf.set_draw_color(206, 221, 240)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.multi_cell(
+        0,
+        8,
+        f"{index}. {title}",
+        border=1,
+        fill=True,
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+    pdf.ln(1)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.cell(24, 7, "Severity:", new_x=XPos.RIGHT, new_y=YPos.TOP)
+    badge_width = max(25, pdf.get_string_width(severity) + 8)
+    pdf.set_fill_color(*_severity_fill_color(severity))
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(
+        badge_width,
+        7,
+        severity,
+        align="C",
+        fill=True,
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+    pdf.set_text_color(0, 0, 0)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.cell(0, 6, "Endpoint", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font("Helvetica", size=10)
+    pdf.multi_cell(0, 6, endpoint, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.cell(0, 6, "Description", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font("Helvetica", size=10)
+    pdf.multi_cell(0, 6, description, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(1)
+
+    payload_blocks = []
+    loot_blocks = []
+    for evidence_index, evidence in enumerate(evidences, start=1):
+        payload_blocks.append(
+            f"[{evidence_index}] "
+            f"{_safe_text(evidence.get('payload_used'), default='No payload recorded.')}"
         )
-        self.set_font("helvetica", "", 12)
-        self.cell(
-            0,
-            10,
-            f"Generated on: {self.generated_at}",
-            align="C",
-            new_x=XPos.LMARGIN,
-            new_y=YPos.NEXT,
+        loot_blocks.append(
+            f"[{evidence_index}] {_format_loot_data(evidence.get('loot_data'))}"
         )
 
-        self.set_y(-60)
-        self.set_font("helvetica", "I", 10)
-        self.multi_cell(
-            0,
-            5,
-            "CONFIDENTIAL\nThis document contains sensitive security information. Access is restricted to authorized personnel only.",
-            align="C",
-        )
-
-    def management_summary(self, vulnerabilities):
-        self.add_page()
-        self.set_font("helvetica", "B", 20)
-        self.cell(0, 15, "1. Management Summary", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.ln(5)
-
-        self.set_font("helvetica", "", 11)
-        self.multi_cell(
-            0,
-            6,
-            "This report provides an overview of the security posture of the assessed environment. The automated scan identified the following security findings which are categorized by their severity levels.",
-        )
-        self.ln(10)
-
-        # Severity Counter
-        stats = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0}
-        for v in vulnerabilities:
-            sev = v.get("severity", "INFO").upper()
-            if sev in stats:
-                stats[sev] += 1
-            else:
-                stats["INFO"] += 1
-
-        # Draw small stats table
-        self.set_font("helvetica", "B", 12)
-        self.cell(60, 10, "Severity Level", border=1, align="C")
-        self.cell(60, 10, "Count", border=1, align="C")
-        self.ln()
-
-        colors = {
-            "CRITICAL": (150, 0, 0),
-            "HIGH": (255, 0, 0),
-            "MEDIUM": (255, 165, 0),
-            "LOW": (0, 128, 0),
-            "INFO": (0, 0, 255),
-        }
-
-        self.set_font("helvetica", "", 11)
-        for label, count in stats.items():
-            self.set_text_color(*colors[label])
-            self.cell(60, 10, label, border=1, align="C")
-            self.set_text_color(0)
-            self.cell(60, 10, str(count), border=1, align="C")
-            self.ln()
-
-        self.ln(10)
-        total = len(vulnerabilities)
-        if total == 0:
-            self.set_font("helvetica", "B", 12)
-            self.set_text_color(0, 128, 0)
-            self.cell(
-                0,
-                10,
-                "SUCCESS: No vulnerabilities detected.",
-                new_x=XPos.LMARGIN,
-                new_y=YPos.NEXT,
-            )
-        else:
-            self.set_font("helvetica", "B", 12)
-            self.set_text_color(150, 0, 0)
-            self.cell(
-                0,
-                10,
-                f"WARNING: {total} security findings require your attention.",
-                new_x=XPos.LMARGIN,
-                new_y=YPos.NEXT,
-            )
-        self.set_text_color(0)
-
-    def vulnerability_details(self, vulnerabilities):
-        self.add_page()
-        self.set_font("helvetica", "B", 20)
-        self.cell(0, 15, "2. Detailed Findings", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.ln(5)
-
-        colors = {
-            "CRITICAL": (150, 0, 0),
-            "HIGH": (255, 0, 0),
-            "MEDIUM": (255, 165, 0),
-            "LOW": (0, 128, 0),
-            "INFO": (0, 0, 255),
-        }
-
-        for idx, v in enumerate(vulnerabilities, 1):
-            if self.get_y() > 220:
-                self.add_page()
-
-            sev = v.get("severity", "INFO").upper()
-            color = colors.get(sev, (0, 0, 0))
-
-            # Header Box
-            self.set_fill_color(*color)
-            self.set_text_color(255, 255, 255)
-            self.set_font("helvetica", "B", 12)
-            self.cell(
-                0,
-                10,
-                f"Finding #{idx}: {v.get('vuln_type', 'Unknown')}",
-                new_x=XPos.LMARGIN,
-                new_y=YPos.NEXT,
-                fill=True,
-            )
-
-            # Metadata
-            self.set_text_color(0)
-            self.set_font("helvetica", "B", 10)
-            self.cell(40, 8, "Severity:", border="B")
-            self.set_font("helvetica", "", 10)
-            self.set_text_color(*color)
-            self.cell(0, 8, sev, border="B", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-
-            self.set_text_color(0)
-            self.set_font("helvetica", "B", 10)
-            self.cell(40, 8, "Target Endpoint:", border="B")
-            self.set_font("helvetica", "", 10)
-            self.cell(
-                0,
-                8,
-                v.get("target_endpoint", "N/A"),
-                border="B",
-                new_x=XPos.LMARGIN,
-                new_y=YPos.NEXT,
-            )
-
-            # Description
-            self.ln(2)
-            self.set_font("helvetica", "B", 10)
-            self.cell(0, 8, "Description:", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            self.set_font("helvetica", "", 10)
-            self.multi_cell(
-                0,
-                6,
-                v.get("description", "No description provided."),
-                new_x=XPos.LMARGIN,
-                new_y=YPos.NEXT,
-            )
-
-            # Evidences
-            evidences = v.get("evidences", [])
-            if evidences:
-                self.ln(2)
-                self.set_font("helvetica", "B", 10)
-                self.cell(
-                    0, 8, "Technical Evidence:", new_x=XPos.LMARGIN, new_y=YPos.NEXT
-                )
-                for ev in evidences:
-                    self.set_font("helvetica", "I", 9)
-                    self.multi_cell(
-                        0,
-                        5,
-                        f"Payload: {ev.get('payload_used', 'N/A')}",
-                        new_x=XPos.LMARGIN,
-                        new_y=YPos.NEXT,
-                    )
-                    loot = ev.get("loot_data")
-                    if loot:
-                        self.set_fill_color(240, 240, 240)
-                        self.set_font("courier", "", 8)
-                        self.multi_cell(
-                            0,
-                            4,
-                            str(loot),
-                            border=1,
-                            fill=True,
-                            new_x=XPos.LMARGIN,
-                            new_y=YPos.NEXT,
-                        )
-                        self.ln(2)
-
-            self.ln(10)
+    _render_boxed_block(
+        pdf,
+        "Payload Used",
+        "\n\n".join(payload_blocks)
+        if payload_blocks
+        else "No payload recorded for this vulnerability.",
+    )
+    _render_boxed_block(
+        pdf,
+        "Evidence / Loot",
+        "\n\n".join(loot_blocks)
+        if loot_blocks
+        else "No evidence or loot data captured.",
+    )
+    pdf.ln(2)
 
 
-def build_report(scan_id, vulnerabilities):
-    pdf = AegisReport(scan_id)
-    pdf.set_title("Aegis AI Security Report")
-    pdf.set_author("Aegis AI Automated Scanner")
+def build_report(scan_id: str, vulnerabilities: list) -> bytes:
+    """Builds a pentest-style PDF report and returns it as bytes."""
+    vulnerabilities = vulnerabilities or []
+    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    pdf = FPDF(format="A4")
+    pdf.set_margins(left=18, top=18, right=18)
+    pdf.set_auto_page_break(auto=True, margin=18)
 
-    pdf.cover_page()
-    pdf.management_summary(vulnerabilities)
-    pdf.vulnerability_details(vulnerabilities)
+    _render_cover_page(pdf, scan_id, vulnerabilities, generated_at)
+    _render_summary(pdf, vulnerabilities)
+    _render_vulnerability_table(pdf, vulnerabilities)
+
+    pdf.add_page()
+    _render_section_header(pdf, "Detailed Vulnerability Findings")
+    if not vulnerabilities:
+        pdf.set_font("Helvetica", "I", 11)
+        pdf.multi_cell(0, 7, "No vulnerabilities were reported for this scan.")
+    else:
+        for idx, vulnerability in enumerate(vulnerabilities, start=1):
+            _render_vulnerability_detail(pdf, idx, vulnerability)
 
     buffer = BytesIO()
     pdf.output(buffer)

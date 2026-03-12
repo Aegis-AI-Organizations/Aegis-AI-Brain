@@ -17,7 +17,14 @@ The Brain worker now runs `generate_and_store_pdf_report(scan_id, vulnerabilitie
 after `save_vulnerabilities` succeeds.
 
 - The report is generated in memory with `fpdf2`
-- Vulnerability details and evidences are included
+- The final report follows a pentest-style structure:
+  - cover page with report title, target snapshot/name, scan ID, and generation date
+  - executive summary with total findings and severity breakdown
+  - vulnerability summary table (type, severity, endpoint, short description)
+  - detailed vulnerability sections with title, severity, endpoint, description,
+    payload used, and evidence/loot blocks
+- Severity is visually highlighted with colored labels
+- Payload and evidence content is rendered in boxed blocks for readability
 - PDF bytes are persisted with:
 
 ```sql

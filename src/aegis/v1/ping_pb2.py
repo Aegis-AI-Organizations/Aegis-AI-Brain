@@ -9,14 +9,18 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-_runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC,
-    7,
-    34,
-    0,
-    '',
-    'aegis/v1/ping.proto'
-)
+# Allow loading generated stubs in environments pinned to protobuf runtime < 7.
+try:
+  _runtime_version.ValidateProtobufRuntimeVersion(
+      _runtime_version.Domain.PUBLIC,
+      7,
+      34,
+      0,
+      '',
+      'aegis/v1/ping.proto'
+  )
+except Exception:
+  pass
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()

@@ -16,13 +16,15 @@ from activities.db_activities import (
 from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sandbox
 
 
-async def init_brain():
+async def main():
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("aegis_brain")
 
     load_dotenv()
 
     temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
+    grpc_port = os.getenv("GRPC_PORT", "50051")
+
     logger.info(
         f"🧠 Aegis AI Brain starting... Connecting to Temporal at {temporal_host}"
     )
@@ -51,8 +53,11 @@ async def init_brain():
     )
 
     logger.info(f"🚀 Worker ready to process tasks on queue {brain_queue}...")
-    await worker.run()
+
+    from grpc_server import serve
+
+    await asyncio.gather(worker.run(), serve(grpc_port))
 
 
 if __name__ == "__main__":
-    asyncio.run(init_brain())
+    asyncio.run(main())

@@ -24,6 +24,16 @@ class ScanServiceStub(object):
                 request_serializer=aegis_dot_v1_dot_scan__pb2.GetScanStatusRequest.SerializeToString,
                 response_deserializer=aegis_dot_v1_dot_scan__pb2.GetScanStatusResponse.FromString,
                 _registered_method=True)
+        self.ListScans = channel.unary_unary(
+                '/aegis.v1.ScanService/ListScans',
+                request_serializer=aegis_dot_v1_dot_scan__pb2.ListScansRequest.SerializeToString,
+                response_deserializer=aegis_dot_v1_dot_scan__pb2.ListScansResponse.FromString,
+                _registered_method=True)
+        self.GetScanReport = channel.unary_unary(
+                '/aegis.v1.ScanService/GetScanReport',
+                request_serializer=aegis_dot_v1_dot_scan__pb2.GetScanReportRequest.SerializeToString,
+                response_deserializer=aegis_dot_v1_dot_scan__pb2.GetScanReportResponse.FromString,
+                _registered_method=True)
 
 
 class ScanServiceServicer(object):
@@ -41,6 +51,18 @@ class ScanServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ListScans(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetScanReport(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ScanServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -53,6 +75,16 @@ def add_ScanServiceServicer_to_server(servicer, server):
                     servicer.GetScanStatus,
                     request_deserializer=aegis_dot_v1_dot_scan__pb2.GetScanStatusRequest.FromString,
                     response_serializer=aegis_dot_v1_dot_scan__pb2.GetScanStatusResponse.SerializeToString,
+            ),
+            'ListScans': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListScans,
+                    request_deserializer=aegis_dot_v1_dot_scan__pb2.ListScansRequest.FromString,
+                    response_serializer=aegis_dot_v1_dot_scan__pb2.ListScansResponse.SerializeToString,
+            ),
+            'GetScanReport': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetScanReport,
+                    request_deserializer=aegis_dot_v1_dot_scan__pb2.GetScanReportRequest.FromString,
+                    response_serializer=aegis_dot_v1_dot_scan__pb2.GetScanReportResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -109,6 +141,60 @@ class ScanService(object):
             '/aegis.v1.ScanService/GetScanStatus',
             aegis_dot_v1_dot_scan__pb2.GetScanStatusRequest.SerializeToString,
             aegis_dot_v1_dot_scan__pb2.GetScanStatusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListScans(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v1.ScanService/ListScans',
+            aegis_dot_v1_dot_scan__pb2.ListScansRequest.SerializeToString,
+            aegis_dot_v1_dot_scan__pb2.ListScansResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetScanReport(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v1.ScanService/GetScanReport',
+            aegis_dot_v1_dot_scan__pb2.GetScanReportRequest.SerializeToString,
+            aegis_dot_v1_dot_scan__pb2.GetScanReportResponse.FromString,
             options,
             channel_credentials,
             insecure,

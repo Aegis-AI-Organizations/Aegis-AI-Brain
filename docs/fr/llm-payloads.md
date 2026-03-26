@@ -1,0 +1,3 @@
+# [FR] # Llm Payloads | Aegis-AI-Brain
+
+Document initialisé pour les tests de récupération Docusaurus par le plugin remote-content.

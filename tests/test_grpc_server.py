@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 from datetime import datetime
 
-from aegis.v1 import ping_pb2, scan_pb2, vulnerability_pb2
+from aegis.v2 import ping_pb2, scan_pb2, vulnerability_pb2
 from grpc_server import PingService, ScanService, VulnerabilityService
 
 

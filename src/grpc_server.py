@@ -7,12 +7,12 @@ from google.protobuf.timestamp_pb2 import Timestamp
 
 from config.db import get_db_connection
 
-import aegis.v1.ping_pb2 as ping_pb2
-import aegis.v1.ping_pb2_grpc as ping_pb2_grpc
-import aegis.v1.scan_pb2 as scan_pb2
-import aegis.v1.scan_pb2_grpc as scan_pb2_grpc
-import aegis.v1.vulnerability_pb2 as vulnerability_pb2
-import aegis.v1.vulnerability_pb2_grpc as vulnerability_pb2_grpc
+import aegis.v2.ping_pb2 as ping_pb2
+import aegis.v2.ping_pb2_grpc as ping_pb2_grpc
+import aegis.v2.scan_pb2 as scan_pb2
+import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
+import aegis.v2.vulnerability_pb2 as vulnerability_pb2
+import aegis.v2.vulnerability_pb2_grpc as vulnerability_pb2_grpc
 
 logger = logging.getLogger("aegis_brain_grpc")
 

@@ -17,7 +17,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           if python -c "import pytest" &> /dev/null; then
-            pytest --cov=src --cov-report=term-missing --cov-fail-under=80 --cov-omit='*_pb2.py,*_pb2_grpc.py'
+            pytest --cov=src --cov-config=.coveragerc --cov-report=term-missing --cov-fail-under=80
           else
             echo "No pytest found, skipping tests"
           fi

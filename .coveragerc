@@ -1,6 +1,8 @@
 [run]
 omit =
     src/aegis/v1/*
+    src/aegis/v2/*_pb2.py
+    src/aegis/v2/*_pb2_grpc.py
     src/main.py
 
 [report]

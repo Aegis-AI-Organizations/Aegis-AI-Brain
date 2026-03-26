@@ -1,5 +1,11 @@
 # Workflows | Aegis-AI-Brain
 
+## Point d'Entrée : Serveur gRPC
+Le composant Brain inclut désormais un **Serveur gRPC** embarqué.
+- Il reçoit les requêtes de l'API Gateway via les services `ScanService` et `VulnerabilityService`.
+- Il initialise les enregistrements en base de données de manière asynchrone (`psycopg`).
+- Il interagit avec le client Temporal (`temporalio`) pour lancer les exécutions de `PentestWorkflow`.
+
 ## PentestWorkflow sequence
 
 1. Update scan status to `PROVISIONING`

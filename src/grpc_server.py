@@ -233,4 +233,6 @@ async def serve(port: str, temporal_client=None):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    # Enable gRPC debug logging
+    logging.getLogger("grpc").setLevel(logging.DEBUG)
     asyncio.run(serve("50051"))

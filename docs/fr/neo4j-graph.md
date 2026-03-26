@@ -1,3 +1,3 @@
-# [FR] # Neo4J Graph | Aegis-AI-Brain
+# Neo4J Graph | Aegis-AI-Brain
 
 Document initialisé pour les tests de récupération Docusaurus par le plugin remote-content.

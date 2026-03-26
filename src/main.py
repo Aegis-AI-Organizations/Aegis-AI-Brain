@@ -3,7 +3,6 @@ import logging
 import os
 from temporalio.client import Client
 from temporalio.worker import Worker
-from dotenv import load_dotenv
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -19,8 +18,6 @@ from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sand
 async def main():
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("aegis_brain")
-
-    load_dotenv()
 
     temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
     grpc_port = os.getenv("GRPC_PORT", "50051")

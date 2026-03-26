@@ -1,38 +1,21 @@
-# [FR] # Workflows | Aegis-AI-Brain
+# Le Brain Aegis AI (Orchestrateur)
 
-## Point d'Entrée : Serveur gRPC
-Le composant Brain inclut désormais un **Serveur gRPC** embarqué.
-- Il reçoit les requêtes de l'API Gateway via les services `ScanService` et `VulnerabilityService`.
-- Il initialise les enregistrements en base de données de manière asynchrone (`psycopg`).
-- Il interagit avec le client Temporal (`temporalio`) pour lancer les exécutions de `PentestWorkflow`.
+Le "Cerveau" est l'orchestrateur asynchrone principal de l'écosystème Aegis. Conçu en Python robuste via `asyncpg` et `temporalio`, il reçoit les ordres d'audit de sécurité massifs en gRPC et coordonne une armée de 'workers' à travers des Workflows Temporal.
 
-## PentestWorkflow sequence
+## Architecture (MVP v2)
+Dans la version 2 du framework, le Brain assume **le rôle exclusif** de commandeur de système :
+1. **Couche gRPC Serveur (`aegis.v2`)** : Écoute sans répit les impulsions relais provenant de l'API Gateway.
+2. **Client asynchrone PostgreSQL** : Consigne l'état des scans, gère la génération des UUID, accumule les vulnérabilités trouvées en temps réel.
+3. **Client Temporal** : Lance les workflows asynchrones distribués à destination de la grille de microservices workers (`pentest-worker`, `ingest-worker`, etc.).
 
-1. Update scan status to `PROVISIONING`
-2. Deploy target sandbox in Kubernetes
-3. Update scan status to `IN_PROGRESS`
-4. Run pentest activity (`run_pentest`) on `PENTEST_TASK_QUEUE`
-5. Save discovered vulnerabilities in PostgreSQL
-6. Generate a structured PDF report and store it in `scans.report_pdf`
-7. Cleanup sandbox resources
-8. Update scan status to `COMPLETED`
+## Panorama des Workflows Temporal
 
-## PDF report storage
+### 1. `PentestWorkflow`
+Le workflow le plus critique d'Aegis. Une fois éveillé par `StartScan`, le Brain décline ses étapes tactiques :
 
-The Brain worker now runs `generate_and_store_pdf_report(scan_id, vulnerabilities)`
-after `save_vulnerabilities` succeeds.
+- **`deploy_sandbox_target` (Activité K8s)** : Forge dynamiquement un "bac à sable" stérile dans le cluster (`aegis-war-room-{scan_id}`). L'image cible y est injectée et isolée hermétiquement des autres applications internes de la plateforme.
+- **`run_pentest` (Pentest Worker)** : Simultanément, la commande de déploiement pousse le worker défensif à arroser de payloads la cible. Le worker expédie les objets `Evidences` au fil de l'eau dans l'historique Temporal.
+- **`cleanup_sandbox` (Activité K8s)** : Démolition intégrale du "war-room" ciblé pour restaurer l'intégrité et la mémoire vive sur le cluster après la réussite de l'attaque.
 
-- The report is generated in memory with `fpdf2`
-- The final report follows a pentest-style structure:
-  - cover page with report title, target snapshot/name, scan ID, and generation date
-  - executive summary with total findings and severity breakdown
-  - vulnerability summary table (type, severity, endpoint, short description)
-  - detailed vulnerability sections with title, severity, endpoint, description,
-    payload used, and evidence/loot blocks
-- Severity is visually highlighted with colored labels
-- Payload and evidence content is rendered in boxed blocks for readability
-- PDF bytes are persisted with:
-
-```sql
-UPDATE scans SET report_pdf = %s WHERE id = %s
-```
+## Périmètre Zero Trust
+Le Brain tourne dans l'enclave aveugle `aegis-system`. Protégé par les contraintes réseaux de Cilium, il reste **le seul et unique composant** formellement apte à adresser la base de données `aegis-postgres-mvp`.

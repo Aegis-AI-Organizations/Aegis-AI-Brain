@@ -16,14 +16,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x61\x65gis/v2/ping.proto\x12\x08\x61\x65gis.v2\"\r\n\x0bPingRequest\"(\n\x0cPingResponse\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message2D\n\x0bPingService\x12\x35\n\x04Ping\x12\x15.aegis.v2.PingRequest\x1a\x16.aegis.v2.PingResponseB;Z9github.com/Aegis-AI-Organizations/aegis-ai-proto/aegis/v1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x61\x65gis/v2/ping.proto\x12\x08\x61\x65gis.v2\"\r\n\x0bPingRequest\"(\n\x0cPingResponse\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message2D\n\x0bPingService\x12\x35\n\x04Ping\x12\x15.aegis.v2.PingRequest\x1a\x16.aegis.v2.PingResponseB;Z9github.com/Aegis-AI-Organizations/aegis-ai-proto/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'aegis.v2.ping_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'Z9github.com/Aegis-AI-Organizations/aegis-ai-proto/aegis/v1'
+  _globals['DESCRIPTOR']._serialized_options = b'Z9github.com/Aegis-AI-Organizations/aegis-ai-proto/aegis/v2'
   _globals['_PINGREQUEST']._serialized_start=33
   _globals['_PINGREQUEST']._serialized_end=46
   _globals['_PINGRESPONSE']._serialized_start=48

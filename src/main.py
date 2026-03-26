@@ -56,7 +56,7 @@ async def main():
 
     from grpc_server import serve
 
-    await asyncio.gather(worker.run(), serve(grpc_port))
+    await asyncio.gather(worker.run(), serve(grpc_port, client))
 
 
 if __name__ == "__main__":

@@ -28,11 +28,15 @@ async def serve(port: str, temporal_client=None):
         VulnerabilityService(), server
     )
 
-    listen_addr = f"[::]:{port}"
-    server.add_insecure_port(listen_addr)
-    logger.info(f"📡 gRPC server starting on {listen_addr}")
-    await server.start()
-    await server.wait_for_termination()
+    listen_addr = f"0.0.0.0:{port}"
+    try:
+        server.add_insecure_port(listen_addr)
+        logger.info(f"📡 gRPC server starting on {listen_addr}")
+        await server.start()
+        await server.wait_for_termination()
+    except Exception as e:
+        logger.error(f"❌ gRPC server failed: {e}")
+        raise
 
 
 if __name__ == "__main__":

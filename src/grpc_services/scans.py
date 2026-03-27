@@ -7,6 +7,7 @@ import aegis.v2.scan_pb2 as scan_pb2
 import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
 from .utils import to_pb_timestamp
 from .broadcaster import broadcaster
+from config.config import BRAIN_TASK_QUEUE
 
 logger = logging.getLogger("aegis_brain_grpc")
 
@@ -43,7 +44,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
                 "PentestWorkflow",
                 args=[scan_id, request.target_image],
                 id=workflow_id,
-                task_queue="BRAIN_TASK_QUEUE",
+                task_queue=BRAIN_TASK_QUEUE,
             )
         except Exception as e:
             logger.error(f"Failed to start workflow: {e}")

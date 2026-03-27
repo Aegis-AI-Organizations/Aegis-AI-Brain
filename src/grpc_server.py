@@ -6,6 +6,7 @@ import aegis.v2.ping_pb2_grpc as ping_pb2_grpc
 import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
 import aegis.v2.vulnerability_pb2_grpc as vulnerability_pb2_grpc
 
+from config.config import GRPC_PORT
 from grpc_services.ping import PingService
 from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
@@ -38,4 +39,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     # Enable gRPC debug logging
     logging.getLogger("grpc").setLevel(logging.DEBUG)
-    asyncio.run(serve("50051"))
+    asyncio.run(serve(GRPC_PORT))

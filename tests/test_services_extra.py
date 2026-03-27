@@ -3,12 +3,19 @@ from grpc_services.broadcaster import StatusBroadcaster
 from grpc_services.utils import to_pb_timestamp
 
 
-def test_broadcaster():
+import pytest
+import asyncio
+
+
+@pytest.mark.asyncio
+async def test_broadcaster():
     b = StatusBroadcaster()
     q = b.register()
     assert q.empty()
 
     b.broadcast("id1", "status1")
+    # Allow loop to run callbacks
+    await asyncio.sleep(0)
     assert q.get_nowait() == ("id1", "status1")
 
     b.unregister(q)

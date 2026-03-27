@@ -30,3 +30,20 @@ packages = ["src"]
 
 [tool.hatch.build.targets.wheel.sources]
 "src" = ""
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "src/aegis/v2/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+show_missing = true
+skip_covered = true

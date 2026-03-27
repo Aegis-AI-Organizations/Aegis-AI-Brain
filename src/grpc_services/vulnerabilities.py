@@ -33,8 +33,8 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             v_id, v_type, severity, endpoint, desc, disco = row
             v = vulnerability_pb2.Vulnerability(
                 id=str(v_id),
-                vuln_type=v_type,
-                severity=severity,
+                vuln_type=str(v_type) if v_type is not None else "",
+                severity=str(severity) if severity is not None else "",
                 target_endpoint=endpoint if endpoint else "",
                 description=desc if desc else "",
             )
@@ -67,7 +67,7 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             e = vulnerability_pb2.Evidence(
                 id=str(e_id),
                 vulnerability_id=request.vulnerability_id,
-                payload_used=payload,
+                payload_used=str(payload) if payload is not None else "",
                 loot_data=json.dumps(loot) if loot else "",
             )
             if captured:

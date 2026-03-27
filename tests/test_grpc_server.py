@@ -3,7 +3,9 @@ from unittest.mock import AsyncMock, patch
 from datetime import datetime
 
 from aegis.v2 import ping_pb2, scan_pb2, vulnerability_pb2
-from grpc_server import PingService, ScanService, VulnerabilityService
+from grpc_services.ping import PingService
+from grpc_services.scans import ScanService
+from grpc_services.vulnerabilities import VulnerabilityService
 
 
 @pytest.mark.asyncio
@@ -15,7 +17,7 @@ async def test_ping_service():
 
 
 @pytest.mark.asyncio
-@patch("grpc_server.get_db_connection")
+@patch("grpc_services.scans.get_db_connection")
 async def test_scan_service_start(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
@@ -31,7 +33,7 @@ async def test_scan_service_start(mock_get_db):
 
 
 @pytest.mark.asyncio
-@patch("grpc_server.get_db_connection")
+@patch("grpc_services.scans.get_db_connection")
 async def test_scan_service_status(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
@@ -46,7 +48,7 @@ async def test_scan_service_status(mock_get_db):
 
 
 @pytest.mark.asyncio
-@patch("grpc_server.get_db_connection")
+@patch("grpc_services.scans.get_db_connection")
 async def test_scan_service_list(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
@@ -63,7 +65,7 @@ async def test_scan_service_list(mock_get_db):
 
 
 @pytest.mark.asyncio
-@patch("grpc_server.get_db_connection")
+@patch("grpc_services.scans.get_db_connection")
 async def test_scan_service_report(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
@@ -77,7 +79,7 @@ async def test_scan_service_report(mock_get_db):
 
 
 @pytest.mark.asyncio
-@patch("grpc_server.get_db_connection")
+@patch("grpc_services.vulnerabilities.get_db_connection")
 async def test_vulnerability_service_get(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
@@ -93,7 +95,7 @@ async def test_vulnerability_service_get(mock_get_db):
 
 
 @pytest.mark.asyncio
-@patch("grpc_server.get_db_connection")
+@patch("grpc_services.vulnerabilities.get_db_connection")
 async def test_vulnerability_service_evidences(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value

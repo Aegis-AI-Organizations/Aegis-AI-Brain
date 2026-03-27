@@ -1,11 +1,11 @@
 # The Aegis AI Brain (Orchestrator)
 
-The Brain is the monolithic, asynchronous orchestrator in the Aegis ecosystem. Designed around Python, `asyncpg`, and `temporalio`, it ingests scanning orders via gRPC and commands the worker fleet through complex Temporal Workflows.
+The Brain is the monolithic, asynchronous orchestrator in the Aegis ecosystem. Designed around Python, `psycopg`, and `temporalio`, it ingests scanning orders via gRPC and commands the worker fleet through complex Temporal Workflows.
 
 ## Architecture (MVP v2)
 In version 2 of the framework, the Brain assumes the exclusive role of system orchestrator:
 1. **gRPC Server Layer (`aegis.v2`)**: Listens continuously for requests originating from the API Gateway.
-2. **PostgreSQL Asynchronous Client**: Persists scan states, handles UUID generation, logs incoming vulnerabilities, and archives evidence blobs via `asyncpg`.
+2. **PostgreSQL Client**: Persists scan states, handles UUID generation, logs incoming vulnerabilities, and archives evidence blobs via `psycopg`.
 3. **Temporal Client**: Launches asynchronous, distributed workflows across the worker cluster (`pentest-worker`, `ingest-worker`, etc.).
 
 ## Temporal Workflows Overview

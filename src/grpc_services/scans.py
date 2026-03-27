@@ -31,6 +31,19 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         finally:
             conn.close()
 
+    def _update_scan_status_db(self, scan_id, status):
+        conn = get_db_connection()
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE scans SET status = %s WHERE id = %s",
+                (status, scan_id),
+            )
+            conn.commit()
+            cur.close()
+        finally:
+            conn.close()
+
     async def StartScan(self, request, context):
         scan_id = str(uuid.uuid4())
         workflow_id = f"pentest-workflow-{scan_id}"
@@ -40,7 +53,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         )
 
         try:
-            await self.temporal_client.execute_workflow(
+            await self.temporal_client.start_workflow(
                 "PentestWorkflow",
                 args=[scan_id, request.target_image],
                 id=workflow_id,
@@ -48,7 +61,9 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             )
         except Exception as e:
             logger.error(f"Failed to start workflow: {e}")
-            context.abort(grpc.StatusCode.INTERNAL, "Failed to start workflow")
+            # Compensation: Update DB status to FAILED
+            await asyncio.to_thread(self._update_scan_status_db, scan_id, "FAILED")
+            await context.abort(grpc.StatusCode.INTERNAL, "Failed to start workflow")
 
         logger.info(f"Started scan {scan_id} for image: {request.target_image}")
         return scan_pb2.StartScanResponse(
@@ -72,7 +87,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
     async def GetScanStatus(self, request, context):
         row = await asyncio.to_thread(self._get_scan_status_db, request.scan_id)
         if not row:
-            context.abort(grpc.StatusCode.NOT_FOUND, "Scan not found")
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Scan not found")
 
         status, started_at, completed_at, target_image, wf_id = row
         resp = scan_pb2.GetScanStatusResponse(
@@ -132,7 +147,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
     async def GetScanReport(self, request, context):
         pdf_bytes = await asyncio.to_thread(self._get_scan_report_db, request.scan_id)
         if pdf_bytes is None:
-            context.abort(grpc.StatusCode.NOT_FOUND, "Scan or report not found")
+            await context.abort(grpc.StatusCode.NOT_FOUND, "Scan or report not found")
         return scan_pb2.GetScanReportResponse(pdf_data=pdf_bytes)
 
     async def WatchScanStatus(self, request, context):

@@ -11,7 +11,7 @@ dependencies = [
     "fpdf2>=2.8.0",
     "grpcio>=1.70.0",
     "grpcio-tools>=1.70.0",
-    "protobuf>=7.34.1", # Ensuring compatibility with Gencode 7.x
+    "protobuf>=5.29.3,<7.0.0", # Downgraded to satisfy temporalio
 ]
 
 [project.optional-dependencies]

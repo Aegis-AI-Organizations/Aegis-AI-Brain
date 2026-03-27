@@ -91,7 +91,9 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             context.abort(grpc.StatusCode.NOT_FOUND, "Scan not found")
 
         status, started_at, completed_at = row
-        resp = scan_pb2.GetScanStatusResponse(scan_id=request.scan_id, status=status)
+        resp = scan_pb2.GetScanStatusResponse(
+            scan_id=str(request.scan_id), status=str(status) if status else ""
+        )
         if started_at:
             resp.started_at.CopyFrom(to_pb_timestamp(started_at))
         if completed_at:
@@ -117,10 +119,10 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         for row in rows:
             scan_id, wf_id, target, status, started, completed = row
             detail = scan_pb2.ScanDetails(
-                scan_id=scan_id,
-                temporal_workflow_id=wf_id,
-                target_image=target,
-                status=status,
+                scan_id=str(scan_id) if scan_id else "",
+                temporal_workflow_id=str(wf_id) if wf_id else "",
+                target_image=str(target) if target else "",
+                status=str(status) if status else "",
             )
             if started:
                 detail.started_at.CopyFrom(to_pb_timestamp(started))

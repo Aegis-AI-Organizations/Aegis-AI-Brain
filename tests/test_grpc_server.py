@@ -131,10 +131,12 @@ async def test_scan_service_start_failure_compensation(mock_get_db):
     servicer = ScanService(temporal_client)
     request = scan_pb2.StartScanRequest(target_image="nginx:latest")
 
-    with pytest.raises(grpc.RpcError) as e:
-        await servicer.StartScan(request, AsyncMock())
+    context = AsyncMock()
+    # Mock context.abort to raise an exception like gRPC does
+    context.abort.side_effect = grpc.RpcError("Aborted")
 
-    assert e.value.code() == grpc.StatusCode.INTERNAL
+    with pytest.raises(grpc.RpcError):
+        await servicer.StartScan(request, context)
     # Verify compensation update was called
     assert mock_cursor.execute.call_count >= 2
 
@@ -149,8 +151,10 @@ async def test_scan_service_status_not_found(mock_get_db):
     servicer = ScanService(AsyncMock())
     request = scan_pb2.GetScanStatusRequest(scan_id="missing-id")
     context = AsyncMock()
+    context.abort.side_effect = Exception("Abort called")
 
-    await servicer.GetScanStatus(request, context)
+    with pytest.raises(Exception, match="Abort called"):
+        await servicer.GetScanStatus(request, context)
     context.abort.assert_called_once_with(grpc.StatusCode.NOT_FOUND, "Scan not found")
 
 

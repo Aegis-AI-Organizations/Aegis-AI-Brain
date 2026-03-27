@@ -1,9 +1,11 @@
 import os
 import psycopg
-from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-def get_db_connection() -> Optional[psycopg.Connection]:
+def get_db_connection() -> psycopg.Connection:
     """Establishes a connection to the PostgreSQL database."""
     host = os.getenv("DB_HOST", "localhost:5432")
 
@@ -22,9 +24,21 @@ def get_db_connection() -> Optional[psycopg.Connection]:
 
     try:
         conn = psycopg.connect(
-            host=host, port=port, dbname=dbname, user=user, password=password
+            host=host,
+            port=port,
+            dbname=dbname,
+            user=user,
+            password=password,
+            connect_timeout=5,
         )
         return conn
     except Exception as e:
-        print(f"Failed to connect to database: {e}")
-        return None
+        logger.error(
+            "Failed to connect to database host=%s port=%s db=%s user=%s: %s",
+            host,
+            port,
+            dbname,
+            user,
+            e,
+        )
+        raise ConnectionError("Database connection failed") from e

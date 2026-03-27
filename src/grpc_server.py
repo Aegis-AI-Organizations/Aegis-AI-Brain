@@ -35,8 +35,9 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         self.temporal_client = temporal_client
 
     def _start_scan_db(self, scan_id, workflow_id, target_image):
-        conn = get_db_connection()
+        conn = None
         try:
+            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "INSERT INTO scans (id, temporal_workflow_id, target_image, status) VALUES (%s, %s, %s, 'PENDING')",
@@ -45,7 +46,8 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             conn.commit()
             cur.close()
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     async def StartScan(self, request, context):
         scan_id = str(uuid.uuid4())
@@ -72,8 +74,9 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         return scan_pb2.StartScanResponse(scan_id=scan_id, status="PENDING")
 
     def _get_scan_status_db(self, scan_id):
-        conn = get_db_connection()
+        conn = None
         try:
+            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "SELECT status, started_at, completed_at FROM scans WHERE id = %s",
@@ -83,7 +86,8 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur.close()
             return row
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     async def GetScanStatus(self, request, context):
         row = await asyncio.to_thread(self._get_scan_status_db, request.scan_id)
@@ -101,8 +105,9 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         return resp
 
     def _list_scans_db(self):
-        conn = get_db_connection()
+        conn = None
         try:
+            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans ORDER BY started_at DESC"
@@ -111,7 +116,8 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur.close()
             return rows
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     async def ListScans(self, request, context):
         rows = await asyncio.to_thread(self._list_scans_db)
@@ -132,15 +138,17 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         return scan_pb2.ListScansResponse(scans=scans)
 
     def _get_scan_report_db(self, scan_id):
-        conn = get_db_connection()
+        conn = None
         try:
+            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute("SELECT report_pdf FROM scans WHERE id = %s", (scan_id,))
             row = cur.fetchone()
             cur.close()
             return row[0] if row else None
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     async def GetScanReport(self, request, context):
         pdf_bytes = await asyncio.to_thread(self._get_scan_report_db, request.scan_id)
@@ -151,8 +159,9 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
 
 class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     def _get_vulns_db(self, scan_id):
-        conn = get_db_connection()
+        conn = None
         try:
+            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "SELECT id, vuln_type, severity, target_endpoint, description, discovered_at FROM vulnerabilities WHERE scan_id = %s ORDER BY discovered_at DESC",
@@ -162,7 +171,8 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur.close()
             return rows
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     async def GetVulnerabilities(self, request, context):
         rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id)
@@ -182,8 +192,9 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
         return vulnerability_pb2.GetVulnerabilitiesResponse(vulnerabilities=vulns)
 
     def _get_evidences_db(self, vuln_id):
-        conn = get_db_connection()
+        conn = None
         try:
+            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "SELECT id, payload_used, loot_data, captured_at FROM evidences WHERE vulnerability_id = %s ORDER BY captured_at DESC",
@@ -193,7 +204,8 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur.close()
             return rows
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     async def GetEvidences(self, request, context):
         rows = await asyncio.to_thread(self._get_evidences_db, request.vulnerability_id)

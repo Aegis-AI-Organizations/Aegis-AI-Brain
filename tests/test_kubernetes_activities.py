@@ -89,3 +89,38 @@ def test_cleanup_sandbox_failure(mock_get_client):
 
     result = cleanup_sandbox("scan-1")
     assert result == "FAILED"
+
+
+@patch("activities.kubernetes_activities._get_k8s_client")
+def test_create_namespace_failure_other_than_409(mock_get_client):
+    from activities.kubernetes_activities import _create_namespace
+
+    mock_k8s = MagicMock()
+    mock_k8s.create_namespace.side_effect = client.rest.ApiException(status=500)
+
+    with pytest.raises(client.rest.ApiException):
+        _create_namespace(mock_k8s, "test-ns", "scan-1")
+
+
+@patch("activities.kubernetes_activities._get_k8s_client")
+def test_create_pod_failure_other_than_409(mock_get_client):
+    from activities.kubernetes_activities import _create_pod
+
+    mock_k8s = MagicMock()
+    mock_k8s.create_namespaced_pod.side_effect = client.rest.ApiException(status=500)
+
+    with pytest.raises(client.rest.ApiException):
+        _create_pod(mock_k8s, "ns", "pod", "scan", "image")
+
+
+@patch("activities.kubernetes_activities._get_k8s_client")
+def test_create_service_failure_other_than_409(mock_get_client):
+    from activities.kubernetes_activities import _create_service
+
+    mock_k8s = MagicMock()
+    mock_k8s.create_namespaced_service.side_effect = client.rest.ApiException(
+        status=500
+    )
+
+    with pytest.raises(client.rest.ApiException):
+        _create_service(mock_k8s, "ns", "svc", "scan")

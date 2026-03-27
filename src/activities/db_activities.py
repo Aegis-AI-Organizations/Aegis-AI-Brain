@@ -23,6 +23,11 @@ def _execute_status_update(scan_id: str, new_status: str):
         conn.commit()
         cur.close()
         logger.info(f"Scan {scan_id} status updated to {new_status}")
+
+        # Notify gRPC streams
+        from grpc_services.broadcaster import broadcaster
+
+        broadcaster.broadcast(scan_id, new_status)
     except Exception as e:
         conn.rollback()
         logger.error(f"Error updating scan {scan_id} status: {e}")

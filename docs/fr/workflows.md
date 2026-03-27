@@ -1,11 +1,11 @@
 # Le Brain Aegis AI (Orchestrateur)
 
-Le "Cerveau" est l'orchestrateur asynchrone principal de l'écosystème Aegis. Conçu en Python robuste via `asyncpg` et `temporalio`, il reçoit les ordres d'audit de sécurité massifs en gRPC et coordonne une armée de 'workers' à travers des Workflows Temporal.
+Le "Cerveau" est l'orchestrateur asynchrone principal de l'écosystème Aegis. Conçu en Python robuste via le client PostgreSQL synchrone `psycopg` et `temporalio`, il reçoit les ordres d'audit de sécurité massifs en gRPC et coordonne une armée de 'workers' à travers des Workflows Temporal.
 
 ## Architecture (MVP v2)
 Dans la version 2 du framework, le Brain assume **le rôle exclusif** de commandeur de système :
 1. **Couche gRPC Serveur (`aegis.v2`)** : Écoute sans répit les impulsions relais provenant de l'API Gateway.
-2. **Client asynchrone PostgreSQL** : Consigne l'état des scans, gère la génération des UUID, accumule les vulnérabilités trouvées en temps réel.
+2. **Client PostgreSQL (`psycopg`)** : Consigne l'état des scans, gère la génération des UUID, accumule les vulnérabilités trouvées en temps réel.
 3. **Client Temporal** : Lance les workflows asynchrones distribués à destination de la grille de microservices workers (`pentest-worker`, `ingest-worker`, etc.).
 
 ## Panorama des Workflows Temporal

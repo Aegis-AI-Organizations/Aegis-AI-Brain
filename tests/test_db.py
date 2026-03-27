@@ -1,4 +1,3 @@
-import os
 import pytest
 from unittest.mock import patch, MagicMock
 from config.db import get_db_connection
@@ -6,7 +5,7 @@ from config.db import get_db_connection
 
 class TestDatabaseConnection:
     @patch("config.db.psycopg.connect")
-    @patch.dict(os.environ, {"POSTGRES_PASSWORD": "dummy"}, clear=True)
+    @patch("config.db.DB_PASSWORD", "dummy")
     def test_get_db_connection_success(self, mock_connect):
         """Test returning a database connection on success."""
         mock_conn = MagicMock()
@@ -18,7 +17,7 @@ class TestDatabaseConnection:
         mock_connect.assert_called_once()
 
     @patch("config.db.psycopg.connect")
-    @patch.dict(os.environ, {"POSTGRES_PASSWORD": "dummy"}, clear=True)
+    @patch("config.db.DB_PASSWORD", "dummy")
     def test_get_db_connection_failure(self, mock_connect):
         """Test raising ConnectionError when database connection fails."""
         mock_connect.side_effect = Exception("Connection Failed")

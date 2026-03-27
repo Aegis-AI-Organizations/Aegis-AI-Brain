@@ -1,3 +1,5 @@
+import asyncio
+import grpc
 import pytest
 from unittest.mock import AsyncMock, patch
 from datetime import datetime
@@ -37,7 +39,13 @@ async def test_scan_service_start(mock_get_db):
 async def test_scan_service_status(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
-    mock_cursor.fetchone.return_value = ("COMPLETED", datetime.now(), datetime.now())
+    mock_cursor.fetchone.return_value = (
+        "COMPLETED",
+        datetime.now(),
+        datetime.now(),
+        "nginx:latest",
+        "wf-1",
+    )
 
     temporal_client = AsyncMock()
     servicer = ScanService(temporal_client)
@@ -108,3 +116,62 @@ async def test_vulnerability_service_evidences(mock_get_db):
     response = await servicer.GetEvidences(request, None)
     assert len(response.evidences) == 1
     assert response.evidences[0].id == "e-1"
+
+
+@pytest.mark.asyncio
+@patch("grpc_services.scans.get_db_connection")
+async def test_scan_service_start_failure_compensation(mock_get_db):
+    mock_conn = mock_get_db.return_value
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = (datetime.now(),)
+
+    temporal_client = AsyncMock()
+    temporal_client.start_workflow.side_effect = Exception("Temporal error")
+
+    servicer = ScanService(temporal_client)
+    request = scan_pb2.StartScanRequest(target_image="nginx:latest")
+
+    with pytest.raises(grpc.RpcError) as e:
+        await servicer.StartScan(request, AsyncMock())
+
+    assert e.value.code() == grpc.StatusCode.INTERNAL
+    # Verify compensation update was called
+    assert mock_cursor.execute.call_count >= 2
+
+
+@pytest.mark.asyncio
+@patch("grpc_services.scans.get_db_connection")
+async def test_scan_service_status_not_found(mock_get_db):
+    mock_conn = mock_get_db.return_value
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = None
+
+    servicer = ScanService(AsyncMock())
+    request = scan_pb2.GetScanStatusRequest(scan_id="missing-id")
+    context = AsyncMock()
+
+    await servicer.GetScanStatus(request, context)
+    context.abort.assert_called_once_with(grpc.StatusCode.NOT_FOUND, "Scan not found")
+
+
+@pytest.mark.asyncio
+async def test_scan_service_watch_status():
+    from grpc_services.broadcaster import broadcaster
+
+    servicer = ScanService(AsyncMock())
+    request = scan_pb2.WatchScanStatusRequest(scan_id="test-id")
+
+    # Simulate a background update
+    async def simulate_update():
+        await asyncio.sleep(0.1)
+        await broadcaster.broadcast("test-id", "COMPLETED")
+        # Send a different one to check filtering
+        await broadcaster.broadcast("other-id", "RUNNING")
+
+    asyncio.create_task(simulate_update())
+
+    stream = servicer.WatchScanStatus(request, None)
+    async for response in stream:
+        assert response.scan_id == "test-id"
+        assert response.status == "COMPLETED"
+        break  # Only expect one for this test

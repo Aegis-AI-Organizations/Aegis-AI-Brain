@@ -60,7 +60,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         try:
             cur = conn.cursor()
             cur.execute(
-                "SELECT status, started_at, completed_at FROM scans WHERE id = %s",
+                "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s",
                 (scan_id,),
             )
             row = cur.fetchone()
@@ -74,9 +74,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         if not row:
             context.abort(grpc.StatusCode.NOT_FOUND, "Scan not found")
 
-        status, started_at, completed_at = row
+        status, started_at, completed_at, target_image, wf_id = row
         resp = scan_pb2.GetScanStatusResponse(
-            scan_id=str(request.scan_id), status=str(status) if status else ""
+            scan_id=str(request.scan_id),
+            status=str(status) if status else "",
+            target_image=str(target_image) if target_image else "",
+            temporal_workflow_id=str(wf_id) if wf_id else "",
         )
         if started_at:
             resp.started_at.CopyFrom(to_pb_timestamp(started_at))

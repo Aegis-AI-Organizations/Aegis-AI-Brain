@@ -35,26 +35,26 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         self.temporal_client = temporal_client
 
     def _start_scan_db(self, scan_id, workflow_id, target_image):
-        conn = None
+        conn = get_db_connection()
         try:
-            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO scans (id, temporal_workflow_id, target_image, status) VALUES (%s, %s, %s, 'PENDING')",
+                "INSERT INTO scans (id, temporal_workflow_id, target_image, status) VALUES (%s, %s, %s, 'PENDING') RETURNING started_at",
                 (scan_id, workflow_id, target_image),
             )
+            started_at = cur.fetchone()[0]
             conn.commit()
             cur.close()
+            return started_at
         finally:
-            if conn is not None:
-                conn.close()
+            conn.close()
 
     async def StartScan(self, request, context):
         scan_id = str(uuid.uuid4())
         workflow_id = f"pentest-workflow-{scan_id}"
 
-        # Save to DB asynchronously
-        await asyncio.to_thread(
+        # Save to DB asynchronously and get started_at
+        started_at = await asyncio.to_thread(
             self._start_scan_db, scan_id, workflow_id, request.target_image
         )
 
@@ -71,12 +71,13 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             context.abort(grpc.StatusCode.INTERNAL, "Failed to start workflow")
 
         logger.info(f"Started scan {scan_id} for image: {request.target_image}")
-        return scan_pb2.StartScanResponse(scan_id=scan_id, status="PENDING")
+        return scan_pb2.StartScanResponse(
+            scan_id=scan_id, status="PENDING", started_at=to_pb_timestamp(started_at)
+        )
 
     def _get_scan_status_db(self, scan_id):
-        conn = None
+        conn = get_db_connection()
         try:
-            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "SELECT status, started_at, completed_at FROM scans WHERE id = %s",
@@ -86,8 +87,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur.close()
             return row
         finally:
-            if conn is not None:
-                conn.close()
+            conn.close()
 
     async def GetScanStatus(self, request, context):
         row = await asyncio.to_thread(self._get_scan_status_db, request.scan_id)
@@ -105,9 +105,8 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         return resp
 
     def _list_scans_db(self):
-        conn = None
+        conn = get_db_connection()
         try:
-            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute(
                 "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans ORDER BY started_at DESC"
@@ -116,8 +115,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur.close()
             return rows
         finally:
-            if conn is not None:
-                conn.close()
+            conn.close()
 
     async def ListScans(self, request, context):
         rows = await asyncio.to_thread(self._list_scans_db)
@@ -138,17 +136,15 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         return scan_pb2.ListScansResponse(scans=scans)
 
     def _get_scan_report_db(self, scan_id):
-        conn = None
+        conn = get_db_connection()
         try:
-            conn = get_db_connection()
             cur = conn.cursor()
             cur.execute("SELECT report_pdf FROM scans WHERE id = %s", (scan_id,))
             row = cur.fetchone()
             cur.close()
             return row[0] if row else None
         finally:
-            if conn is not None:
-                conn.close()
+            conn.close()
 
     async def GetScanReport(self, request, context):
         pdf_bytes = await asyncio.to_thread(self._get_scan_report_db, request.scan_id)

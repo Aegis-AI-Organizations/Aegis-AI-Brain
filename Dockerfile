@@ -1,14 +1,14 @@
 FROM python:3.11-slim AS builder
-RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libffi-dev
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uv/bin/uv
 WORKDIR /app
-COPY requirements.txt* ./
-RUN if [ -f requirements.txt ]; then pip install --user --no-cache-dir -r requirements.txt; fi
+COPY pyproject.toml ./
+RUN uv sync --no-dev
 
 # Stage 2: Minimal Runtime
 FROM python:3.11-slim
 WORKDIR /app
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 COPY . .
 ENV PYTHONPATH=/app/src
 CMD ["python", "src/main.py"]

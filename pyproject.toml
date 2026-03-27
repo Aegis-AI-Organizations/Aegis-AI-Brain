@@ -1,0 +1,26 @@
+[project]
+name = "aegis-ai-brain"
+version = "0.1.0"
+description = "Core orchestration logic for Aegis AI"
+authors = [{ name = "Aegis AI Team" }]
+dependencies = [
+    "temporalio>=1.4.0",
+    "pydantic>=2.6.3",
+    "psycopg[binary]>=3.2.10",
+    "kubernetes>=29.0.0",
+    "fpdf2>=2.8.0",
+    "grpcio>=1.70.0",
+    "grpcio-tools>=1.70.0",
+    "protobuf>=5.29.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -17,12 +17,17 @@ async def test_ping_service():
 @pytest.mark.asyncio
 @patch("grpc_server.get_db_connection")
 async def test_scan_service_start(mock_get_db):
+    mock_conn = mock_get_db.return_value
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = (datetime.now(),)
+
     temporal_client = AsyncMock()
     servicer = ScanService(temporal_client)
     request = scan_pb2.StartScanRequest(target_image="nginx:latest")
     response = await servicer.StartScan(request, None)
     assert response.status == "PENDING"
     assert response.scan_id != ""
+    assert response.started_at is not None
 
 
 @pytest.mark.asyncio

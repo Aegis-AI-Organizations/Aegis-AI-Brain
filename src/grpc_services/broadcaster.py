@@ -14,8 +14,9 @@ class StatusBroadcaster:
         self.queues.remove(q)
 
     def broadcast(self, scan_id, status):
+        loop = asyncio.get_event_loop()
         for q in self.queues:
-            q.put_nowait((scan_id, status))
+            loop.call_soon_threadsafe(q.put_nowait, (scan_id, status))
 
 
 broadcaster = StatusBroadcaster()

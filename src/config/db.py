@@ -10,13 +10,16 @@ from config.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 
 logger = logging.getLogger(__name__)
 
+_engine = None
+_SessionLocal = None
+
 
 def _build_db_url() -> URL:
     """Builds the SQLAlchemy DB URL securely."""
     if not DB_PASSWORD:
         logger.error("DB_PASSWORD is not set in environment or config")
         raise EnvironmentError(
-            "DB_PASSWORD is required for database connection. "
+            "DB_PASSWORD is required for database session initialization. "
             "Please check your environment variables or Infisical secrets."
         )
 
@@ -30,9 +33,22 @@ def _build_db_url() -> URL:
     )
 
 
-DB_URL = _build_db_url()
-engine = create_engine(DB_URL, echo=False)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def get_engine():
+    """Lazily initializes and returns the SQLAlchemy engine."""
+    global _engine
+    if _engine is None:
+        db_url = _build_db_url()
+        _engine = create_engine(db_url, echo=True)
+    return _engine
+
+
+def get_session_factory():
+    """Lazily initializes and returns the session factory."""
+    global _SessionLocal
+    if _SessionLocal is None:
+        engine = get_engine()
+        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    return _SessionLocal
 
 
 def get_db_connection() -> psycopg.Connection:
@@ -67,7 +83,8 @@ def get_db_connection() -> psycopg.Connection:
 
 def get_session() -> Generator[Session, None, None]:
     """Dependency for providing a SQLAlchemy session."""
-    session = SessionLocal()
+    session_factory = get_session_factory()
+    session = session_factory()
     try:
         yield session
     finally:

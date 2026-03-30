@@ -2,11 +2,13 @@ import asyncio
 import logging
 import grpc
 
+import aegis.v2.auth_pb2_grpc as auth_pb2_grpc
 import aegis.v2.ping_pb2_grpc as ping_pb2_grpc
 import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
 import aegis.v2.vulnerability_pb2_grpc as vulnerability_pb2_grpc
 
 from config.config import GRPC_PORT
+from grpc_services.auth import AuthService
 from grpc_services.ping import PingService
 from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
@@ -21,6 +23,7 @@ async def serve(port: str, temporal_client=None):
     server = grpc.aio.server()
 
     ping_pb2_grpc.add_PingServiceServicer_to_server(PingService(), server)
+    auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthService(), server)
     scan_pb2_grpc.add_ScanServiceServicer_to_server(
         ScanService(temporal_client), server
     )

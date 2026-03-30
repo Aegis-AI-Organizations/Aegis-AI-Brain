@@ -16,5 +16,5 @@ DB_NAME = os.getenv("POSTGRES_DB", "aegis_db")
 DB_USER = os.getenv("POSTGRES_USER", "aegis_admin")
 DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 
-# SQL Engine Debugging
-SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
+# Authentication
+JWT_SECRET = os.getenv("JWT_SECRET", "super-secret-aegis-key")

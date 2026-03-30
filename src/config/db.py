@@ -1,12 +1,65 @@
 import logging
+from typing import Generator
+
 import psycopg
-from config.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
+from sqlalchemy.orm import Session, sessionmaker
+
+from config.config import (
+    DB_HOST,
+    DB_NAME,
+    DB_PASSWORD,
+    DB_PORT,
+    DB_USER,
+    SQLALCHEMY_ECHO,
+)
 
 logger = logging.getLogger(__name__)
 
+_engine = None
+_SessionLocal = None
+
+
+def _build_db_url() -> URL:
+    """Builds the SQLAlchemy DB URL securely."""
+    if not DB_PASSWORD:
+        logger.error("POSTGRES_PASSWORD is not set in environment or config")
+        raise EnvironmentError(
+            "POSTGRES_PASSWORD is required for database session initialization. "
+            "Please check your environment variables or Infisical secrets."
+        )
+
+    return URL.create(
+        drivername="postgresql+psycopg",
+        username=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=int(DB_PORT) if DB_PORT else 5432,
+        database=DB_NAME,
+    )
+
+
+def get_engine():
+    """Lazily initializes and returns the SQLAlchemy engine."""
+    global _engine
+    if _engine is None:
+        db_url = _build_db_url()
+        _engine = create_engine(db_url, echo=SQLALCHEMY_ECHO)
+    return _engine
+
+
+def get_session_factory():
+    """Lazily initializes and returns the session factory."""
+    global _SessionLocal
+    if _SessionLocal is None:
+        engine = get_engine()
+        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    return _SessionLocal
+
 
 def get_db_connection() -> psycopg.Connection:
-    """Establishes a connection to the PostgreSQL database."""
+    """Establishes a raw connection to the PostgreSQL database (legacy)."""
     if not DB_PASSWORD:
         raise ValueError(
             "POSTGRES_PASSWORD environment variable is not set; "
@@ -33,3 +86,13 @@ def get_db_connection() -> psycopg.Connection:
             e,
         )
         raise ConnectionError("Database connection failed") from e
+
+
+def get_session() -> Generator[Session, None, None]:
+    """Dependency for providing a SQLAlchemy session."""
+    session_factory = get_session_factory()
+    session = session_factory()
+    try:
+        yield session
+    finally:
+        session.close()

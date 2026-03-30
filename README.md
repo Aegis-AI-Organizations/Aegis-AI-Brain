@@ -12,10 +12,12 @@ The **Aegis AI Brain** lies at the heart of the DECISION CENTER in the Aegis Cor
   * Interacts with Neo4j (Topology Graph) to calculate real-time attack vectors.
   * Emits commands to the Infinite Worker Pools (Ingest, Pentest, Deployer/Fixer).
 * **Architecture Justification:** Python offers rapid integration with bleeding-edge AI logic ecosystems and Temporal provides durable, resilient workflows capable of surviving pod crashes (< 2s RTO).
+  * **Database Layer:** Uses modern SQLAlchemy 2.0 (DeclarativeBase) to map the PostgreSQL schema, ensuring strict consistency with the Aegis Infrastructure definitions.
 
 ## 🔐 Security & DevSecOps Mandates
 * **No Plain-Text Secrets:** Secrets injected dynamically at runtime (Infisical).
 * **High Availability:** Runs in an HA Mode ReplicaSet to instantly resume workflows upon node failure.
+* **Secure Auth logic:** Implements robust bcrypt hashing for user management and high-entropy session tracking with RefreshToken entities.
 
 ## 🐳 Docker Container Deployment
 Immutable, K8s-ready Python 3.11+ container, stripped of capabilities.

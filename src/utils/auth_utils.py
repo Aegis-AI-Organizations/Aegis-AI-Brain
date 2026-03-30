@@ -11,7 +11,6 @@ def hash_password(password: str) -> str:
     Returns:
         The hashed string (decoded to utf-8).
     """
-    # bcrypt.hashpw expects bytes
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
     return hashed.decode("utf-8")
@@ -29,8 +28,6 @@ def verify_password(password: str, hashed_password: str) -> bool:
         True if the password matches the hash, False otherwise.
     """
     try:
-        # bcrypt.checkpw expects bytes for both arguments
         return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
     except Exception:
-        # Handles potential errors with malformed hashes
         return False

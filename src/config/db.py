@@ -9,8 +9,6 @@ from config.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 
 logger = logging.getLogger(__name__)
 
-# SQLAlchemy standard setup
-# Using psycopg as the driver for SQLAlchemy to match existing dependency
 DB_URL = f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DB_URL, echo=False)

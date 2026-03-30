@@ -6,15 +6,9 @@ def test_password_hashing_and_verification():
     password = "secure_password_123"
     hashed = hash_password(password)
 
-    # Check that it's not plain text
     assert hashed != password
-    # Check that it's a bcrypt hash (starts with $2b$ or $2a$)
     assert hashed.startswith("$2")
-
-    # Verify correct password
     assert verify_password(password, hashed) is True
-
-    # Verify incorrect password
     assert verify_password("wrong_password", hashed) is False
 
 

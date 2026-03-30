@@ -33,7 +33,6 @@ class Scan(Base):
     )
     report_pdf: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
 
-    # Relationships
     vulnerabilities: Mapped[List[Vulnerability]] = relationship(
         "Vulnerability", back_populates="scan", cascade="all, delete-orphan"
     )
@@ -63,7 +62,6 @@ class Vulnerability(Base):
         default=datetime.utcnow,
     )
 
-    # Relationships
     scan: Mapped[Scan] = relationship("Scan", back_populates="vulnerabilities")
     evidences: Mapped[List[Evidence]] = relationship(
         "Evidence", back_populates="vulnerability", cascade="all, delete-orphan"
@@ -92,7 +90,6 @@ class Evidence(Base):
         default=datetime.utcnow,
     )
 
-    # Relationships
     vulnerability: Mapped[Vulnerability] = relationship(
         "Vulnerability", back_populates="evidences"
     )

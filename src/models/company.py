@@ -32,13 +32,10 @@ class Company(Base):
         default=datetime.utcnow,
     )
 
-    # Relationships
-    # owner: refers to the user who owns the company
     owner: Mapped[Optional[User]] = relationship(
         "User", foreign_keys=[owner_id], back_populates="owned_company"
     )
 
-    # members: all users belonging to this company
     members: Mapped[List[User]] = relationship(
         "User", primaryjoin="Company.id == User.company_id", back_populates="company"
     )

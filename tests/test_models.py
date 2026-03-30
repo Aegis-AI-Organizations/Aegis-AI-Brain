@@ -60,20 +60,16 @@ def test_user_creation_and_role_enum(db_session: Session):
 
 def test_company_user_relationships(db_session: Session):
     """Tests complex relationships between companies and users (owner/members)."""
-    # Create owner first
     owner = User(email="owner@test.com", password_hash="hash", role=UserRole.OWNER)
     db_session.add(owner)
     db_session.commit()
 
-    # Create company with owner_id directly to avoid circular relationship management in session
     company = Company(name="Linked Corp", owner_id=owner.id)
     db_session.add(company)
     db_session.commit()
 
-    # Now that both exist, associate owner as a member
     owner.company_id = company.id
 
-    # Create another member
     member = User(
         email="member@test.com",
         password_hash="hash",
@@ -84,15 +80,12 @@ def test_company_user_relationships(db_session: Session):
 
     db_session.commit()
 
-    # Refresh to see updated relationships
     db_session.refresh(company)
     db_session.refresh(owner)
 
-    # Verify owner relationship
     assert company.owner_id == owner.id
     assert owner.owned_company == company
 
-    # Verify members relationship
     assert len(company.members) == 2
     assert owner in company.members
     assert member in company.members
@@ -130,16 +123,13 @@ def test_scan_vulnerability_evidence_chain(db_session: Session):
     db_session.add_all([scan, vuln, evidence])
     db_session.commit()
 
-    # Check Scan -> Vulnerabilities
     assert len(scan.vulnerabilities) == 1
     assert scan.vulnerabilities[0] == vuln
 
-    # Check Vulnerability -> Evidence
     assert len(vuln.evidences) == 1
     assert vuln.evidences[0] == evidence
     assert evidence.vulnerability == vuln
 
-    # Check data
     assert evidence.loot_data == {"found": True}
     assert vuln.scan_id == scan.id
 

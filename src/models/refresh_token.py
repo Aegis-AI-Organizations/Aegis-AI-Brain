@@ -34,7 +34,6 @@ class RefreshToken(Base):
         default=datetime.utcnow,
     )
 
-    # Relationships
     user: Mapped[User] = relationship("User", back_populates="refresh_tokens")
 
     def __repr__(self) -> str:

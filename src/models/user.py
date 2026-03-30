@@ -48,7 +48,6 @@ class User(Base):
         default=datetime.utcnow,
     )
 
-    # Relationships
     company: Mapped[Optional[Company]] = relationship(
         "Company", foreign_keys=[company_id], back_populates="members"
     )

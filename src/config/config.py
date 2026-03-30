@@ -20,4 +20,11 @@ DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
 
 # Authentication
-JWT_SECRET = os.getenv("JWT_SECRET", "super-secret-aegis-key")
+JWT_SECRET = os.getenv("JWT_SECRET")
+# In non-dev environments, we strictly require JWT_SECRET for security.
+# We fallback to a well-known placeholder ONLY if explicitly in a dev mode.
+if not JWT_SECRET:
+    if os.getenv("ENV") == "dev" or os.getenv("DEBUG") == "true":
+        JWT_SECRET = "super-secret-aegis-key-development-only"
+    else:
+        raise RuntimeError("JWT_SECRET must be set in production environments.")

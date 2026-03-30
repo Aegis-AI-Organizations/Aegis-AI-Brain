@@ -73,34 +73,9 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
     ) -> auth_pb2.RefreshResponse:
         """Validates refresh token and returns a new Access token."""
         with self.session_factory() as db:
-            # Note: We must fetch all tokens for evaluation since we hash them.
-            # In a high-scale environment, we'd use a different lookup, but for now
-            # we can use the hash as a unique key if we know how it was hashed.
-            # But bcrypt hashes are salted, so we can't search by hash.
-            # We'll use a simplified implementation for this specific requirement:
-            # "hash is stored in the table refresh_tokens".
-
-            # Since bcrypt is salted, we cannot querying by hash.
-            # In reality, the Gateway should provide a session ID or we should use
-            # a faster (unsalted or known salt) hash for indexing.
-            # To respect the "store hash" requirement, I'll use a lookup by user and iterate.
-            # Better approach: store a token ID in the JWT or cookie.
-            # For this task, I'll perform a lookup that works with the existing schema.
-
-            # Implementation decision: To support lookup, we'll need to store the hash
-            # in a way that is searchable or use a different ID.
-            # However, I will strictly follow the "hash and search" instruction by
-            # using a non-random salt for the lookup-token or similar.
-            # WAIT, the instruction said: "recevoir le token en clair... le hacher et le chercher".
-            # This implies a deterministic hash for lookup. I'll use SHA256 for the lookup hash
-            # to fulfill the "chercher par hash" requirement.
-
             import hashlib
 
             lookup_hash = hashlib.sha256(request.refresh_token.encode()).hexdigest()
-
-            # I'll update the Login logic to store this searchable hash.
-            # But I should check the RefreshToken model first.
 
             token_entry = (
                 db.query(RefreshToken)

@@ -24,7 +24,7 @@ Tous les modèles sont situés dans `src/models/` et héritent de `Base`.
 ### 🔐 Authentification & Suivi de Session
 - **`RefreshToken`** : Utilisé pour la gestion des sessions de type OIDC et la révocation.
   - Champs : `token_hash`, `expires_at`, `revoked`.
-  - Logique : Révoqué automatiquement si l'utilisateur est supprimé ou si le jeton expire.
+  - Logique : La révocation est vérifiée lors de l'utilisation ; le jeton est considéré invalide si le drapeau `revoked` est vrai ou si `expires_at` est dans le passé.
 
 ### 🎯 Pentest & Vulnérabilités
 - **`Scan`** : Représente une session de test d'intrusion.

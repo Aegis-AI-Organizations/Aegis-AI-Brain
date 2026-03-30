@@ -1,5 +1,5 @@
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 from typing import List, Optional, TYPE_CHECKING
 
@@ -29,7 +29,7 @@ class Company(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
     )
 
     owner: Mapped[Optional[User]] = relationship(

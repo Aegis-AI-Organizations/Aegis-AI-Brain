@@ -17,9 +17,9 @@ _SessionLocal = None
 def _build_db_url() -> URL:
     """Builds the SQLAlchemy DB URL securely."""
     if not DB_PASSWORD:
-        logger.error("DB_PASSWORD is not set in environment or config")
+        logger.error("POSTGRES_PASSWORD is not set in environment or config")
         raise EnvironmentError(
-            "DB_PASSWORD is required for database session initialization. "
+            "POSTGRES_PASSWORD is required for database session initialization. "
             "Please check your environment variables or Infisical secrets."
         )
 

@@ -24,7 +24,7 @@ All models are located in `src/models/` and inherit from `Base`.
 ### 🔐 Authentication & Session Tracking
 - **`RefreshToken`**: Used for OIDC-like session management and revocation.
   - Fields: `token_hash`, `expires_at`, `revoked`.
-  - Logic: Automatically revoked if the user is deleted or the token expires.
+  - Logic: Revocation is checked upon use; the token is considered invalid if the `revoked` flag is true or if `expires_at` is in the past.
 
 ### 🎯 Pentest & Vulnerabilities
 - **`Scan`**: Represents a penetration testing session.

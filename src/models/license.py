@@ -1,4 +1,5 @@
-from datetime import datetime
+from __future__ import annotations
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from sqlalchemy import String, DateTime, text
@@ -20,7 +21,7 @@ class License(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
     )
 
     def __repr__(self) -> str:

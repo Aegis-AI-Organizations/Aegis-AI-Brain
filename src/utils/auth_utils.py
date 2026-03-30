@@ -16,7 +16,7 @@ def hash_password(password: str) -> str:
     return hashed.decode("utf-8")
 
 
-def verify_password(password: str, hashed_password: str) -> bool:
+def verify_password(password: str, hashed_password: str | bytes) -> bool:
     """
     Verifies a plain-text password against a stored bcrypt hash.
 
@@ -28,6 +28,8 @@ def verify_password(password: str, hashed_password: str) -> bool:
         True if the password matches the hash, False otherwise.
     """
     try:
-        return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+        if isinstance(hashed_password, str):
+            hashed_password = hashed_password.encode("utf-8")
+        return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
     except Exception:
         return False

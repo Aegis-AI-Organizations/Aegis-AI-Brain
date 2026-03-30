@@ -12,7 +12,6 @@ Tous les modèles sont situés dans `src/models/` et héritent de `Base`.
   - Relations :
     - `owner` : Une relation un-à-un avec l'utilisateur (`User`) qui possède l'entreprise.
     - `members` : Une relation un-à-plusieurs avec toutes les entités `User` appartenant à l'entreprise.
-    - `licenses` : Toutes les licences assignées à l'entreprise.
 
 ### 👤 Utilisateurs & Rôles
 - **`User`** : Entité logicielle de base pour l'authentification.
@@ -24,14 +23,14 @@ Tous les modèles sont situés dans `src/models/` et héritent de `Base`.
 
 ### 🔐 Authentification & Suivi de Session
 - **`RefreshToken`** : Utilisé pour la gestion des sessions de type OIDC et la révocation.
-  - Champs : `token_hash`, `expires_at`, `is_revoked`.
+  - Champs : `token_hash`, `expires_at`, `revoked`.
   - Logique : Révoqué automatiquement si l'utilisateur est supprimé ou si le jeton expire.
 
 ### 🎯 Pentest & Vulnérabilités
 - **`Scan`** : Représente une session de test d'intrusion.
-  - Champs : `status`, `report_pdf`, `start_at`, `end_at`.
+  - Champs : `status`, `report_pdf`, `started_at`, `completed_at`.
 - **`Vulnerability`** : Découvertes identifiées lors d'un scan.
-  - Champs : `title`, `severity`, `cvss_score`.
+  - Champs : `vuln_type`, `severity`.
 - **`Evidence`** : Preuve d'exploitation pour une vulnérabilité spécifique.
   - Champs : `payload_used`, `loot_data` (JSONB).
 

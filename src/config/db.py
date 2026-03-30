@@ -3,14 +3,34 @@ from typing import Generator
 
 import psycopg
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 from sqlalchemy.orm import Session, sessionmaker
 
 from config.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 
 logger = logging.getLogger(__name__)
 
-DB_URL = f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+def _build_db_url() -> URL:
+    """Builds the SQLAlchemy DB URL securely."""
+    if not DB_PASSWORD:
+        logger.error("DB_PASSWORD is not set in environment or config")
+        raise EnvironmentError(
+            "DB_PASSWORD is required for database connection. "
+            "Please check your environment variables or Infisical secrets."
+        )
+
+    return URL.create(
+        drivername="postgresql+psycopg",
+        username=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=int(DB_PORT) if DB_PORT else 5432,
+        database=DB_NAME,
+    )
+
+
+DB_URL = _build_db_url()
 engine = create_engine(DB_URL, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

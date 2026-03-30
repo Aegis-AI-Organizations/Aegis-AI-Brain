@@ -12,7 +12,6 @@ All models are located in `src/models/` and inherit from `Base`.
   - Relationships:
     - `owner`: A One-to-One relationship to the `User` who owns the company.
     - `members`: A One-to-Many relationship to all `User` entities belonging to the company.
-    - `licenses`: All licenses assigned to the company.
 
 ### 👤 Users & Roles
 - **`User`**: Core authentication entity.
@@ -24,14 +23,14 @@ All models are located in `src/models/` and inherit from `Base`.
 
 ### 🔐 Authentication & Session Tracking
 - **`RefreshToken`**: Used for OIDC-like session management and revocation.
-  - Fields: `token_hash`, `expires_at`, `is_revoked`.
+  - Fields: `token_hash`, `expires_at`, `revoked`.
   - Logic: Automatically revoked if the user is deleted or the token expires.
 
 ### 🎯 Pentest & Vulnerabilities
 - **`Scan`**: Represents a penetration testing session.
-  - Fields: `status`, `report_pdf`, `start_at`, `end_at`.
+  - Fields: `status`, `report_pdf`, `started_at`, `completed_at`.
 - **`Vulnerability`**: Findings discovered during a scan.
-  - Fields: `title`, `severity`, `cvss_score`.
+  - Fields: `vuln_type`, `severity`.
 - **`Evidence`**: Proof of exploitation for a specific vulnerability.
   - Fields: `payload_used`, `loot_data` (JSONB).
 

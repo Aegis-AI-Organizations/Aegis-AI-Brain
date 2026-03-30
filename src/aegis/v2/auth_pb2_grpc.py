@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from aegis.v2 import auth_pb2 as aegis_dot_v2_dot_auth__pb2
+from . import auth_pb2 as aegis_dot_v2_dot_auth__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__

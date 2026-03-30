@@ -39,8 +39,16 @@ class RefreshToken(Base):
 
     @hybrid_property
     def is_expired(self) -> bool:
-        """Checks if the token is expired based on current UTC time."""
-        return datetime.now(timezone.utc) > self.expires_at
+        """Checks if the token is expired based on current UTC time.
+        Normalizes naive datetimes (e.g. from SQLite) to UTC for safe comparison.
+        """
+        dt = self.expires_at
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return datetime.now(timezone.utc) > dt
 
     def __repr__(self) -> str:
-        return f"<RefreshToken(user_id={self.user_id}, revoked={self.revoked}, expired={self.is_expired})>"
+        return (
+            f"<RefreshToken(user_id={self.user_id}, "
+            f"revoked={self.revoked}, expired={self.is_expired})>"
+        )

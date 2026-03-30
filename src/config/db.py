@@ -6,7 +6,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import Session, sessionmaker
 
-from config.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+from config.config import (
+    DB_HOST,
+    DB_NAME,
+    DB_PASSWORD,
+    DB_PORT,
+    DB_USER,
+    SQLALCHEMY_ECHO,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +45,7 @@ def get_engine():
     global _engine
     if _engine is None:
         db_url = _build_db_url()
-        _engine = create_engine(db_url, echo=True)
+        _engine = create_engine(db_url, echo=SQLALCHEMY_ECHO)
     return _engine
 
 

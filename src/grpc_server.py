@@ -12,6 +12,7 @@ from grpc_services.auth import AuthService
 from grpc_services.ping import PingService
 from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
+from grpc_services.interceptors import AuthInterceptor
 
 logger = logging.getLogger("aegis_brain_grpc")
 
@@ -20,7 +21,7 @@ async def serve(port: str, temporal_client=None):
     if temporal_client is None:
         logger.warning("Starting gRPC server without Temporal Client!")
 
-    server = grpc.aio.server()
+    server = grpc.aio.server(interceptors=[AuthInterceptor()])
 
     ping_pb2_grpc.add_PingServiceServicer_to_server(PingService(), server)
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthService(), server)
@@ -44,6 +45,5 @@ async def serve(port: str, temporal_client=None):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    # Enable gRPC debug logging
     logging.getLogger("grpc").setLevel(logging.DEBUG)
     asyncio.run(serve(GRPC_PORT))

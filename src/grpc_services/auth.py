@@ -46,6 +46,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         """Generates a JWT Access Token valid for 15 minutes."""
         payload = {
             "sub": str(user.id),
+            "company_id": str(user.company_id) if user.company_id else None,
             "email": user.email,
             "role": user.role,
             "iat": datetime.now(timezone.utc),

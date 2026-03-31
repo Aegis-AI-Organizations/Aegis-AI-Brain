@@ -83,7 +83,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 db.commit()
             except Exception:
                 db.rollback()
-                logger.exception(f"Database error during login for {user.email}")
+                logger.exception(f"Database error during login for user ID: {user.id}")
                 return None, AuthErrorCode.DB_ERROR
 
             return (access_token, raw_refresh_token), AuthErrorCode.SUCCESS

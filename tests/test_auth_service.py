@@ -15,7 +15,7 @@ from utils.auth_utils import hash_password
 @pytest.fixture
 def auth_service():
     service = AuthService()
-    service.session_factory = MagicMock()
+    service._session_factory = MagicMock()
     return service
 
 
@@ -148,3 +148,39 @@ async def test_logout(auth_service, mock_db):
     assert response.success is True
     assert token.revoked is True
     mock_db.commit.assert_called_once()
+@pytest.mark.asyncio
+async def test_refresh_exception(auth_service, mock_db):
+    mock_db.query.side_effect = Exception("Serious DB failure")
+
+    request = auth_pb2.RefreshRequest(refresh_token="any")
+    context = MagicMock()
+
+    await auth_service.Refresh(request, context)
+    context.set_code.assert_called_with(grpc.StatusCode.INTERNAL)
+
+
+@pytest.mark.asyncio
+async def test_logout_db_error(auth_service, mock_db):
+    token = RefreshToken(token_hash="hash", revoked=False)
+    mock_db.query.return_value.filter.return_value.first.return_value = token
+    mock_db.commit.side_effect = Exception("DB commit fail")
+
+    request = auth_pb2.LogoutRequest(refresh_token="token")
+    context = MagicMock()
+
+    response = await auth_service.Logout(request, context)
+    assert response.success is False
+    context.set_code.assert_called_with(grpc.StatusCode.INTERNAL)
+    mock_db.rollback.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_logout_exception(auth_service, mock_db):
+    mock_db.query.side_effect = Exception("Query fail")
+
+    request = auth_pb2.LogoutRequest(refresh_token="token")
+    context = MagicMock()
+
+    response = await auth_service.Logout(request, context)
+    assert response.success is False
+    context.set_code.assert_called_with(grpc.StatusCode.INTERNAL)

@@ -18,11 +18,31 @@ from utils.auth_utils import verify_password
 logger = logging.getLogger(__name__)
 
 
+import enum
+
+
+class AuthErrorCode(enum.Enum):
+    """Structured error codes for Auth synchronization methods."""
+
+    SUCCESS = 0
+    INVALID_CREDENTIALS = 1
+    USER_INACTIVE = 2
+    DB_ERROR = 3
+    INVALID_TOKEN = 4
+
+
 class AuthService(auth_pb2_grpc.AuthServiceServicer):
     """AuthService handles user login, token refresh, and logout."""
 
     def __init__(self):
-        self.session_factory = get_session_factory()
+        self._session_factory = None
+
+    @property
+    def session_factory(self):
+        """Lazy-loaded session factory to avoid startup failure."""
+        if self._session_factory is None:
+            self._session_factory = get_session_factory()
+        return self._session_factory
 
     def _generate_access_token(self, user: User) -> str:
         """Generates a JWT Access Token valid for 15 minutes."""
@@ -44,10 +64,10 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         with self.session_factory() as db:
             user = db.query(User).filter(User.email == request.email).first()
             if not user or not verify_password(request.password, user.password_hash):
-                return None, "Invalid email or password"
+                return None, AuthErrorCode.INVALID_CREDENTIALS
 
             if not user.is_active:
-                return None, "User account is inactive"
+                return None, AuthErrorCode.USER_INACTIVE
 
             # Generate tokens
             access_token = self._generate_access_token(user)
@@ -66,23 +86,32 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             except Exception as e:
                 db.rollback()
                 logger.error(f"Database error during login for {user.email}: {e}")
-                return None, "Internal error"
+                return None, AuthErrorCode.DB_ERROR
 
-            return (access_token, raw_refresh_token), None
+            return (access_token, raw_refresh_token), AuthErrorCode.SUCCESS
 
     async def Login(
         self, request: auth_pb2.LoginRequest, context
     ) -> auth_pb2.LoginResponse:
         """Authenticates user and returns Access + Refresh tokens."""
-        result, error = await asyncio.to_thread(self._login_db_sync, request)
-        if error:
-            if "Invalid" in error:
+        try:
+            result, code = await asyncio.to_thread(self._login_db_sync, request)
+        except Exception as e:
+            logger.error(f"Unexpected error in Login RPC: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal service error")
+            return auth_pb2.LoginResponse()
+
+        if code != AuthErrorCode.SUCCESS:
+            if code == AuthErrorCode.INVALID_CREDENTIALS:
                 context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            elif "Internal" in error:
-                context.set_code(grpc.StatusCode.INTERNAL)
-            else:
+                context.set_details("Invalid email or password")
+            elif code == AuthErrorCode.USER_INACTIVE:
                 context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            context.set_details(error)
+                context.set_details("User account is inactive")
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details("Internal authentication error")
             return auth_pb2.LoginResponse()
 
         access_token, refresh_token = result
@@ -101,25 +130,32 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             )
 
             if not token_entry or token_entry.revoked or token_entry.is_expired:
-                return None
+                return None, AuthErrorCode.INVALID_TOKEN
 
-            return self._generate_access_token(token_entry.user)
+            return self._generate_access_token(token_entry.user), AuthErrorCode.SUCCESS
 
     async def Refresh(
         self, request: auth_pb2.RefreshRequest, context
     ) -> auth_pb2.RefreshResponse:
         """Validates refresh token and returns a new Access token."""
-        access_token = await asyncio.to_thread(
-            self._refresh_db_sync, request.refresh_token
-        )
-        if not access_token:
+        try:
+            access_token, code = await asyncio.to_thread(
+                self._refresh_db_sync, request.refresh_token
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in Refresh RPC: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal service error")
+            return auth_pb2.RefreshResponse()
+
+        if code != AuthErrorCode.SUCCESS:
             context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             context.set_details("Invalid or expired refresh token")
             return auth_pb2.RefreshResponse()
 
         return auth_pb2.RefreshResponse(access_token=access_token)
 
-    def _logout_db_sync(self, refresh_token: str):
+    def _logout_db_sync(self, refresh_token: str) -> AuthErrorCode:
         """Synchronous part of Logout logic."""
         with self.session_factory() as db:
             lookup_hash = self._hash_token(refresh_token)
@@ -128,14 +164,35 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 .filter(RefreshToken.token_hash == lookup_hash)
                 .first()
             )
-            if token_entry:
+
+            if not token_entry:
+                return AuthErrorCode.SUCCESS  # Idempotent
+
+            try:
                 token_entry.revoked = True
                 db.commit()
-            return True
+            except Exception as e:
+                db.rollback()
+                logger.error(f"Database error during logout: {e}")
+                return AuthErrorCode.DB_ERROR
+
+            return AuthErrorCode.SUCCESS
 
     async def Logout(
         self, request: auth_pb2.LogoutRequest, context
     ) -> auth_pb2.LogoutResponse:
         """Invalidates a refresh token by marking it as revoked."""
-        await asyncio.to_thread(self._logout_db_sync, request.refresh_token)
+        try:
+            code = await asyncio.to_thread(self._logout_db_sync, request.refresh_token)
+        except Exception as e:
+            logger.error(f"Unexpected error in Logout RPC: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal service error")
+            return auth_pb2.LogoutResponse(success=False)
+
+        if code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Failed to persist logout")
+            return auth_pb2.LogoutResponse(success=False)
+
         return auth_pb2.LogoutResponse(success=True)

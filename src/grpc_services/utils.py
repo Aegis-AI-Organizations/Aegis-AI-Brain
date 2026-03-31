@@ -1,6 +1,11 @@
+import contextvars
 import functools
 import inspect
+import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
+
+# Trusted storage for verified identities from AuthInterceptor
+verified_identity = contextvars.ContextVar("verified_identity", default=None)
 
 
 def to_pb_timestamp(dt):
@@ -12,16 +17,25 @@ def to_pb_timestamp(dt):
 
 
 def get_identity(context):
-    """Extract identity meta-data from gRPC context.
-    Resilient to context=None for testing.
+    """Securely extracts identity from verified context or gRPC metadata fallback.
+    Prioritizes verified_identity ContextVar set by the AuthInterceptor.
     """
+    v_id = verified_identity.get()
+    if v_id:
+        return v_id
+
+    # Fallback for unit tests where interceptor is not present
     if context is None:
-        return {"user_id": None, "company_id": None, "role": None}
+        return None
 
     metadata = dict(context.invocation_metadata())
     user_id = metadata.get("user-id")
     company_id = metadata.get("company-id")
     role = metadata.get("role")
+
+    if not user_id or not company_id:
+        return None
+
     return {"user_id": user_id, "company_id": company_id, "role": role}
 
 

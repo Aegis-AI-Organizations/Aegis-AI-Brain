@@ -104,7 +104,6 @@ async def test_auth_interceptor_spoofing_prevention():
     metadata = [
         ("user-id", "evil-user"),
         ("company-id", "victim-company"),
-        # No authorization header
     ]
     handler_details = MockHandlerCallDetails(metadata)
 

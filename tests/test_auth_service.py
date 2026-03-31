@@ -22,7 +22,10 @@ def auth_service():
 @pytest.fixture
 def mock_db(auth_service):
     db = MagicMock()
-    auth_service.session_factory.return_value.__enter__.return_value = db
+    # Configure the session factory mock to return 'db' as a context manager
+    auth_service._session_factory.return_value.__enter__.return_value = db
+    # Ensure exceptions raised inside the with-block are propagated
+    auth_service._session_factory.return_value.__exit__.return_value = False
     return db
 
 

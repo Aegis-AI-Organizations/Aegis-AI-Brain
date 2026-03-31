@@ -81,9 +81,9 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             try:
                 db.add(db_refresh_token)
                 db.commit()
-            except Exception as e:
+            except Exception:
                 db.rollback()
-                logger.error(f"Database error during login for {user.email}: {e}")
+                logger.exception(f"Database error during login for {user.email}")
                 return None, AuthErrorCode.DB_ERROR
 
             return (access_token, raw_refresh_token), AuthErrorCode.SUCCESS
@@ -94,8 +94,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         """Authenticates user and returns Access + Refresh tokens."""
         try:
             result, code = await asyncio.to_thread(self._login_db_sync, request)
-        except Exception as e:
-            logger.error(f"Unexpected error in Login RPC: {e}")
+        except Exception:
+            logger.exception("Unexpected error in Login RPC")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Internal service error")
             return auth_pb2.LoginResponse()
@@ -140,8 +140,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             access_token, code = await asyncio.to_thread(
                 self._refresh_db_sync, request.refresh_token
             )
-        except Exception as e:
-            logger.error(f"Unexpected error in Refresh RPC: {e}")
+        except Exception:
+            logger.exception("Unexpected error in Refresh RPC")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Internal service error")
             return auth_pb2.RefreshResponse()
@@ -169,9 +169,9 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             try:
                 token_entry.revoked = True
                 db.commit()
-            except Exception as e:
+            except Exception:
                 db.rollback()
-                logger.error(f"Database error during logout: {e}")
+                logger.exception("Database error during logout")
                 return AuthErrorCode.DB_ERROR
 
             return AuthErrorCode.SUCCESS
@@ -182,8 +182,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         """Invalidates a refresh token by marking it as revoked."""
         try:
             code = await asyncio.to_thread(self._logout_db_sync, request.refresh_token)
-        except Exception as e:
-            logger.error(f"Unexpected error in Logout RPC: {e}")
+        except Exception:
+            logger.exception("Unexpected error in Logout RPC")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Internal service error")
             return auth_pb2.LogoutResponse(success=False)

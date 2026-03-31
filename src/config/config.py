@@ -1,3 +1,4 @@
+import logging
 import os
 
 TEMPORAL_HOST = os.getenv("TEMPORAL_HOST", "localhost:7233")
@@ -33,8 +34,8 @@ if not JWT_SECRET:
         # Developers should set this in their .env file (see .env.example)
         # We only allow it to be missing here if we are in a lower environment.
         JWT_SECRET = "insecure-dev-secret-only"
-        print(
-            "WARNING: JWT_SECRET not set. Using default insecure secret for development."
+        logging.getLogger(__name__).warning(
+            "JWT_SECRET not set. Using default insecure secret for development."
         )
     else:
         raise RuntimeError("JWT_SECRET must be set in production environments.")

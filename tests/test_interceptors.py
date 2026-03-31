@@ -16,7 +16,7 @@ class MockHandlerCallDetails:
 async def test_auth_interceptor_valid_token():
     # Clear verified_identity before test
     verified_identity.set(None)
-    
+
     interceptor = AuthInterceptor()
     token = jwt.encode(
         {"sub": "test-user", "company_id": "test-company", "role": "admin"},
@@ -30,7 +30,7 @@ async def test_auth_interceptor_valid_token():
     await interceptor.intercept_service(continuation, handler_details)
 
     continuation.assert_called_once_with(handler_details)
-    
+
     # Verify the context var is set
     identity = verified_identity.get()
     assert identity is not None

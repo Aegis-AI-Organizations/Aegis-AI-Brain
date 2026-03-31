@@ -18,10 +18,10 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur = conn.cursor()
             cur.execute(
                 """
-                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at 
+                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at
                 FROM vulnerabilities v
                 JOIN scans s ON v.scan_id = s.id
-                WHERE v.scan_id = %s AND s.company_id = %s 
+                WHERE v.scan_id = %s AND s.company_id = %s
                 ORDER BY v.discovered_at DESC
                 """,
                 (scan_id, company_id),
@@ -36,9 +36,7 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     @with_identity
     async def GetVulnerabilities(self, request, context, identity):
         company_id = identity.get("company_id")
-        rows = await asyncio.to_thread(
-            self._get_vulns_db, request.scan_id, company_id
-        )
+        rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id, company_id)
         if rows is None:
             await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Access denied")
         vulns = []
@@ -63,11 +61,11 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur = conn.cursor()
             cur.execute(
                 """
-                SELECT e.id, e.payload_used, e.loot_data, e.captured_at 
+                SELECT e.id, e.payload_used, e.loot_data, e.captured_at
                 FROM evidences e
                 JOIN vulnerabilities v ON e.vulnerability_id = v.id
                 JOIN scans s ON v.scan_id = s.id
-                WHERE e.vulnerability_id = %s AND s.company_id = %s 
+                WHERE e.vulnerability_id = %s AND s.company_id = %s
                 ORDER BY e.captured_at DESC
                 """,
                 (vuln_id, company_id),
@@ -82,9 +80,7 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     @with_identity
     async def GetEvidences(self, request, context, identity):
         company_id = identity.get("company_id")
-        rows = await asyncio.to_thread(
-            self._get_evidences_db, request.vulnerability_id, company_id
-        )
+        rows = await asyncio.to_thread(self._get_evidences_db, request.vulnerability_id, company_id)
         if rows is None:
             await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Access denied")
         evs = []

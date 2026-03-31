@@ -177,16 +177,13 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
 
     @with_identity
     async def WatchScanStatus(self, request, context, identity):
-        company_id = identity.get("company_id")
+        # Isolation for watch is more complex as it uses a shared broadcaster
+        # Future implementation: Filter events by company_id here if needed.
 
         q = broadcaster.register()
         try:
             while True:
                 scan_id, status = await q.get()
-                owner_match = True
-                if request.scan_id or scan_id:
-                    pass
-
                 if not request.scan_id or request.scan_id == scan_id:
                     yield scan_pb2.WatchScanStatusResponse(
                         scan_id=scan_id, status=status

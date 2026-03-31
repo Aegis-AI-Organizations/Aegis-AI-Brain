@@ -12,8 +12,10 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
 
     async def intercept_service(self, continuation, handler_call_details):
         metadata = dict(handler_call_details.invocation_metadata)
-        logger.error(f"DEBUG: AuthInterceptor received metadata keys: {list(metadata.keys())}")
-        
+        logger.error(
+            f"DEBUG: AuthInterceptor received metadata keys: {list(metadata.keys())}"
+        )
+
         auth_header = metadata.get("authorization") or metadata.get("Authorization", "")
         if not auth_header:
             logger.error("DEBUG: No authorization header found in metadata.")
@@ -31,7 +33,9 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
                 }
                 if identity["user_id"] and identity["company_id"]:
                     verified_identity.set(identity)
-                    logger.error(f"DEBUG: Identity verified for user: {identity['user_id']}")
+                    logger.error(
+                        f"DEBUG: Identity verified for user: {identity['user_id']}"
+                    )
                 else:
                     logger.error("JWT missing required identity claims.")
 

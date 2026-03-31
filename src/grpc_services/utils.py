@@ -1,4 +1,5 @@
 import functools
+import inspect
 from google.protobuf.timestamp_pb2 import Timestamp
 
 
@@ -25,11 +26,20 @@ def get_identity(context):
 
 
 def with_identity(f):
-    """Decorator to inject identity into the handler."""
+    """Decorator to inject identity into the handler.
+    Supports both async functions and async generators.
+    """
 
-    @functools.wraps(f)
-    async def wrapper(self, request, context, *args, **kwargs):
-        identity = get_identity(context)
-        return await f(self, request, context, identity, *args, **kwargs)
+    if inspect.isasyncgenfunction(f):
+        @functools.wraps(f)
+        async def wrapper(self, request, context, *args, **kwargs):
+            identity = get_identity(context)
+            async for response in f(self, request, context, identity, *args, **kwargs):
+                yield response
+    else:
+        @functools.wraps(f)
+        async def wrapper(self, request, context, *args, **kwargs):
+            identity = get_identity(context)
+            return await f(self, request, context, identity, *args, **kwargs)
 
     return wrapper

@@ -11,7 +11,12 @@ def to_pb_timestamp(dt):
 
 
 def get_identity(context):
-    """Extract identity meta-data from gRPC context."""
+    """Extract identity meta-data from gRPC context.
+    Resilient to context=None for testing.
+    """
+    if context is None:
+        return {"user_id": None, "company_id": None, "role": None}
+
     metadata = dict(context.invocation_metadata())
     user_id = metadata.get("user-id")
     company_id = metadata.get("company-id")

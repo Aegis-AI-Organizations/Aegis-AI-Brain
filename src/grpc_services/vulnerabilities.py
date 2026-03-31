@@ -36,9 +36,10 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     @with_identity
     async def GetVulnerabilities(self, request, context, identity):
         company_id = identity.get("company_id")
+        if not company_id:
+            await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Authentication required")
+
         rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id, company_id)
-        if rows is None:
-            await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Access denied")
         vulns = []
         for row in rows:
             v_id, v_type, severity, endpoint, desc, disco = row
@@ -80,9 +81,12 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     @with_identity
     async def GetEvidences(self, request, context, identity):
         company_id = identity.get("company_id")
-        rows = await asyncio.to_thread(self._get_evidences_db, request.vulnerability_id, company_id)
-        if rows is None:
-            await context.abort(grpc.StatusCode.PERMISSION_DENIED, "Access denied")
+        if not company_id:
+            await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Authentication required")
+
+        rows = await asyncio.to_thread(
+            self._get_evidences_db, request.vulnerability_id, company_id
+        )
         evs = []
         for row in rows:
             e_id, payload, loot, captured = row

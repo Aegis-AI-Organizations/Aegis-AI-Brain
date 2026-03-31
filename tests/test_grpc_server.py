@@ -172,7 +172,7 @@ async def test_scan_service_status_not_found(mock_get_db):
 @patch("grpc_services.scans.get_db_connection")
 async def test_scan_service_watch_status(mock_get_db):
     from grpc_services.broadcaster import broadcaster
-    
+
     # Mock status for watch ownership check
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value

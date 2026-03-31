@@ -1,5 +1,3 @@
-import pytest
-import os
 from unittest.mock import patch
 from grpc_services.auth import AuthService
 

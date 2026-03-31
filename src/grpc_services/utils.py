@@ -31,12 +31,14 @@ def with_identity(f):
     """
 
     if inspect.isasyncgenfunction(f):
+
         @functools.wraps(f)
         async def wrapper(self, request, context, *args, **kwargs):
             identity = get_identity(context)
             async for response in f(self, request, context, identity, *args, **kwargs):
                 yield response
     else:
+
         @functools.wraps(f)
         async def wrapper(self, request, context, *args, **kwargs):
             identity = get_identity(context)

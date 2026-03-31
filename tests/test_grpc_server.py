@@ -12,7 +12,10 @@ from grpc_services.vulnerabilities import VulnerabilityService
 
 class MockContext:
     def __init__(self, metadata=None):
-        self._metadata = metadata or [("company-id", "test-company"), ("user-id", "test-user")]
+        self._metadata = metadata or [
+            ("company-id", "test-company"),
+            ("user-id", "test-user"),
+        ]
         self.abort = MagicMock(side_effect=grpc.RpcError("Aborted"))
 
     def invocation_metadata(self):
@@ -160,7 +163,9 @@ async def test_scan_service_status_not_found(mock_get_db):
 
     with pytest.raises(grpc.RpcError):
         await servicer.GetScanStatus(request, context)
-    context.abort.assert_called_once_with(grpc.StatusCode.NOT_FOUND, "Scan not found or access denied")
+    context.abort.assert_called_once_with(
+        grpc.StatusCode.NOT_FOUND, "Scan not found or access denied"
+    )
 
 
 @pytest.mark.asyncio
@@ -171,7 +176,13 @@ async def test_scan_service_watch_status(mock_get_db):
     # Mock status for watch ownership check
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
-    mock_cursor.fetchone.return_value = ("RUNNING", datetime.now(), None, "nginx", "wf-1")
+    mock_cursor.fetchone.return_value = (
+        "RUNNING",
+        datetime.now(),
+        None,
+        "nginx",
+        "wf-1",
+    )
 
     servicer = ScanService(AsyncMock())
     request = scan_pb2.WatchScanStatusRequest(scan_id="test-id")

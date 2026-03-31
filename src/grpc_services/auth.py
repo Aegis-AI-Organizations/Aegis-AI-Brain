@@ -60,8 +60,13 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 token_hash=token_hash,
                 expires_at=datetime.now(timezone.utc) + timedelta(days=7),
             )
-            db.add(db_refresh_token)
-            db.commit()
+            try:
+                db.add(db_refresh_token)
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                logger.error(f"Database error during login for {user.email}: {e}")
+                return None, "Internal error"
 
             return (access_token, raw_refresh_token), None
 
@@ -73,6 +78,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         if error:
             if "Invalid" in error:
                 context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            elif "Internal" in error:
+                context.set_code(grpc.StatusCode.INTERNAL)
             else:
                 context.set_code(grpc.StatusCode.PERMISSION_DENIED)
             context.set_details(error)

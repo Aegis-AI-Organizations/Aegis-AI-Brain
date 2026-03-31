@@ -3,10 +3,11 @@ from unittest.mock import MagicMock
 import grpc
 from datetime import datetime, timedelta, timezone
 import hashlib
+import uuid
 
 from grpc_services.auth import AuthService
 import aegis.v2.auth_pb2 as auth_pb2
-from models.user import User
+from models.user import User, UserRole
 from models.refresh_token import RefreshToken
 from utils.auth_utils import hash_password
 
@@ -30,11 +31,11 @@ async def test_login_success(auth_service, mock_db):
     password = "password123"
     pwd_hash = hash_password(password)
     user = User(
-        id=1,
+        id=uuid.uuid4(),
         email="test@example.com",
         password_hash=pwd_hash,
         is_active=True,
-        role="user",
+        role=UserRole.OPERATOR,
     )
     mock_db.query.return_value.filter.return_value.first.return_value = user
 
@@ -65,7 +66,7 @@ async def test_login_invalid_credentials(auth_service, mock_db):
 @pytest.mark.asyncio
 async def test_login_inactive_user(auth_service, mock_db):
     user = User(
-        id=1,
+        id=uuid.uuid4(),
         email="test@example.com",
         password_hash=hash_password("pw"),
         is_active=False,
@@ -80,8 +81,32 @@ async def test_login_inactive_user(auth_service, mock_db):
 
 
 @pytest.mark.asyncio
+async def test_login_db_error(auth_service, mock_db):
+    password = "password123"
+    pwd_hash = hash_password(password)
+    user = User(
+        id=uuid.uuid4(),
+        email="test@example.com",
+        password_hash=pwd_hash,
+        is_active=True,
+        role=UserRole.OPERATOR,
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = user
+    mock_db.commit.side_effect = Exception("DB error")
+
+    request = auth_pb2.LoginRequest(email="test@example.com", password=password)
+    context = MagicMock()
+
+    response = await auth_service.Login(request, context)
+
+    context.set_code.assert_called_with(grpc.StatusCode.INTERNAL)
+    mock_db.rollback.assert_called_once()
+    assert response.access_token == ""
+
+
+@pytest.mark.asyncio
 async def test_refresh_success(auth_service, mock_db):
-    user = User(id=1, email="test@example.com", role="user")
+    user = User(id=uuid.uuid4(), email="test@example.com", role=UserRole.VIEWER)
     token = RefreshToken(
         token_hash=hashlib.sha256("valid_token".encode()).hexdigest(),
         user=user,

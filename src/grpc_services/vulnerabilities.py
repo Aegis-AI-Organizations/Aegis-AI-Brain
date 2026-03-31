@@ -37,7 +37,9 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     async def GetVulnerabilities(self, request, context, identity):
         company_id = identity.get("company_id")
         if not company_id:
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Authentication required")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
 
         rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id, company_id)
         vulns = []
@@ -82,7 +84,9 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     async def GetEvidences(self, request, context, identity):
         company_id = identity.get("company_id")
         if not company_id:
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Authentication required")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
 
         rows = await asyncio.to_thread(
             self._get_evidences_db, request.vulnerability_id, company_id

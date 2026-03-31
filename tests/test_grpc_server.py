@@ -1,7 +1,7 @@
 import asyncio
 import grpc
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
 
 from aegis.v2 import ping_pb2, scan_pb2, vulnerability_pb2
@@ -10,11 +10,23 @@ from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
 
 
+class MockContext:
+    def __init__(self, metadata=None):
+        self._metadata = metadata or [
+            ("company-id", "test-company"),
+            ("user-id", "test-user"),
+        ]
+        self.abort = MagicMock(side_effect=grpc.RpcError("Aborted"))
+
+    def invocation_metadata(self):
+        return self._metadata
+
+
 @pytest.mark.asyncio
 async def test_ping_service():
     servicer = PingService()
     request = ping_pb2.PingRequest()
-    response = await servicer.Ping(request, None)
+    response = await servicer.Ping(request, MockContext())
     assert response.message == "pong"
 
 
@@ -28,7 +40,7 @@ async def test_scan_service_start(mock_get_db):
     temporal_client = AsyncMock()
     servicer = ScanService(temporal_client)
     request = scan_pb2.StartScanRequest(target_image="nginx:latest")
-    response = await servicer.StartScan(request, None)
+    response = await servicer.StartScan(request, MockContext())
     assert response.status == "PENDING"
     assert response.scan_id != ""
     assert response.started_at is not None
@@ -50,7 +62,7 @@ async def test_scan_service_status(mock_get_db):
     temporal_client = AsyncMock()
     servicer = ScanService(temporal_client)
     request = scan_pb2.GetScanStatusRequest(scan_id="test-id")
-    response = await servicer.GetScanStatus(request, None)
+    response = await servicer.GetScanStatus(request, MockContext())
     assert response.scan_id == "test-id"
     assert response.status == "COMPLETED"
 
@@ -67,7 +79,7 @@ async def test_scan_service_list(mock_get_db):
     temporal_client = AsyncMock()
     servicer = ScanService(temporal_client)
     request = scan_pb2.ListScansRequest()
-    response = await servicer.ListScans(request, None)
+    response = await servicer.ListScans(request, MockContext())
     assert len(response.scans) == 1
     assert response.scans[0].scan_id == "test-id"
 
@@ -82,7 +94,7 @@ async def test_scan_service_report(mock_get_db):
     temporal_client = AsyncMock()
     servicer = ScanService(temporal_client)
     request = scan_pb2.GetScanReportRequest(scan_id="test-id")
-    response = await servicer.GetScanReport(request, None)
+    response = await servicer.GetScanReport(request, MockContext())
     assert response.pdf_data == b"fake-pdf"
 
 
@@ -97,7 +109,7 @@ async def test_vulnerability_service_get(mock_get_db):
 
     servicer = VulnerabilityService()
     request = vulnerability_pb2.GetVulnerabilitiesRequest(scan_id="test-id")
-    response = await servicer.GetVulnerabilities(request, None)
+    response = await servicer.GetVulnerabilities(request, MockContext())
     assert len(response.vulnerabilities) == 1
     assert response.vulnerabilities[0].id == "v-1"
 
@@ -113,7 +125,7 @@ async def test_vulnerability_service_evidences(mock_get_db):
 
     servicer = VulnerabilityService()
     request = vulnerability_pb2.GetEvidencesRequest(vulnerability_id="v-1")
-    response = await servicer.GetEvidences(request, None)
+    response = await servicer.GetEvidences(request, MockContext())
     assert len(response.evidences) == 1
     assert response.evidences[0].id == "e-1"
 
@@ -131,10 +143,7 @@ async def test_scan_service_start_failure_compensation(mock_get_db):
     servicer = ScanService(temporal_client)
     request = scan_pb2.StartScanRequest(target_image="nginx:latest")
 
-    context = AsyncMock()
-    # Mock context.abort to raise an exception like gRPC does
-    context.abort.side_effect = grpc.RpcError("Aborted")
-
+    context = MockContext()
     with pytest.raises(grpc.RpcError):
         await servicer.StartScan(request, context)
     # Verify compensation update was called
@@ -150,17 +159,30 @@ async def test_scan_service_status_not_found(mock_get_db):
 
     servicer = ScanService(AsyncMock())
     request = scan_pb2.GetScanStatusRequest(scan_id="missing-id")
-    context = AsyncMock()
-    context.abort.side_effect = Exception("Abort called")
+    context = MockContext()
 
-    with pytest.raises(Exception, match="Abort called"):
+    with pytest.raises(grpc.RpcError):
         await servicer.GetScanStatus(request, context)
-    context.abort.assert_called_once_with(grpc.StatusCode.NOT_FOUND, "Scan not found")
+    context.abort.assert_called_once_with(
+        grpc.StatusCode.NOT_FOUND, "Scan not found or access denied"
+    )
 
 
 @pytest.mark.asyncio
-async def test_scan_service_watch_status():
+@patch("grpc_services.scans.get_db_connection")
+async def test_scan_service_watch_status(mock_get_db):
     from grpc_services.broadcaster import broadcaster
+
+    # Mock status for watch ownership check
+    mock_conn = mock_get_db.return_value
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = (
+        "RUNNING",
+        datetime.now(),
+        None,
+        "nginx",
+        "wf-1",
+    )
 
     servicer = ScanService(AsyncMock())
     request = scan_pb2.WatchScanStatusRequest(scan_id="test-id")
@@ -174,7 +196,7 @@ async def test_scan_service_watch_status():
 
     asyncio.create_task(simulate_update())
 
-    stream = servicer.WatchScanStatus(request, None)
+    stream = servicer.WatchScanStatus(request, MockContext())
     async for response in stream:
         assert response.scan_id == "test-id"
         assert response.status == "COMPLETED"

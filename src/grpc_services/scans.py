@@ -5,7 +5,7 @@ import grpc
 from config.db import get_db_connection
 import aegis.v2.scan_pb2 as scan_pb2
 import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
-from .utils import to_pb_timestamp
+from .utils import to_pb_timestamp, with_identity
 from .broadcaster import broadcaster
 from config.config import BRAIN_TASK_QUEUE
 
@@ -16,13 +16,13 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
     def __init__(self, temporal_client):
         self.temporal_client = temporal_client
 
-    def _start_scan_db(self, scan_id, workflow_id, target_image):
+    def _start_scan_db(self, scan_id, workflow_id, target_image, company_id):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO scans (id, temporal_workflow_id, target_image, status) VALUES (%s, %s, %s, 'PENDING') RETURNING started_at",
-                (scan_id, workflow_id, target_image),
+                "INSERT INTO scans (id, company_id, temporal_workflow_id, target_image, status) VALUES (%s, %s, %s, %s, 'PENDING') RETURNING started_at",
+                (scan_id, company_id, workflow_id, target_image),
             )
             started_at = cur.fetchone()[0]
             conn.commit()
@@ -44,12 +44,19 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         finally:
             conn.close()
 
-    async def StartScan(self, request, context):
+    @with_identity
+    async def StartScan(self, request, context, identity):
+        company_id = identity.get("company_id")
+        if not company_id:
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
+
         scan_id = str(uuid.uuid4())
         workflow_id = f"pentest-workflow-{scan_id}"
 
         started_at = await asyncio.to_thread(
-            self._start_scan_db, scan_id, workflow_id, request.target_image
+            self._start_scan_db, scan_id, workflow_id, request.target_image, company_id
         )
 
         try:
@@ -61,22 +68,23 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             )
         except Exception as e:
             logger.error(f"Failed to start workflow: {e}")
-            # Compensation: Update DB status to FAILED
             await asyncio.to_thread(self._update_scan_status_db, scan_id, "FAILED")
             await context.abort(grpc.StatusCode.INTERNAL, "Failed to start workflow")
 
-        logger.info(f"Started scan {scan_id} for image: {request.target_image}")
+        logger.info(
+            f"Started scan {scan_id} for image: {request.target_image} (Company: {company_id})"
+        )
         return scan_pb2.StartScanResponse(
             scan_id=scan_id, status="PENDING", started_at=to_pb_timestamp(started_at)
         )
 
-    def _get_scan_status_db(self, scan_id):
+    def _get_scan_status_db(self, scan_id, company_id):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
             cur.execute(
-                "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s",
-                (scan_id,),
+                "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s AND company_id = %s",
+                (scan_id, company_id),
             )
             row = cur.fetchone()
             cur.close()
@@ -84,10 +92,21 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         finally:
             conn.close()
 
-    async def GetScanStatus(self, request, context):
-        row = await asyncio.to_thread(self._get_scan_status_db, request.scan_id)
+    @with_identity
+    async def GetScanStatus(self, request, context, identity):
+        company_id = identity.get("company_id")
+        if not company_id:
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
+
+        row = await asyncio.to_thread(
+            self._get_scan_status_db, request.scan_id, company_id
+        )
         if not row:
-            await context.abort(grpc.StatusCode.NOT_FOUND, "Scan not found")
+            await context.abort(
+                grpc.StatusCode.NOT_FOUND, "Scan not found or access denied"
+            )
 
         status, started_at, completed_at, target_image, wf_id = row
         resp = scan_pb2.GetScanStatusResponse(
@@ -100,12 +119,13 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             resp.completed_at.CopyFrom(to_pb_timestamp(completed_at))
         return resp
 
-    def _list_scans_db(self):
+    def _list_scans_db(self, company_id):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
             cur.execute(
-                "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans ORDER BY started_at DESC"
+                "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans WHERE company_id = %s ORDER BY started_at DESC",
+                (company_id,),
             )
             rows = cur.fetchall()
             cur.close()
@@ -113,8 +133,15 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         finally:
             conn.close()
 
-    async def ListScans(self, request, context):
-        rows = await asyncio.to_thread(self._list_scans_db)
+    @with_identity
+    async def ListScans(self, request, context, identity):
+        company_id = identity.get("company_id")
+        if not company_id:
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
+
+        rows = await asyncio.to_thread(self._list_scans_db, company_id)
         scans = []
         for row in rows:
             scan_id, wf_id, target, status, started, completed = row
@@ -131,24 +158,55 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             scans.append(detail)
         return scan_pb2.ListScansResponse(scans=scans)
 
-    def _get_scan_report_db(self, scan_id):
+    def _get_scan_report_db(self, scan_id, company_id):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
-            cur.execute("SELECT report_pdf FROM scans WHERE id = %s", (scan_id,))
+            cur.execute(
+                "SELECT report_pdf FROM scans WHERE id = %s AND company_id = %s",
+                (scan_id, company_id),
+            )
             row = cur.fetchone()
             cur.close()
             return row[0] if row else None
         finally:
             conn.close()
 
-    async def GetScanReport(self, request, context):
-        pdf_bytes = await asyncio.to_thread(self._get_scan_report_db, request.scan_id)
+    @with_identity
+    async def GetScanReport(self, request, context, identity):
+        company_id = identity.get("company_id")
+        if not company_id:
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
+
+        pdf_bytes = await asyncio.to_thread(
+            self._get_scan_report_db, request.scan_id, company_id
+        )
         if pdf_bytes is None:
-            await context.abort(grpc.StatusCode.NOT_FOUND, "Scan or report not found")
+            await context.abort(
+                grpc.StatusCode.NOT_FOUND, "Scan/report not found or access denied"
+            )
         return scan_pb2.GetScanReportResponse(pdf_data=pdf_bytes)
 
-    async def WatchScanStatus(self, request, context):
+    @with_identity
+    async def WatchScanStatus(self, request, context, identity):
+        company_id = identity.get("company_id")
+        if not company_id:
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
+            )
+
+        # Optional: verify that the requested scan_id belongs to the company before registering
+        if request.scan_id:
+            row = await asyncio.to_thread(
+                self._get_scan_status_db, request.scan_id, company_id
+            )
+            if not row:
+                await context.abort(
+                    grpc.StatusCode.NOT_FOUND, "Scan not found or access denied"
+                )
+
         q = broadcaster.register()
         try:
             while True:

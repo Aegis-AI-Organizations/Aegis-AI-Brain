@@ -148,6 +148,8 @@ async def test_logout(auth_service, mock_db):
     assert response.success is True
     assert token.revoked is True
     mock_db.commit.assert_called_once()
+
+
 @pytest.mark.asyncio
 async def test_refresh_exception(auth_service, mock_db):
     mock_db.query.side_effect = Exception("Serious DB failure")

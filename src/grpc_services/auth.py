@@ -1,3 +1,4 @@
+import enum
 import hashlib
 import logging
 import uuid
@@ -16,9 +17,6 @@ from models.user import User
 from utils.auth_utils import verify_password
 
 logger = logging.getLogger(__name__)
-
-
-import enum
 
 
 class AuthErrorCode(enum.Enum):

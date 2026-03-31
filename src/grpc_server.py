@@ -21,7 +21,6 @@ async def serve(port: str, temporal_client=None):
     if temporal_client is None:
         logger.warning("Starting gRPC server without Temporal Client!")
 
-    # Applying the JWT validation interceptor
     server = grpc.aio.server(interceptors=[AuthInterceptor()])
 
     ping_pb2_grpc.add_PingServiceServicer_to_server(PingService(), server)
@@ -46,6 +45,5 @@ async def serve(port: str, temporal_client=None):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    # Enable gRPC debug logging
     logging.getLogger("grpc").setLevel(logging.DEBUG)
     asyncio.run(serve(GRPC_PORT))

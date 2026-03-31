@@ -12,11 +12,17 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
 
     async def intercept_service(self, continuation, handler_call_details):
         metadata = dict(handler_call_details.invocation_metadata)
-        auth_header = metadata.get("authorization", "")
+        logger.error(f"DEBUG: AuthInterceptor received metadata keys: {list(metadata.keys())}")
+        
+        auth_header = metadata.get("authorization") or metadata.get("Authorization", "")
+        if not auth_header:
+            logger.error("DEBUG: No authorization header found in metadata.")
 
         if auth_header.startswith("Bearer "):
             token = auth_header.split(" ", 1)[1]
             try:
+                # Log secret prefix for verification (safe)
+                logger.error(f"DEBUG: Using JWT_SECRET prefix: {JWT_SECRET[:5]}...")
                 payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
                 identity = {
                     "user_id": payload.get("sub"),
@@ -25,19 +31,21 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
                 }
                 if identity["user_id"] and identity["company_id"]:
                     verified_identity.set(identity)
-                    logger.debug(f"Identity verified for user: {identity['user_id']}")
+                    logger.error(f"DEBUG: Identity verified for user: {identity['user_id']}")
                 else:
-                    logger.warning("JWT missing required identity claims.")
+                    logger.error("JWT missing required identity claims.")
 
             except jwt.ExpiredSignatureError:
-                logger.warning("Expired JWT token received.")
+                logger.error("Expired JWT token received.")
             except jwt.InvalidTokenError as e:
-                logger.warning(f"Invalid JWT token received: {e}")
+                logger.error(f"Invalid JWT token received: {e}")
         else:
             # Check for legacy metadata fallback (primarily for tests)
             user_id = metadata.get("user-id")
             company_id = metadata.get("company-id")
             if user_id and company_id:
-                logger.debug(f"Using legacy metadata fallback for user: {user_id}")
+                logger.error(f"Using legacy metadata fallback for user: {user_id}")
+            else:
+                logger.error("No valid identity found in JWT or fallback metadata.")
 
         return await continuation(handler_call_details)

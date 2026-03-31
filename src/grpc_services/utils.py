@@ -1,7 +1,6 @@
 import contextvars
 import functools
 import inspect
-import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
 
 # Trusted storage for verified identities from AuthInterceptor
@@ -24,7 +23,6 @@ def get_identity(context):
     if v_id:
         return v_id
 
-    # Fallback for unit tests where interceptor is not present
     if context is None:
         return None
 

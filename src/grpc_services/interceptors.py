@@ -26,7 +26,7 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
         token = parts[1]
         try:
             payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-            
+
             # Securely inject the verified identity into the ContextVar
             identity = {
                 "user_id": payload.get("sub"),
@@ -35,7 +35,7 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
             }
             if identity["user_id"] and identity["company_id"]:
                 verified_identity.set(identity)
-                
+
         except jwt.ExpiredSignatureError:
             logger.warning("Expired JWT token received.")
         except jwt.InvalidTokenError as e:

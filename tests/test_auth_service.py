@@ -38,7 +38,7 @@ async def test_login_success(auth_service, mock_db):
         email="test@example.com",
         password_hash=pwd_hash,
         is_active=True,
-        role=UserRole.OPERATOR,
+        role=UserRole.operator,
     )
     mock_db.query.return_value.filter.return_value.first.return_value = user
 
@@ -92,7 +92,7 @@ async def test_login_db_error(auth_service, mock_db):
         email="test@example.com",
         password_hash=pwd_hash,
         is_active=True,
-        role=UserRole.OPERATOR,
+        role=UserRole.operator,
     )
     mock_db.query.return_value.filter.return_value.first.return_value = user
     mock_db.commit.side_effect = Exception("DB error")
@@ -109,7 +109,7 @@ async def test_login_db_error(auth_service, mock_db):
 
 @pytest.mark.asyncio
 async def test_refresh_success(auth_service, mock_db):
-    user = User(id=uuid.uuid4(), email="test@example.com", role=UserRole.VIEWER)
+    user = User(id=uuid.uuid4(), email="test@example.com", role=UserRole.viewer)
     token = RefreshToken(
         token_hash=hashlib.sha256("valid_token".encode()).hexdigest(),
         user=user,

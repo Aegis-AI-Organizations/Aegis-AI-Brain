@@ -154,6 +154,50 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 
         return auth_pb2.RefreshResponse(access_token=access_token)
 
+    def _get_me_db_sync(self, user_id: str):
+        """Synchronous part of GetMe logic."""
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user or not user.is_active:
+                return None, AuthErrorCode.USER_INACTIVE
+
+            return user, AuthErrorCode.SUCCESS
+
+    async def GetMe(self, request, context) -> auth_pb2.GetMeResponse:
+        """Retrieves the authenticated user's profile based on the injected metadata."""
+        user_id = None
+        for key, value in context.invocation_metadata():
+            if key == "user_id":
+                user_id = value
+                break
+
+        if not user_id:
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            context.set_details("Missing user_id in metadata")
+            return auth_pb2.GetMeResponse()
+
+        try:
+            user, code = await asyncio.to_thread(self._get_me_db_sync, user_id)
+        except Exception:
+            logger.exception("Unexpected error in GetMe RPC")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal service error")
+            return auth_pb2.GetMeResponse()
+
+        if code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found or inactive")
+            return auth_pb2.GetMeResponse()
+
+        return auth_pb2.GetMeResponse(
+            id=str(user.id),
+            name=user.name if user.name else "",
+            email=user.email,
+            role=user.role if isinstance(user.role, str) else user.role.value,
+            company_id=str(user.company_id) if user.company_id else "",
+            company_name=user.company.name if user.company else "",
+        )
+
     def _logout_db_sync(self, refresh_token: str) -> AuthErrorCode:
         """Synchronous part of Logout logic."""
         with self.session_factory() as db:

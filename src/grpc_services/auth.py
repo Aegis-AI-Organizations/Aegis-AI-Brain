@@ -167,7 +167,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         """Retrieves the authenticated user's profile based on the injected metadata."""
         user_id = None
         for key, value in context.invocation_metadata():
-            if key == "user_id":
+            if key == "user-id":
                 user_id = value
                 break
 

@@ -1,6 +1,7 @@
 import contextvars
 import functools
 import inspect
+import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
 
 # Trusted storage for verified identities from AuthInterceptor
@@ -40,6 +41,7 @@ def get_identity(context):
 def with_identity(f):
     """Decorator to inject identity into the handler.
     Supports both async functions and async generators.
+    Fails closed if identity cannot be resolved.
     """
 
     if inspect.isasyncgenfunction(f):
@@ -47,6 +49,8 @@ def with_identity(f):
         @functools.wraps(f)
         async def wrapper(self, request, context, *args, **kwargs):
             identity = get_identity(context)
+            if not identity:
+                await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unauthenticated")
             async for response in f(self, request, context, identity, *args, **kwargs):
                 yield response
     else:
@@ -54,6 +58,8 @@ def with_identity(f):
         @functools.wraps(f)
         async def wrapper(self, request, context, *args, **kwargs):
             identity = get_identity(context)
+            if not identity:
+                await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unauthenticated")
             return await f(self, request, context, identity, *args, **kwargs)
 
     return wrapper

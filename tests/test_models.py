@@ -47,20 +47,20 @@ def test_user_creation_and_role_enum(db_session: Session):
     email = "admin@example.com"
     pwd_hash = "mock_hash_123"
 
-    user = User(email=email, password_hash=pwd_hash, role=UserRole.SUPERADMIN)
+    user = User(email=email, password_hash=pwd_hash, role=UserRole.superadmin)
     db_session.add(user)
     db_session.commit()
 
     assert user.id is not None
     assert user.email == email
     assert user.password_hash == pwd_hash
-    assert user.role == UserRole.SUPERADMIN
+    assert user.role == UserRole.superadmin
     assert user.is_active is True
 
 
 def test_company_user_relationships(db_session: Session):
     """Tests complex relationships between companies and users (owner/members)."""
-    owner = User(email="owner@test.com", password_hash="hash", role=UserRole.OWNER)
+    owner = User(email="owner@test.com", password_hash="hash", role=UserRole.owner)
     db_session.add(owner)
     db_session.commit()
 
@@ -73,7 +73,7 @@ def test_company_user_relationships(db_session: Session):
     member = User(
         email="member@test.com",
         password_hash="hash",
-        role=UserRole.VIEWER,
+        role=UserRole.viewer,
         company_id=company.id,
     )
     db_session.add(member)

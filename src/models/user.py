@@ -17,10 +17,10 @@ if TYPE_CHECKING:
 class UserRole(str, enum.Enum):
     """User roles matching the PostgreSQL Enum 'user_role'."""
 
-    SUPERADMIN = "superadmin"
-    OWNER = "owner"
-    OPERATOR = "operator"
-    VIEWER = "viewer"
+    superadmin = "superadmin"
+    owner = "owner"
+    operator = "operator"
+    viewer = "viewer"
 
 
 class User(Base):
@@ -32,12 +32,13 @@ class User(Base):
     company_id: Mapped[Optional[UUID]] = mapped_column(
         ForeignKey("companies.id", ondelete="SET NULL"), nullable=True
     )
+    name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(
         Enum(UserRole, name="user_role", native_enum=True),
         server_default=text("'viewer'"),
-        default=UserRole.VIEWER,
+        default=UserRole.viewer,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True

@@ -32,6 +32,7 @@ class User(Base):
     company_id: Mapped[Optional[UUID]] = mapped_column(
         ForeignKey("companies.id", ondelete="SET NULL"), nullable=True
     )
+    name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(

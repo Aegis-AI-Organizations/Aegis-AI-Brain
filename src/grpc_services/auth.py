@@ -12,6 +12,7 @@ import aegis.v2.auth_pb2 as auth_pb2
 import aegis.v2.auth_pb2_grpc as auth_pb2_grpc
 from config.config import JWT_SECRET
 from config.db import get_session_factory
+from sqlalchemy.orm import joinedload
 from models.refresh_token import RefreshToken
 from models.user import User
 from utils.auth_utils import verify_password
@@ -157,7 +158,12 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
     def _get_me_db_sync(self, user_id: str):
         """Synchronous part of GetMe logic."""
         with self.session_factory() as db:
-            user = db.query(User).filter(User.id == user_id).first()
+            user = (
+                db.query(User)
+                .options(joinedload(User.company))
+                .filter(User.id == user_id)
+                .first()
+            )
             if not user or not user.is_active:
                 return None, AuthErrorCode.USER_INACTIVE
 

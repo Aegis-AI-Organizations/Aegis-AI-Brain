@@ -212,10 +212,21 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         q = broadcaster.register()
         try:
             while True:
-                scan_id, status = await q.get()
-                if not request.scan_id or request.scan_id == scan_id:
+                try:
+                    # Wait for an update with a timeout (heartbeat)
+                    # We use a 20-second timeout to stay well within most proxy timeouts (usually 60s)
+                    update = await asyncio.wait_for(q.get(), timeout=20.0)
+                    scan_id, status = update
+
+                    if not request.scan_id or request.scan_id == scan_id:
+                        yield scan_pb2.WatchScanStatusResponse(
+                            scan_id=scan_id, status=status
+                        )
+                except asyncio.TimeoutError:
+                    # Send a "ping" or empty heartbeat update to keep the connection alive
+                    # This yields to the gRPC layer and keeps the TCP/HTTP2 connection active
                     yield scan_pb2.WatchScanStatusResponse(
-                        scan_id=scan_id, status=status
+                        scan_id="ping", status="HEARTBEAT"
                     )
         finally:
             broadcaster.unregister(q)

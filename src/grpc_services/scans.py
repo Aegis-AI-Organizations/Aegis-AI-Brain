@@ -112,6 +112,8 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         resp = scan_pb2.GetScanStatusResponse(
             scan_id=str(request.scan_id),
             status=str(status) if status else "",
+            temporal_workflow_id=str(wf_id) if wf_id else "",
+            target_image=str(target_image) if target_image else "",
         )
         if started_at:
             resp.started_at.CopyFrom(to_pb_timestamp(started_at))

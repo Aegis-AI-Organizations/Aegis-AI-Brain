@@ -2,7 +2,7 @@ import asyncio
 import logging
 from temporalio.client import Client
 
-from config.config import TEMPORAL_HOST, GRPC_PORT
+from config.config import TEMPORAL_HOST, TEMPORAL_NAMESPACE, GRPC_PORT
 from worker import start_worker
 from grpc_server import serve
 
@@ -16,7 +16,7 @@ async def main():
     )
 
     try:
-        client = await Client.connect(TEMPORAL_HOST)
+        client = await Client.connect(TEMPORAL_HOST, namespace=TEMPORAL_NAMESPACE)
         logger.info("✅ Connected to Temporal!")
     except Exception as e:
         logger.error(f"❌ Failed to connect to Temporal: {e}")

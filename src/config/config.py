@@ -6,6 +6,12 @@ TEMPORAL_NAMESPACE = os.getenv("TEMPORAL_NAMESPACE", "default")
 GRPC_PORT = os.getenv("GRPC_PORT", "50051")
 BRAIN_TASK_QUEUE = os.getenv("BRAIN_TASK_QUEUE", "BRAIN_TASK_QUEUE")
 
+# gRPC TLS Configuration
+TLS_ENABLE = os.getenv("BRAIN_TLS_ENABLE", "false").lower() == "true"
+TLS_CA_CERT = os.getenv("BRAIN_TLS_CA_CERT", "/etc/brain/certs/ca.crt")
+TLS_SERVER_CERT = os.getenv("BRAIN_TLS_SERVER_CERT", "/etc/brain/certs/tls.crt")
+TLS_SERVER_KEY = os.getenv("BRAIN_TLS_SERVER_KEY", "/etc/brain/certs/tls.key")
+
 # Database Configuration
 _DB_HOST_ENV = os.getenv("DB_HOST", "localhost:5432")
 DB_HOST = _DB_HOST_ENV

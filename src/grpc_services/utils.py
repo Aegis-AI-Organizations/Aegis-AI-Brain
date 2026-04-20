@@ -16,13 +16,16 @@ def to_pb_timestamp(dt):
     return ts
 
 
-def get_identity(context):
+def get_identity(context, verified_only=False):
     """Securely extracts identity from verified context or gRPC metadata fallback.
     Prioritizes verified_identity ContextVar set by the AuthInterceptor.
     """
     v_id = verified_identity.get()
     if v_id:
         return v_id
+
+    if verified_only:
+        return None
 
     if context is None:
         return None
@@ -38,28 +41,44 @@ def get_identity(context):
     return {"user_id": user_id, "company_id": company_id, "role": role}
 
 
-def with_identity(f):
+def with_identity(verified_only=False):
     """Decorator to inject identity into the handler.
     Supports both async functions and async generators.
     Fails closed if identity cannot be resolved.
     """
 
-    if inspect.isasyncgenfunction(f):
+    def decorator(f):
+        if inspect.isasyncgenfunction(f):
 
-        @functools.wraps(f)
-        async def wrapper(self, request, context, *args, **kwargs):
-            identity = get_identity(context)
-            if not identity:
-                await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unauthenticated")
-            async for response in f(self, request, context, identity, *args, **kwargs):
-                yield response
-    else:
+            @functools.wraps(f)
+            async def wrapper(self, request, context, *args, **kwargs):
+                identity = get_identity(context, verified_only=verified_only)
+                if not identity:
+                    await context.abort(
+                        grpc.StatusCode.UNAUTHENTICATED, "Unauthenticated"
+                    )
+                async for response in f(
+                    self, request, context, identity, *args, **kwargs
+                ):
+                    yield response
 
-        @functools.wraps(f)
-        async def wrapper(self, request, context, *args, **kwargs):
-            identity = get_identity(context)
-            if not identity:
-                await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unauthenticated")
-            return await f(self, request, context, identity, *args, **kwargs)
+        else:
 
-    return wrapper
+            @functools.wraps(f)
+            async def wrapper(self, request, context, *args, **kwargs):
+                identity = get_identity(context, verified_only=verified_only)
+                if not identity:
+                    await context.abort(
+                        grpc.StatusCode.UNAUTHENTICATED, "Unauthenticated"
+                    )
+                return await f(self, request, context, identity, *args, **kwargs)
+
+        return wrapper
+
+    # Support @with_identity and @with_identity(verified_only=True)
+    if callable(verified_only):
+        func = verified_only
+        verified_only = False
+        return decorator(func)
+
+    return decorator

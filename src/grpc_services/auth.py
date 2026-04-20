@@ -16,6 +16,7 @@ from sqlalchemy.orm import joinedload
 from models.refresh_token import RefreshToken
 from models.user import User
 from utils.auth_utils import verify_password, hash_password
+from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
 
@@ -259,16 +260,10 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 db.rollback()
                 return AuthErrorCode.DB_ERROR
 
+    @with_identity(verified_only=True)
     async def UpdateProfile(
-        self, request: auth_pb2.UpdateProfileRequest, context
+        self, request: auth_pb2.UpdateProfileRequest, context, identity
     ) -> auth_pb2.UpdateProfileResponse:
-        from grpc_services.utils import get_identity
-
-        identity = get_identity(context)
-        if not identity:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            return auth_pb2.UpdateProfileResponse(success=False)
-
         user_id = identity["user_id"]
         code = await asyncio.to_thread(
             self._update_profile_db_sync, user_id, request.name
@@ -285,14 +280,15 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 
     def _update_email_db_sync(self, user_id: str, new_email: str) -> AuthErrorCode:
         with self.session_factory() as db:
-            # Check if email is already in use
-            existing = db.query(User).filter(User.email == new_email).first()
-            if existing:
-                return AuthErrorCode.INVALID_CREDENTIALS  # Using as "Conflict"
-
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
                 return AuthErrorCode.INVALID_TOKEN
+
+            # Check if email is already in use by someone ELSE
+            existing = db.query(User).filter(User.email == new_email).first()
+            if existing and existing.id != user.id:
+                return AuthErrorCode.INVALID_CREDENTIALS  # Conflict
+
             try:
                 user.email = new_email
                 db.commit()
@@ -301,16 +297,10 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 db.rollback()
                 return AuthErrorCode.DB_ERROR
 
+    @with_identity(verified_only=True)
     async def UpdateEmail(
-        self, request: auth_pb2.UpdateEmailRequest, context
+        self, request: auth_pb2.UpdateEmailRequest, context, identity
     ) -> auth_pb2.UpdateEmailResponse:
-        from grpc_services.utils import get_identity
-
-        identity = get_identity(context)
-        if not identity:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            return auth_pb2.UpdateEmailResponse(success=False)
-
         user_id = identity["user_id"]
         code = await asyncio.to_thread(
             self._update_email_db_sync, user_id, request.new_email
@@ -348,16 +338,10 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 db.rollback()
                 return AuthErrorCode.DB_ERROR
 
+    @with_identity(verified_only=True)
     async def UpdatePassword(
-        self, request: auth_pb2.UpdatePasswordRequest, context
+        self, request: auth_pb2.UpdatePasswordRequest, context, identity
     ) -> auth_pb2.UpdatePasswordResponse:
-        from grpc_services.utils import get_identity
-
-        identity = get_identity(context)
-        if not identity:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            return auth_pb2.UpdatePasswordResponse(success=False)
-
         user_id = identity["user_id"]
         code = await asyncio.to_thread(
             self._update_password_db_sync,

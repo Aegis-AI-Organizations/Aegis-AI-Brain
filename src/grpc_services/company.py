@@ -52,7 +52,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 logger.exception("Failed to create company")
                 return None, str(e)
 
-    @with_identity
+    @with_identity(verified_only=True)
     async def CreateCompany(
         self, request: company_pb2.CreateCompanyRequest, context, identity
     ) -> company_pb2.CreateCompanyResponse:
@@ -71,8 +71,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         if error:
             if "exists" in error:
                 context.set_code(grpc.StatusCode.ALREADY_EXISTS)
-            else:
+            elif "Owner user" in error:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(error)
             return company_pb2.CreateCompanyResponse()
 
@@ -100,7 +102,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 )
             return result
 
-    @with_identity
+    @with_identity(verified_only=True)
     async def ListCompanies(
         self, request: company_pb2.ListCompaniesRequest, context, identity
     ) -> company_pb2.ListCompaniesResponse:

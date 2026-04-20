@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import enum
 import grpc
 
 import aegis.v2.company_pb2 as company_pb2
@@ -11,6 +12,13 @@ from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
+
+
+class CompanyCreateError(enum.Enum):
+    SUCCESS = 0
+    OWNER_NOT_FOUND = 1
+    NAME_EXISTS = 2
+    DB_ERROR = 3
 
 
 class CompanyService(company_pb2_grpc.CompanyServiceServicer):
@@ -30,12 +38,12 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             # 1. Verify owner exists
             owner = db.query(User).filter(User.email == owner_email).first()
             if not owner:
-                return None, "Owner user not found"
+                return None, CompanyCreateError.OWNER_NOT_FOUND
 
             # 2. Check if company name already exists
             existing = db.query(Company).filter(Company.name == name).first()
             if existing:
-                return None, "Company name already exists"
+                return None, CompanyCreateError.NAME_EXISTS
 
             try:
                 new_company = Company(name=name, owner_id=owner.id)
@@ -46,11 +54,11 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 owner.company_id = new_company.id
 
                 db.commit()
-                return new_company, None
-            except Exception as e:
+                return new_company, CompanyCreateError.SUCCESS
+            except Exception:
                 db.rollback()
                 logger.exception("Failed to create company")
-                return None, str(e)
+                return None, CompanyCreateError.DB_ERROR
 
     @with_identity(verified_only=True)
     async def CreateCompany(
@@ -68,14 +76,16 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             self._create_company_db_sync, request.name, request.owner_email
         )
 
-        if error:
-            if "exists" in error:
+        if error != CompanyCreateError.SUCCESS:
+            if error == CompanyCreateError.NAME_EXISTS:
                 context.set_code(grpc.StatusCode.ALREADY_EXISTS)
-            elif "Owner user" in error:
+                context.set_details("Company name already exists")
+            elif error == CompanyCreateError.OWNER_NOT_FOUND:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details("Owner user not found")
             else:
                 context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(error)
+                context.set_details("Failed to create company")
             return company_pb2.CreateCompanyResponse()
 
         return company_pb2.CreateCompanyResponse(id=str(company.id), name=company.name)

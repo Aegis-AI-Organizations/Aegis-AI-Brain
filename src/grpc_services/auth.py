@@ -29,6 +29,7 @@ class AuthErrorCode(enum.Enum):
     USER_INACTIVE = 2
     DB_ERROR = 3
     INVALID_TOKEN = 4
+    USER_NOT_FOUND = 5
 
 
 class AuthService(auth_pb2_grpc.AuthServiceServicer):
@@ -170,18 +171,10 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 
             return user, AuthErrorCode.SUCCESS
 
-    async def GetMe(self, request, context) -> auth_pb2.GetMeResponse:
-        """Retrieves the authenticated user's profile based on the injected metadata."""
-        user_id = None
-        for key, value in context.invocation_metadata():
-            if key == "user-id":
-                user_id = value
-                break
-
-        if not user_id:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            context.set_details("Missing user_id in metadata")
-            return auth_pb2.GetMeResponse()
+    @with_identity(verified_only=True)
+    async def GetMe(self, request, context, identity) -> auth_pb2.GetMeResponse:
+        """Retrieves the authenticated user's profile based on verified JWT identity."""
+        user_id = identity["user_id"]
 
         try:
             user, code = await asyncio.to_thread(self._get_me_db_sync, user_id)
@@ -251,7 +244,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         with self.session_factory() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
-                return AuthErrorCode.INVALID_TOKEN  # Using as "User not found"
+                return AuthErrorCode.USER_NOT_FOUND
             try:
                 user.name = name
                 db.commit()
@@ -268,7 +261,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         code = await asyncio.to_thread(
             self._update_profile_db_sync, user_id, request.name
         )
-        if code == AuthErrorCode.INVALID_TOKEN:
+        if code == AuthErrorCode.USER_NOT_FOUND:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("User not found")
             return auth_pb2.UpdateProfileResponse(success=False)
@@ -282,7 +275,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         with self.session_factory() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
-                return AuthErrorCode.INVALID_TOKEN
+                return AuthErrorCode.USER_NOT_FOUND
 
             # Check if email is already in use by someone ELSE
             existing = db.query(User).filter(User.email == new_email).first()
@@ -309,7 +302,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             context.set_code(grpc.StatusCode.ALREADY_EXISTS)
             context.set_details("Email already in use")
             return auth_pb2.UpdateEmailResponse(success=False)
-        elif code == AuthErrorCode.INVALID_TOKEN:
+        elif code == AuthErrorCode.USER_NOT_FOUND:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("User not found")
             return auth_pb2.UpdateEmailResponse(success=False)
@@ -325,7 +318,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         with self.session_factory() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
-                return AuthErrorCode.INVALID_TOKEN
+                return AuthErrorCode.USER_NOT_FOUND
 
             if not verify_password(old_pwd, user.password_hash):
                 return AuthErrorCode.INVALID_CREDENTIALS
@@ -353,7 +346,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             context.set_details("Invalid old password")
             return auth_pb2.UpdatePasswordResponse(success=False)
-        elif code == AuthErrorCode.INVALID_TOKEN:
+        elif code == AuthErrorCode.USER_NOT_FOUND:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("User not found")
             return auth_pb2.UpdatePasswordResponse(success=False)

@@ -8,8 +8,9 @@ from grpc_services.utils import verified_identity
 
 
 class MockHandlerCallDetails:
-    def __init__(self, metadata):
+    def __init__(self, metadata, method="/aegis.v2.ScanService/StartScan"):
         self.invocation_metadata = metadata
+        self.method = method
 
 
 @pytest.mark.asyncio

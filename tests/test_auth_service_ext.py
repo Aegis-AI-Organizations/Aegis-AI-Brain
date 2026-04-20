@@ -46,8 +46,8 @@ async def test_update_profile_success(auth_service, mock_db):
 async def test_update_email_conflict(auth_service, mock_db):
     user_id = str(uuid.uuid4())
     mock_db.query.return_value.filter.return_value.first.side_effect = [
-        User(id=uuid.uuid4(), email="existing@test.com"),  # Conflict check
         User(id=user_id, email="old@test.com"),  # User lookup
+        User(id=uuid.uuid4(), email="existing@test.com"),  # Conflict check
     ]
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:

@@ -16,7 +16,7 @@ def to_pb_timestamp(dt):
     return ts
 
 
-def get_identity(context, verified_only=False):
+def get_identity(context, verified_only=True):
     """Securely extracts identity from verified context or gRPC metadata fallback.
     Prioritizes verified_identity ContextVar set by the AuthInterceptor.
     """
@@ -41,7 +41,7 @@ def get_identity(context, verified_only=False):
     return {"user_id": user_id, "company_id": company_id, "role": role}
 
 
-def with_identity(verified_only=False):
+def with_identity(verified_only=True):
     """Decorator to inject identity into the handler.
     Supports both async functions and async generators.
     Fails closed if identity cannot be resolved.
@@ -78,7 +78,7 @@ def with_identity(verified_only=False):
     # Support @with_identity and @with_identity(verified_only=True)
     if callable(verified_only):
         func = verified_only
-        verified_only = False
+        verified_only = True
         return decorator(func)
 
     return decorator

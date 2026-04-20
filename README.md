@@ -5,7 +5,7 @@
 ## 🏗️ System Architecture & Role
 The **Aegis AI Brain** is the central "Decision Center" of the platform. It orchestrates complex, long-running vulnerability research workflows using **Temporal** and provides high-intelligence data via a **gRPC mTLS** interface.
 
-* **Tech Stack:** Python 3.12+, **Temporal SDK**, gRPC (Better-proto), SQLAlchemy 2.0.
+* **Tech Stack:** Python 3.11+, **Temporal SDK**, gRPC (`grpcio` generated stubs), SQLAlchemy 2.0.
 * **Role:**
   * **Workflow Engine**: Executes resilient, distributed penetration testing "Sagas".
   * **gRPC Server**: Serves as the source of truth for scans, vulnerabilities, and evidence.
@@ -25,9 +25,9 @@ The **Aegis AI Brain** is the central "Decision Center" of the platform. It orch
 
 ## 🔐 Security & DevSecOps Mandates
 
-- **mTLS Enforced**: The gRPC server **requires** a valid client certificate signed by the Internal CA.
+- **mTLS Enforced**: The gRPC server **strictly requires** a valid client certificate signed by the Internal CA. Fallback to insecure is disabled.
 - **Zero-Privilege**: Runs as a non-root, unprivileged user with no capability escalation.
-- **Database Security**: Uses GORM-compatible SQLAlchemy models to ensure data integrity with PostgreSQL.
+- **Database Security**: Uses SQLAlchemy ORM models to ensure data integrity with PostgreSQL.
 
 ---
 

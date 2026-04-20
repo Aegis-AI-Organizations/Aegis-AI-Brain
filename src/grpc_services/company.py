@@ -7,6 +7,8 @@ import aegis.v2.company_pb2_grpc as company_pb2_grpc
 from config.db import get_session_factory
 from models.company import Company
 from models.user import User
+from sqlalchemy.orm import joinedload
+from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +52,18 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 logger.exception("Failed to create company")
                 return None, str(e)
 
+    @with_identity
     async def CreateCompany(
-        self, request: company_pb2.CreateCompanyRequest, context
+        self, request: company_pb2.CreateCompanyRequest, context, identity
     ) -> company_pb2.CreateCompanyResponse:
+        # RBAC: Only SuperAdmin or Operator maybe? Copilot says "SuperAdmin only" for List.
+        # Typically any authenticated user with permissions can create a company in some systems,
+        # but let's stick to the secure recommendation.
+        if identity["role"] != "superadmin":
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            context.set_details("Only SuperAdmin can create companies")
+            return company_pb2.CreateCompanyResponse()
+
         company, error = await asyncio.to_thread(
             self._create_company_db_sync, request.name, request.owner_email
         )
@@ -69,7 +80,11 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
 
     def _list_companies_db_sync(self):
         with self.session_factory() as db:
-            companies = db.query(Company).all()
+            companies = (
+                db.query(Company)
+                .options(joinedload(Company.owner), joinedload(Company.members))
+                .all()
+            )
             result = []
             for c in companies:
                 owner_email = c.owner.email if c.owner else ""
@@ -85,9 +100,15 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 )
             return result
 
+    @with_identity
     async def ListCompanies(
-        self, request: company_pb2.ListCompaniesRequest, context
+        self, request: company_pb2.ListCompaniesRequest, context, identity
     ) -> company_pb2.ListCompaniesResponse:
+        if identity["role"] != "superadmin":
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            context.set_details("Only SuperAdmin can list companies")
+            return company_pb2.ListCompaniesResponse()
+
         try:
             companies = await asyncio.to_thread(self._list_companies_db_sync)
             return company_pb2.ListCompaniesResponse(companies=companies)

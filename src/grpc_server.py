@@ -61,8 +61,9 @@ async def serve(port: str, temporal_client=None):
                 server.add_secure_port(listen_addr, server_credentials)
             except Exception as e:
                 logger.error(f"❌ Failed to load gRPC TLS certificates: {e}")
-                logger.warning("⚠️ Falling back to insecure port due to TLS failure")
-                server.add_insecure_port(listen_addr)
+                raise RuntimeError(
+                    "mTLS is enabled but certificates could not be loaded"
+                ) from e
         else:
             server.add_insecure_port(listen_addr)
 

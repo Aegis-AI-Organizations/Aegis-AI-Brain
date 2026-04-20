@@ -15,7 +15,7 @@ from config.db import get_session_factory
 from sqlalchemy.orm import joinedload
 from models.refresh_token import RefreshToken
 from models.user import User
-from utils.auth_utils import verify_password
+from utils.auth_utils import verify_password, hash_password
 
 logger = logging.getLogger(__name__)
 
@@ -245,3 +245,119 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             return auth_pb2.LogoutResponse(success=False)
 
         return auth_pb2.LogoutResponse(success=True)
+
+    def _get_user_id_from_context(self, context) -> str | None:
+        """Helper to extract user-id from gRPC metadata."""
+        for key, value in context.invocation_metadata():
+            if key == "user-id":
+                return value
+        return None
+
+    def _update_profile_db_sync(self, user_id: str, name: str) -> AuthErrorCode:
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return AuthErrorCode.DB_ERROR
+            try:
+                user.name = name
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    async def UpdateProfile(
+        self, request: auth_pb2.UpdateProfileRequest, context
+    ) -> auth_pb2.UpdateProfileResponse:
+        user_id = self._get_user_id_from_context(context)
+        if not user_id:
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            return auth_pb2.UpdateProfileResponse(success=False)
+
+        code = await asyncio.to_thread(
+            self._update_profile_db_sync, user_id, request.name
+        )
+        if code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.UpdateProfileResponse(success=False)
+
+        return auth_pb2.UpdateProfileResponse(success=True)
+
+    def _update_email_db_sync(self, user_id: str, new_email: str) -> AuthErrorCode:
+        with self.session_factory() as db:
+            # Check if email is already in use
+            existing = db.query(User).filter(User.email == new_email).first()
+            if existing:
+                return AuthErrorCode.INVALID_CREDENTIALS  # Using as "Conflict"
+
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return AuthErrorCode.DB_ERROR
+            try:
+                user.email = new_email
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    async def UpdateEmail(
+        self, request: auth_pb2.UpdateEmailRequest, context
+    ) -> auth_pb2.UpdateEmailResponse:
+        user_id = self._get_user_id_from_context(context)
+        if not user_id:
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            return auth_pb2.UpdateEmailResponse(success=False)
+
+        code = await asyncio.to_thread(
+            self._update_email_db_sync, user_id, request.new_email
+        )
+        if code == AuthErrorCode.INVALID_CREDENTIALS:
+            context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+            context.set_details("Email already in use")
+            return auth_pb2.UpdateEmailResponse(success=False)
+        elif code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.UpdateEmailResponse(success=False)
+
+        return auth_pb2.UpdateEmailResponse(success=True)
+
+    def _update_password_db_sync(
+        self, user_id: str, old_pwd: str, new_pwd: str
+    ) -> AuthErrorCode:
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user or not verify_password(old_pwd, user.password_hash):
+                return AuthErrorCode.INVALID_CREDENTIALS
+
+            try:
+                user.password_hash = hash_password(new_pwd)
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    async def UpdatePassword(
+        self, request: auth_pb2.UpdatePasswordRequest, context
+    ) -> auth_pb2.UpdatePasswordResponse:
+        user_id = self._get_user_id_from_context(context)
+        if not user_id:
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            return auth_pb2.UpdatePasswordResponse(success=False)
+
+        code = await asyncio.to_thread(
+            self._update_password_db_sync,
+            user_id,
+            request.old_password,
+            request.new_password,
+        )
+        if code == AuthErrorCode.INVALID_CREDENTIALS:
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            context.set_details("Invalid old password")
+            return auth_pb2.UpdatePasswordResponse(success=False)
+        elif code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.UpdatePasswordResponse(success=False)
+
+        return auth_pb2.UpdatePasswordResponse(success=True)

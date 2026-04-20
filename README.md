@@ -1,37 +1,63 @@
-# 🧠 Aegis AI - Brain & Core Logic
+# 🧠 Aegis AI - Brain Orchestrator
 
 **Project ID:** AEGIS-CORE-2026
 
 ## 🏗️ System Architecture & Role
-The **Aegis AI Brain** lies at the heart of the DECISION CENTER in the Aegis Core Cloud. It works intimately with the **Temporal Server** to supervise the orchestration and AI logic of the entire vulnerability detection and exploitation flow.
+The **Aegis AI Brain** is the central "Decision Center" of the platform. It orchestrates complex, long-running vulnerability research workflows using **Temporal** and provides high-intelligence data via a **gRPC mTLS** interface.
 
-* **Tech Stack:** Python (Temporal-SDK).
+* **Tech Stack:** Python 3.11+, **Temporal SDK**, gRPC (`grpcio` generated stubs), SQLAlchemy 2.0.
 * **Role:**
-  * Executes long-running penetration testing workflows, sagas, and state retries.
-  * Generates structured PDF scan reports and persists them in PostgreSQL (`scans.report_pdf`).
-  * Interacts with Neo4j (Topology Graph) to calculate real-time attack vectors.
-  * Emits commands to the Infinite Worker Pools (Ingest, Pentest, Deployer/Fixer).
-* **Architecture Justification:** Python offers rapid integration with bleeding-edge AI logic ecosystems and Temporal provides durable, resilient workflows capable of surviving pod crashes (< 2s RTO).
-  * **Database Layer:** Uses modern SQLAlchemy 2.0 (DeclarativeBase) to map the PostgreSQL schema, ensuring strict consistency with the Aegis Infrastructure definitions.
+  * **Workflow Engine**: Executes resilient, distributed penetration testing "Sagas".
+  * **gRPC Server**: Serves as the source of truth for scans, vulnerabilities, and evidence.
+  * **Graph Intelligence**: Interacts with **Neo4j** to map infrastructure topologies and attack paths.
+  * **Report Engine**: Generates professional PDF penetration test reports.
+
+---
+
+## 🚀 Key Features
+
+- **Durable Workflows**: Powered by Temporal, ensuring scans survive pod restarts and network partitions.
+- **Internal mTLS**: Enforces bi-directional TLS for its gRPC server, only accepting connections from authorized clients (e.g., API Gateway).
+- **Multi-tenancy**: Native support for company isolation and role-based access at the core logic level.
+- **Asynchronous Processing**: Handles massive payloads and loot extraction using Python's `asyncio`.
+
+---
 
 ## 🔐 Security & DevSecOps Mandates
-* **No Plain-Text Secrets:** Secrets injected dynamically at runtime (Infisical).
-* **High Availability:** Runs in an HA Mode ReplicaSet to instantly resume workflows upon node failure.
-* **Secure Auth logic:** Implements robust bcrypt hashing for user management and high-entropy session tracking with RefreshToken entities.
 
-## 🐳 Docker Container Deployment
-Immutable, K8s-ready Python 3.11+ container, stripped of capabilities.
+- **mTLS Enforced**: The gRPC server **strictly requires** a valid client certificate signed by the Internal CA. Fallback to insecure is disabled.
+- **Zero-Privilege**: Runs as a non-root, unprivileged user with no capability escalation.
+- **Database Security**: Uses SQLAlchemy ORM models to ensure data integrity with PostgreSQL.
+
+---
+
+## 🐳 Deployment (Kubernetes)
+
+```yaml
+# Helm values example
+tls:
+  enabled: true
+  caCert: "/etc/tls/ca.crt"
+  serverCert: "/etc/tls/server.crt"
+  serverKey: "/etc/tls/server.key"
+env:
+  TEMPORAL_HOST: "aegis-temporal-mvp-frontend:7233"
+  DATABASE_URL: "postgresql://..."
+```
+
+---
+
+## 🛠️ Development
 
 ```bash
-docker pull ghcr.io/aegis-ai/aegis-brain:latest
+# Install dependencies
+poetry install
 
-# Secured execution, strictly non-root
-infisical run --env=prod -- docker run -d \
-  --name aegis-brain \
-  --read-only \
-  --cap-drop=ALL \
-  --security-opt no-new-privileges:true \
-  --user 10001:10001 \
-  -e INFISICAL_TOKEN=$INFISICAL_TOKEN \
-  ghcr.io/aegis-ai/aegis-brain:latest
+# Run the gRPC server
+python src/grpc_server.py
+
+# Run Temporal workers
+python src/worker.py
 ```
+
+*Aegis AI — Intelligence & Orchestration — 2026*

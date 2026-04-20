@@ -8,6 +8,7 @@ from aegis.v2 import ping_pb2, scan_pb2, vulnerability_pb2
 from grpc_services.ping import PingService
 from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
+from grpc_services.utils import verified_identity
 
 
 class MockContext:
@@ -15,7 +16,19 @@ class MockContext:
         self._metadata = metadata or [
             ("company-id", "test-company"),
             ("user-id", "test-user"),
+            ("role", "operator"),
         ]
+        metadata_map = dict(self._metadata)
+        if metadata_map.get("user-id") and metadata_map.get("company-id"):
+            verified_identity.set(
+                {
+                    "user_id": metadata_map.get("user-id"),
+                    "company_id": metadata_map.get("company-id"),
+                    "role": metadata_map.get("role"),
+                }
+            )
+        else:
+            verified_identity.set(None)
         self.abort = MagicMock(side_effect=grpc.RpcError("Aborted"))
 
     def invocation_metadata(self):

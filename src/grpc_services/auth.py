@@ -15,7 +15,8 @@ from config.db import get_session_factory
 from sqlalchemy.orm import joinedload
 from models.refresh_token import RefreshToken
 from models.user import User
-from utils.auth_utils import verify_password
+from utils.auth_utils import verify_password, hash_password
+from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class AuthErrorCode(enum.Enum):
     USER_INACTIVE = 2
     DB_ERROR = 3
     INVALID_TOKEN = 4
+    USER_NOT_FOUND = 5
 
 
 class AuthService(auth_pb2_grpc.AuthServiceServicer):
@@ -169,18 +171,10 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 
             return user, AuthErrorCode.SUCCESS
 
-    async def GetMe(self, request, context) -> auth_pb2.GetMeResponse:
-        """Retrieves the authenticated user's profile based on the injected metadata."""
-        user_id = None
-        for key, value in context.invocation_metadata():
-            if key == "user-id":
-                user_id = value
-                break
-
-        if not user_id:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            context.set_details("Missing user_id in metadata")
-            return auth_pb2.GetMeResponse()
+    @with_identity(verified_only=True)
+    async def GetMe(self, request, context, identity) -> auth_pb2.GetMeResponse:
+        """Retrieves the authenticated user's profile based on verified JWT identity."""
+        user_id = identity["user_id"]
 
         try:
             user, code = await asyncio.to_thread(self._get_me_db_sync, user_id)
@@ -245,3 +239,119 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             return auth_pb2.LogoutResponse(success=False)
 
         return auth_pb2.LogoutResponse(success=True)
+
+    def _update_profile_db_sync(self, user_id: str, name: str) -> AuthErrorCode:
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return AuthErrorCode.USER_NOT_FOUND
+            try:
+                user.name = name
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    @with_identity(verified_only=True)
+    async def UpdateProfile(
+        self, request: auth_pb2.UpdateProfileRequest, context, identity
+    ) -> auth_pb2.UpdateProfileResponse:
+        user_id = identity["user_id"]
+        code = await asyncio.to_thread(
+            self._update_profile_db_sync, user_id, request.name
+        )
+        if code == AuthErrorCode.USER_NOT_FOUND:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return auth_pb2.UpdateProfileResponse(success=False)
+        elif code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.UpdateProfileResponse(success=False)
+
+        return auth_pb2.UpdateProfileResponse(success=True)
+
+    def _update_email_db_sync(self, user_id: str, new_email: str) -> AuthErrorCode:
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return AuthErrorCode.USER_NOT_FOUND
+
+            # Check if email is already in use by someone ELSE
+            existing = db.query(User).filter(User.email == new_email).first()
+            if existing and existing.id != user.id:
+                return AuthErrorCode.INVALID_CREDENTIALS  # Conflict
+
+            try:
+                user.email = new_email
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    @with_identity(verified_only=True)
+    async def UpdateEmail(
+        self, request: auth_pb2.UpdateEmailRequest, context, identity
+    ) -> auth_pb2.UpdateEmailResponse:
+        user_id = identity["user_id"]
+        code = await asyncio.to_thread(
+            self._update_email_db_sync, user_id, request.new_email
+        )
+        if code == AuthErrorCode.INVALID_CREDENTIALS:
+            context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+            context.set_details("Email already in use")
+            return auth_pb2.UpdateEmailResponse(success=False)
+        elif code == AuthErrorCode.USER_NOT_FOUND:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return auth_pb2.UpdateEmailResponse(success=False)
+        elif code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.UpdateEmailResponse(success=False)
+
+        return auth_pb2.UpdateEmailResponse(success=True)
+
+    def _update_password_db_sync(
+        self, user_id: str, old_pwd: str, new_pwd: str
+    ) -> AuthErrorCode:
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return AuthErrorCode.USER_NOT_FOUND
+
+            if not verify_password(old_pwd, user.password_hash):
+                return AuthErrorCode.INVALID_CREDENTIALS
+
+            try:
+                user.password_hash = hash_password(new_pwd)
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    @with_identity(verified_only=True)
+    async def UpdatePassword(
+        self, request: auth_pb2.UpdatePasswordRequest, context, identity
+    ) -> auth_pb2.UpdatePasswordResponse:
+        user_id = identity["user_id"]
+        code = await asyncio.to_thread(
+            self._update_password_db_sync,
+            user_id,
+            request.old_password,
+            request.new_password,
+        )
+        if code == AuthErrorCode.INVALID_CREDENTIALS:
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            context.set_details("Invalid old password")
+            return auth_pb2.UpdatePasswordResponse(success=False)
+        elif code == AuthErrorCode.USER_NOT_FOUND:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return auth_pb2.UpdatePasswordResponse(success=False)
+        elif code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.UpdatePasswordResponse(success=False)
+
+        return auth_pb2.UpdatePasswordResponse(success=True)

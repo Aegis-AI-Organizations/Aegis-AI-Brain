@@ -6,6 +6,7 @@ import aegis.v2.auth_pb2_grpc as auth_pb2_grpc
 import aegis.v2.ping_pb2_grpc as ping_pb2_grpc
 import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
 import aegis.v2.vulnerability_pb2_grpc as vulnerability_pb2_grpc
+import aegis.v2.company_pb2_grpc as company_pb2_grpc
 
 from config.config import (
     GRPC_PORT,
@@ -18,6 +19,7 @@ from grpc_services.auth import AuthService
 from grpc_services.ping import PingService
 from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
+from grpc_services.company import CompanyService
 from grpc_services.interceptors import AuthInterceptor
 
 logger = logging.getLogger("aegis_brain_grpc")
@@ -37,6 +39,7 @@ async def serve(port: str, temporal_client=None):
     vulnerability_pb2_grpc.add_VulnerabilityServiceServicer_to_server(
         VulnerabilityService(), server
     )
+    company_pb2_grpc.add_CompanyServiceServicer_to_server(CompanyService(), server)
 
     listen_addr = f"0.0.0.0:{port}"
     try:
@@ -58,8 +61,9 @@ async def serve(port: str, temporal_client=None):
                 server.add_secure_port(listen_addr, server_credentials)
             except Exception as e:
                 logger.error(f"❌ Failed to load gRPC TLS certificates: {e}")
-                logger.warning("⚠️ Falling back to insecure port due to TLS failure")
-                server.add_insecure_port(listen_addr)
+                raise RuntimeError(
+                    "mTLS is enabled but certificates could not be loaded"
+                ) from e
         else:
             server.add_insecure_port(listen_addr)
 

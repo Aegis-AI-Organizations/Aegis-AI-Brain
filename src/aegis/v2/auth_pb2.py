@@ -16,7 +16,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x61\x65gis/v2/auth.proto\x12\x08\x61\x65gis.v2\"@\n\x0cLoginRequest\x12\x14\n\x05\x65mail\x18\x01 \x01(\tR\x05\x65mail\x12\x1a\n\x08password\x18\x02 \x01(\tR\x08password\"W\n\rLoginResponse\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x02 \x01(\tR\x0crefreshToken\"5\n\x0eRefreshRequest\x12#\n\rrefresh_token\x18\x01 \x01(\tR\x0crefreshToken\"4\n\x0fRefreshResponse\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tR\x0b\x61\x63\x63\x65ssToken\"4\n\rLogoutRequest\x12#\n\rrefresh_token\x18\x01 \x01(\tR\x0crefreshToken\"*\n\x0eLogoutResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"\x0e\n\x0cGetMeRequest\"\x9f\x01\n\rGetMeResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05\x65mail\x18\x03 \x01(\tR\x05\x65mail\x12\x12\n\x04role\x18\x04 \x01(\tR\x04role\x12\x1d\n\ncompany_id\x18\x05 \x01(\tR\tcompanyId\x12!\n\x0c\x63ompany_name\x18\x06 \x01(\tR\x0b\x63ompanyName2\xfe\x01\n\x0b\x41uthService\x12\x38\n\x05Login\x12\x16.aegis.v2.LoginRequest\x1a\x17.aegis.v2.LoginResponse\x12>\n\x07Refresh\x12\x18.aegis.v2.RefreshRequest\x1a\x19.aegis.v2.RefreshResponse\x12;\n\x06Logout\x12\x17.aegis.v2.LogoutRequest\x1a\x18.aegis.v2.LogoutResponse\x12\x38\n\x05GetMe\x12\x16.aegis.v2.GetMeRequest\x1a\x17.aegis.v2.GetMeResponseB;Z9github.com/Aegis-AI-Organizations/aegis-ai-proto/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x61\x65gis/v2/auth.proto\x12\x08\x61\x65gis.v2\"@\n\x0cLoginRequest\x12\x14\n\x05\x65mail\x18\x01 \x01(\tR\x05\x65mail\x12\x1a\n\x08password\x18\x02 \x01(\tR\x08password\"W\n\rLoginResponse\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x02 \x01(\tR\x0crefreshToken\"5\n\x0eRefreshRequest\x12#\n\rrefresh_token\x18\x01 \x01(\tR\x0crefreshToken\"4\n\x0fRefreshResponse\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tR\x0b\x61\x63\x63\x65ssToken\"4\n\rLogoutRequest\x12#\n\rrefresh_token\x18\x01 \x01(\tR\x0crefreshToken\"*\n\x0eLogoutResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"\x0e\n\x0cGetMeRequest\"\x9f\x01\n\rGetMeResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05\x65mail\x18\x03 \x01(\tR\x05\x65mail\x12\x12\n\x04role\x18\x04 \x01(\tR\x04role\x12\x1d\n\ncompany_id\x18\x05 \x01(\tR\tcompanyId\x12!\n\x0c\x63ompany_name\x18\x06 \x01(\tR\x0b\x63ompanyName\"*\n\x14UpdateProfileRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\"1\n\x15UpdateProfileResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"1\n\x12UpdateEmailRequest\x12\x1b\n\tnew_email\x18\x01 \x01(\tR\x08newEmail\"/\n\x13UpdateEmailResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"]\n\x15UpdatePasswordRequest\x12!\n\x0cold_password\x18\x01 \x01(\tR\x0boldPassword\x12!\n\x0cnew_password\x18\x02 \x01(\tR\x0bnewPassword\"2\n\x16UpdatePasswordResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success2\xf1\x03\n\x0b\x41uthService\x12\x38\n\x05Login\x12\x16.aegis.v2.LoginRequest\x1a\x17.aegis.v2.LoginResponse\x12>\n\x07Refresh\x12\x18.aegis.v2.RefreshRequest\x1a\x19.aegis.v2.RefreshResponse\x12;\n\x06Logout\x12\x17.aegis.v2.LogoutRequest\x1a\x18.aegis.v2.LogoutResponse\x12\x38\n\x05GetMe\x12\x16.aegis.v2.GetMeRequest\x1a\x17.aegis.v2.GetMeResponse\x12P\n\rUpdateProfile\x12\x1e.aegis.v2.UpdateProfileRequest\x1a\x1f.aegis.v2.UpdateProfileResponse\x12J\n\x0bUpdateEmail\x12\x1c.aegis.v2.UpdateEmailRequest\x1a\x1d.aegis.v2.UpdateEmailResponse\x12S\n\x0eUpdatePassword\x12\x1f.aegis.v2.UpdatePasswordRequest\x1a .aegis.v2.UpdatePasswordResponseB;Z9github.com/Aegis-AI-Organizations/aegis-ai-proto/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -40,6 +40,18 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GETMEREQUEST']._serialized_end=409
   _globals['_GETMERESPONSE']._serialized_start=412
   _globals['_GETMERESPONSE']._serialized_end=571
-  _globals['_AUTHSERVICE']._serialized_start=574
-  _globals['_AUTHSERVICE']._serialized_end=828
+  _globals['_UPDATEPROFILEREQUEST']._serialized_start=573
+  _globals['_UPDATEPROFILEREQUEST']._serialized_end=615
+  _globals['_UPDATEPROFILERESPONSE']._serialized_start=617
+  _globals['_UPDATEPROFILERESPONSE']._serialized_end=666
+  _globals['_UPDATEEMAILREQUEST']._serialized_start=668
+  _globals['_UPDATEEMAILREQUEST']._serialized_end=717
+  _globals['_UPDATEEMAILRESPONSE']._serialized_start=719
+  _globals['_UPDATEEMAILRESPONSE']._serialized_end=766
+  _globals['_UPDATEPASSWORDREQUEST']._serialized_start=768
+  _globals['_UPDATEPASSWORDREQUEST']._serialized_end=861
+  _globals['_UPDATEPASSWORDRESPONSE']._serialized_start=863
+  _globals['_UPDATEPASSWORDRESPONSE']._serialized_end=913
+  _globals['_AUTHSERVICE']._serialized_start=916
+  _globals['_AUTHSERVICE']._serialized_end=1413
 # @@protoc_insertion_point(module_scope)

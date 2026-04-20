@@ -35,6 +35,21 @@ class AuthServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_auth__pb2.GetMeRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_auth__pb2.GetMeResponse.FromString,
                 _registered_method=True)
+        self.UpdateProfile = channel.unary_unary(
+                '/aegis.v2.AuthService/UpdateProfile',
+                request_serializer=aegis_dot_v2_dot_auth__pb2.UpdateProfileRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_auth__pb2.UpdateProfileResponse.FromString,
+                _registered_method=True)
+        self.UpdateEmail = channel.unary_unary(
+                '/aegis.v2.AuthService/UpdateEmail',
+                request_serializer=aegis_dot_v2_dot_auth__pb2.UpdateEmailRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_auth__pb2.UpdateEmailResponse.FromString,
+                _registered_method=True)
+        self.UpdatePassword = channel.unary_unary(
+                '/aegis.v2.AuthService/UpdatePassword',
+                request_serializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordResponse.FromString,
+                _registered_method=True)
 
 
 class AuthServiceServicer(object):
@@ -69,6 +84,27 @@ class AuthServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateProfile(self, request, context):
+        """UpdateProfile updates the authenticated user's profile information.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateEmail(self, request, context):
+        """UpdateEmail updates the authenticated user's email address.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdatePassword(self, request, context):
+        """UpdatePassword updates the authenticated user's password.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AuthServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -91,6 +127,21 @@ def add_AuthServiceServicer_to_server(servicer, server):
                     servicer.GetMe,
                     request_deserializer=aegis_dot_v2_dot_auth__pb2.GetMeRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_auth__pb2.GetMeResponse.SerializeToString,
+            ),
+            'UpdateProfile': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateProfile,
+                    request_deserializer=aegis_dot_v2_dot_auth__pb2.UpdateProfileRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_auth__pb2.UpdateProfileResponse.SerializeToString,
+            ),
+            'UpdateEmail': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateEmail,
+                    request_deserializer=aegis_dot_v2_dot_auth__pb2.UpdateEmailRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_auth__pb2.UpdateEmailResponse.SerializeToString,
+            ),
+            'UpdatePassword': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdatePassword,
+                    request_deserializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -202,6 +253,87 @@ class AuthService(object):
             '/aegis.v2.AuthService/GetMe',
             aegis_dot_v2_dot_auth__pb2.GetMeRequest.SerializeToString,
             aegis_dot_v2_dot_auth__pb2.GetMeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateProfile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.AuthService/UpdateProfile',
+            aegis_dot_v2_dot_auth__pb2.UpdateProfileRequest.SerializeToString,
+            aegis_dot_v2_dot_auth__pb2.UpdateProfileResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateEmail(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.AuthService/UpdateEmail',
+            aegis_dot_v2_dot_auth__pb2.UpdateEmailRequest.SerializeToString,
+            aegis_dot_v2_dot_auth__pb2.UpdateEmailResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdatePassword(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.AuthService/UpdatePassword',
+            aegis_dot_v2_dot_auth__pb2.UpdatePasswordRequest.SerializeToString,
+            aegis_dot_v2_dot_auth__pb2.UpdatePasswordResponse.FromString,
             options,
             channel_credentials,
             insecure,

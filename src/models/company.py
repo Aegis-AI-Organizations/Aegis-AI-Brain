@@ -20,6 +20,9 @@ class Company(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     logo_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    deployment_token: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, nullable=True
+    )
     owner_id: Mapped[Optional[UUID]] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )

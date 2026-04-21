@@ -371,3 +371,27 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             return auth_pb2.UpdatePasswordResponse(success=False)
 
         return auth_pb2.UpdatePasswordResponse(success=True)
+
+    def _remove_avatar_db_sync(self, user_id: str) -> AuthErrorCode:
+        with self.session_factory() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                return AuthErrorCode.USER_NOT_FOUND
+            try:
+                user.avatar_url = None
+                db.commit()
+                return AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                return AuthErrorCode.DB_ERROR
+
+    @with_identity(verified_only=True)
+    async def RemoveAvatar(
+        self, request: auth_pb2.RemoveAvatarRequest, context, identity
+    ) -> auth_pb2.RemoveAvatarResponse:
+        user_id = identity["user_id"]
+        code = await asyncio.to_thread(self._remove_avatar_db_sync, user_id)
+        if code != AuthErrorCode.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return auth_pb2.RemoveAvatarResponse(success=False)
+        return auth_pb2.RemoveAvatarResponse(success=True)

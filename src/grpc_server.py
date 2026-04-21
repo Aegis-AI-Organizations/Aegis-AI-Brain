@@ -29,7 +29,13 @@ async def serve(port: str, temporal_client=None):
     if temporal_client is None:
         logger.warning("Starting gRPC server without Temporal Client!")
 
-    server = grpc.aio.server(interceptors=[AuthInterceptor()])
+    server = grpc.aio.server(
+        interceptors=[AuthInterceptor()],
+        options=[
+            ("grpc.max_receive_message_length", 50 * 1024 * 1024),
+            ("grpc.max_send_message_length", 50 * 1024 * 1024),
+        ],
+    )
 
     ping_pb2_grpc.add_PingServiceServicer_to_server(PingService(), server)
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthService(), server)

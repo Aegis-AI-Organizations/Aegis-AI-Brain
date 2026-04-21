@@ -200,6 +200,8 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 if search_query:
                     query = query.filter(
                         (Company.name.ilike(f"%{search_query}%"))
+                        | (Company.members.any(User.name.ilike(f"%{search_query}%")))
+                        | (Company.members.any(User.email.ilike(f"%{search_query}%")))
                         | (
                             Company.id.cast(
                                 db.bind.dialect.type_compiler.process(

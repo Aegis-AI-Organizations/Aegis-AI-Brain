@@ -19,7 +19,7 @@ def company_service():
 
 @pytest.fixture
 def scan_service():
-    service = ScanService()
+    service = ScanService(temporal_client=MagicMock())
     return service
 
 
@@ -41,7 +41,7 @@ async def test_list_companies_owner_visibility(company_service, mock_db):
     c1 = Company(id=owner_company_id, name="Owner Co", owner=owner, members=[])
 
     # Mocking the query chain for list-companies
-    mock_db.query.return_value.options.return_value.options.return_value.filter.return_value.all.return_value = [
+    mock_db.query.return_value.options.return_value.filter.return_value.all.return_value = [
         c1
     ]
 
@@ -66,8 +66,8 @@ async def test_list_companies_owner_visibility(company_service, mock_db):
 
         # Verify filter was called with the correct company_id
         # The chain is db.query(Company).options(...).filter(Company.id == company_id)
-        mock_db.query.return_value.options.return_value.options.return_value.filter.assert_called_once()
-        filter_args = mock_db.query.return_value.options.return_value.options.return_value.filter.call_args[
+        mock_db.query.return_value.options.return_value.filter.assert_called_once()
+        filter_args = mock_db.query.return_value.options.return_value.filter.call_args[
             0
         ][0]
         # Check that it filters by ID

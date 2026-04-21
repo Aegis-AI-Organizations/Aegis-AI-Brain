@@ -174,19 +174,21 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 users = query.order_by(User.name.asc()).all()
                 result = []
                 for u in users:
-                    result.append(
-                        company_pb2.CompanySummary(
-                            id=str(u.id),
-                            name=u.name,
-                            owner_id=str(u.company_id) if u.company_id else "",
-                            owner_email=u.email,
-                            deployment_token=u.role
-                            if isinstance(u.role, str)
-                            else u.role.value,
-                            member_count=0,
-                            avatar_url=u.avatar_url or "",
-                        )
-                    )
+                    summary_kwargs = {
+                        "id": str(u.id),
+                        "name": u.name,
+                        "owner_id": str(u.company_id) if u.company_id else "",
+                        "owner_email": u.email,
+                        "deployment_token": u.role
+                        if isinstance(u.role, str)
+                        else u.role.value,
+                        "member_count": 0,
+                    }
+                    # Defensive check for proto field existence
+                    if hasattr(company_pb2.CompanySummary, "avatar_url"):
+                        summary_kwargs["avatar_url"] = u.avatar_url or ""
+
+                    result.append(company_pb2.CompanySummary(**summary_kwargs))
                 return result
             else:
                 # Company search logic
@@ -215,18 +217,19 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 for c in companies:
                     owner_email = c.owner.email if c.owner else ""
                     owner_id = str(c.owner_id) if c.owner_id else ""
-                    avatar_url = c.owner.avatar_url if c.owner else ""
-                    result.append(
-                        company_pb2.CompanySummary(
-                            id=str(c.id),
-                            name=c.name,
-                            owner_id=owner_id,
-                            owner_email=owner_email,
-                            member_count=len(c.members),
-                            deployment_token=c.deployment_token or "",
-                            avatar_url=avatar_url or "",
+                    summary_kwargs = {
+                        "id": str(c.id),
+                        "name": c.name,
+                        "owner_id": owner_id,
+                        "owner_email": owner_email,
+                        "member_count": len(c.members),
+                        "deployment_token": c.deployment_token or "",
+                    }
+                    if hasattr(company_pb2.CompanySummary, "avatar_url"):
+                        summary_kwargs["avatar_url"] = (
+                            c.owner.avatar_url if c.owner else ""
                         )
-                    )
+                    result.append(company_pb2.CompanySummary(**summary_kwargs))
                 return result
 
     @with_identity(verified_only=True)
@@ -243,11 +246,15 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         # Owners can only search their own company users or see their own company
         allowed_roles = ["superadmin", "admin", "commercial"]
         if identity["role"] not in allowed_roles:
-            if action == "list-users" and company_id == str(identity["company_id"]):
+            user_company_id = str(identity.get("company_id", ""))
+            if action == "list-users" and company_id == user_company_id:
                 pass  # Allowed
             elif action == "list-companies":
                 # Force visibility to their own company only
-                company_id = str(identity["company_id"])
+                company_id = user_company_id
+                if not company_id:
+                    context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                    return company_pb2.ListCompaniesResponse()
             else:
                 context.set_code(grpc.StatusCode.PERMISSION_DENIED)
                 return company_pb2.ListCompaniesResponse()

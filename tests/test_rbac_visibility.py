@@ -120,7 +120,15 @@ async def test_list_scans_superadmin_visibility(scan_service):
 
         # Mock DB results
         mock_scans = [
-            (str(uuid.uuid4()), "workflow-1", "image:latest", "COMPLETED", None, None)
+            (
+                str(uuid.uuid4()),
+                "workflow-1",
+                "image:latest",
+                "COMPLETED",
+                None,
+                None,
+                "Aegis AI",
+            )
         ]
 
         with patch.object(

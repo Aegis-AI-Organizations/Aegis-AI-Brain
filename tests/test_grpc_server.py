@@ -86,7 +86,7 @@ async def test_scan_service_list(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
     mock_cursor.fetchall.return_value = [
-        ("test-id", "wf-1", "nginx", "COMPLETED", datetime.now(), None)
+        ("test-id", "wf-1", "nginx", "COMPLETED", datetime.now(), None, "Company X")
     ]
 
     temporal_client = AsyncMock()

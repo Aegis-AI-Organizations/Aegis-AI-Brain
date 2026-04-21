@@ -62,33 +62,6 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 logger.exception("Failed to create company")
                 return None, CompanyCreateError.DB_ERROR
 
-    @with_identity(verified_only=True)
-    async def CreateCompany(
-        self, request: company_pb2.CreateCompanyRequest, context, identity
-    ) -> company_pb2.CreateCompanyResponse:
-        if identity["role"] != "superadmin":
-            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            context.set_details("Only SuperAdmin can create companies")
-            return company_pb2.CreateCompanyResponse()
-
-        company, error = await asyncio.to_thread(
-            self._create_company_db_sync, request.name, request.owner_email
-        )
-
-        if error != CompanyCreateError.SUCCESS:
-            if error == CompanyCreateError.NAME_EXISTS:
-                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
-                context.set_details("Company name already exists")
-            elif error == CompanyCreateError.OWNER_NOT_FOUND:
-                context.set_code(grpc.StatusCode.NOT_FOUND)
-                context.set_details("Owner user not found")
-            else:
-                context.set_code(grpc.StatusCode.INTERNAL)
-                context.set_details("Failed to create company")
-            return company_pb2.CreateCompanyResponse()
-
-        return company_pb2.CreateCompanyResponse(id=str(company.id), name=company.name)
-
     def _onboard_company_db_sync(
         self,
         company_name: str,
@@ -174,42 +147,185 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             company_id=company_id, owner_id=owner_id, deployment_token=token
         )
 
-    def _list_companies_db_sync(self):
+    def _list_entities_db_sync(
+        self,
+        search_query: str = "",
+        action: str = "list-companies",
+        company_id: str = "",
+    ):
         with self.session_factory() as db:
-            companies = (
-                db.query(Company)
-                .options(joinedload(Company.owner), joinedload(Company.members))
-                .all()
-            )
-            result = []
-            for c in companies:
-                owner_email = c.owner.email if c.owner else ""
-                owner_id = str(c.owner_id) if c.owner_id else ""
-                result.append(
-                    company_pb2.CompanySummary(
-                        id=str(c.id),
-                        name=c.name,
-                        owner_id=owner_id,
-                        owner_email=owner_email,
-                        member_count=len(c.members),
-                        deployment_token=c.deployment_token or "",
+            if action == "list-users":
+                # User search logic
+                query = db.query(User)
+                if company_id:
+                    query = query.filter(User.company_id == company_id)
+                if search_query:
+                    query = query.filter(
+                        (User.name.ilike(f"%{search_query}%"))
+                        | (User.email.ilike(f"%{search_query}%"))
+                        | (
+                            User.id.cast(
+                                db.bind.dialect.type_compiler.process(
+                                    db.bind.dialect.type_descriptor(User.id.type)
+                                )
+                            ).ilike(f"%{search_query}%")
+                        )
                     )
+                users = query.order_by(User.name.asc()).all()
+                result = []
+                for u in users:
+                    result.append(
+                        company_pb2.CompanySummary(
+                            id=str(u.id),
+                            name=u.name,
+                            owner_id=str(u.company_id) if u.company_id else "",
+                            owner_email=u.email,
+                            deployment_token=u.role
+                            if isinstance(u.role, str)
+                            else u.role.value,
+                            member_count=0,
+                        )
+                    )
+                return result
+            else:
+                # Company search logic
+                query = db.query(Company).options(
+                    joinedload(Company.owner), joinedload(Company.members)
                 )
-            return result
+                if search_query:
+                    query = query.filter(
+                        (Company.name.ilike(f"%{search_query}%"))
+                        | (
+                            Company.id.cast(
+                                db.bind.dialect.type_compiler.process(
+                                    db.bind.dialect.type_descriptor(Company.id.type)
+                                )
+                            ).ilike(f"%{search_query}%")
+                        )
+                    )
+                companies = query.all()
+
+                # Sort: Aegis AI first
+                companies.sort(key=lambda x: 0 if x.name == "Aegis AI" else 1)
+
+                result = []
+                for c in companies:
+                    owner_email = c.owner.email if c.owner else ""
+                    owner_id = str(c.owner_id) if c.owner_id else ""
+                    result.append(
+                        company_pb2.CompanySummary(
+                            id=str(c.id),
+                            name=c.name,
+                            owner_id=owner_id,
+                            owner_email=owner_email,
+                            member_count=len(c.members),
+                            deployment_token=c.deployment_token or "",
+                        )
+                    )
+                return result
 
     @with_identity(verified_only=True)
     async def ListCompanies(
         self, request: company_pb2.ListCompaniesRequest, context, identity
     ) -> company_pb2.ListCompaniesResponse:
-        if identity["role"] != "superadmin":
-            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            context.set_details("Only SuperAdmin can list companies")
-            return company_pb2.ListCompaniesResponse()
+        # Check metadata for search and action
+        metadata = dict(context.invocation_metadata())
+        search_query = metadata.get("x-query", "")
+        action = metadata.get("x-action", "list-companies")
+        company_id = metadata.get("x-company-id", "")
+
+        # RBAC: Only admin/superadmin/commercial can search everything
+        # Owners can only search their own company users
+        allowed_roles = ["superadmin", "admin", "commercial"]
+        if identity["role"] not in allowed_roles:
+            if action == "list-users" and company_id == str(identity["company_id"]):
+                pass  # Allowed
+            else:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                return company_pb2.ListCompaniesResponse()
 
         try:
-            companies = await asyncio.to_thread(self._list_companies_db_sync)
-            return company_pb2.ListCompaniesResponse(companies=companies)
+            entities = await asyncio.to_thread(
+                self._list_entities_db_sync, search_query, action, company_id
+            )
+            return company_pb2.ListCompaniesResponse(companies=entities)
         except Exception:
-            logger.exception("Failed to list companies")
+            logger.exception(f"Failed to execute action {action}")
             context.set_code(grpc.StatusCode.INTERNAL)
             return company_pb2.ListCompaniesResponse()
+
+    def _create_user_db_sync(self, name, email, password, role, company_id):
+        with self.session_factory() as db:
+            # Check if email exists
+            existing = db.query(User).filter(User.email == email).first()
+            if existing:
+                return None, "Email already in use"
+
+            try:
+                new_user = User(
+                    name=name,
+                    email=email,
+                    password_hash=hash_password(password),
+                    role=role,
+                    company_id=company_id,
+                    is_active=True,
+                )
+                db.add(new_user)
+                db.commit()
+                return str(new_user.id), None
+            except Exception as e:
+                db.rollback()
+                return None, str(e)
+
+    @with_identity(verified_only=True)
+    async def CreateCompany(
+        self, request: company_pb2.CreateCompanyRequest, context, identity
+    ) -> company_pb2.CreateCompanyResponse:
+        metadata = dict(context.invocation_metadata())
+        action = metadata.get("x-action", "create-company")
+
+        if action == "create-user":
+            # Hijack for user creation
+            allowed_roles = ["superadmin", "admin", "owner"]
+            if identity["role"] not in allowed_roles:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                return company_pb2.CreateCompanyResponse()
+
+            user_role = metadata.get("x-user-role", "viewer")
+            user_password = metadata.get("x-user-password", "")
+            company_id = metadata.get("x-company-id", "")
+
+            # If owner, force company_id
+            if identity["role"] == "owner":
+                company_id = str(identity["company_id"])
+
+            user_id, error = await asyncio.to_thread(
+                self._create_user_db_sync,
+                request.name,
+                request.owner_email,  # using owner_email field as user email
+                user_password,
+                user_role,
+                company_id,
+            )
+
+            if error:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details(error)
+                return company_pb2.CreateCompanyResponse()
+
+            return company_pb2.CreateCompanyResponse(id=user_id, name=request.name)
+
+        # Original CreateCompany logic
+        if identity["role"] != "superadmin":
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return company_pb2.CreateCompanyResponse()
+
+        company, error = await asyncio.to_thread(
+            self._create_company_db_sync, request.name, request.owner_email
+        )
+
+        if error != CompanyCreateError.SUCCESS:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return company_pb2.CreateCompanyResponse()
+
+        return company_pb2.CreateCompanyResponse(id=str(company.id), name=company.name)

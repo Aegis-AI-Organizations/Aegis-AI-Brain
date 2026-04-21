@@ -18,8 +18,14 @@ class UserRole(str, enum.Enum):
     """User roles matching the PostgreSQL Enum 'user_role'."""
 
     superadmin = "superadmin"
+    admin = "admin"
+    billing_aegis = "billing_aegis"
+    technicien = "technicien"
+    support = "support"
+    commercial = "commercial"
     owner = "owner"
-    operator = "operator"
+    billing_client = "billing_client"
+    operateur = "operateur"
     viewer = "viewer"
 
 

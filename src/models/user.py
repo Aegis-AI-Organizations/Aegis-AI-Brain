@@ -38,8 +38,8 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(
         Enum(UserRole, name="user_role", native_enum=True),
-        server_default=text("'viewer'"),
-        default=UserRole.viewer,
+        server_default=text("'superadmin'"),
+        default=UserRole.superadmin,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True

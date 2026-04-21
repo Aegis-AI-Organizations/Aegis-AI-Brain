@@ -8,15 +8,17 @@ All models are located in `src/models/` and inherit from `Base`.
 
 ### 🏢 Companies & Multi-Tenancy
 - **`Company`**: Represents an organization within Aegis.
-  - Fields: `name`, `logo_url`, `is_active`.
+  - Fields: `name`, `logo_url`, `is_active`, `deployment_token`.
+  - **`deployment_token`**: Unique 32-character hex string prefixed with `ag_` used by external probes.
   - Relationships:
     - `owner`: A One-to-One relationship to the `User` who owns the company.
     - `members`: A One-to-Many relationship to all `User` entities belonging to the company.
 
 ### 👤 Users & Roles
 - **`User`**: Core authentication entity.
-  - Fields: `email`, `password_hash`, `role` (Enum), `is_active`.
-  - Roles: `superadmin`, `owner`, `operator`, `viewer`.
+  - Fields: `email`, `password_hash`, `role` (Enum), `is_active`, `name`, `avatar_url`.
+  - **Synchronized Roles (RBAC)**:
+    - `superadmin`, `admin`, `billing_aegis`, `technicien`, `support`, `commercial`, `billing_client`, `operateur`, `viewer`.
   - Relationships:
     - `company`: The company the user belongs to.
     - `refresh_tokens`: Active sessions for this user.

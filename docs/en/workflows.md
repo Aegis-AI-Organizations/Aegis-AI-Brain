@@ -17,5 +17,16 @@ The most critical workflow in Aegis AI. When triggered through the gRPC `StartSc
 - **`run_pentest` (Pentest Worker):** In parallel, commands the remote pentest-worker node to blast payloads into the target within the sandbox. The worker generates `Evidences` and `Vulnerabilities` streams sent back to the temporal history.
 - **`cleanup_sandbox` (Kubernetes Activity):** Dismantles the target namespace to restore cluster equilibrium once the scan is successfully concluded.
 
+## Service Logic Flows
+
+### 1. Manual Onboarding (MVP)
+Onboarding is currently an atomic operation managed by Aegis administrators.
+
+1.  **gRPC Request**: The API Gateway calls internal `OnboardCompany` rpc.
+2.  **Entity Creation**: `CompanyService` saves the new `Company` record to PostgreSQL.
+3.  **Token Generation**: A unique 32-char hex `deployment_token` (`ag_` prefix) is generated via `secrets.token_hex`.
+4.  **Owner Initialization**: The initial "Owner" user is created and linked to the company.
+5.  **Atomic Response**: The system returns the credentials and deployment token for immediate agent configuration.
+
 ## Zero Trust Security Scope
 The Brain is securely locked away within `aegis-system`. By Cilium Network Policies, it is the solitary component explicitly permitted inward ingress traffic to the `aegis-postgres-mvp` namespace.

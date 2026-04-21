@@ -2,19 +2,17 @@ import pytest
 import uuid
 from unittest.mock import MagicMock, patch
 from grpc_services.company import CompanyService
-from aegis.v2 import company_pb2
+from grpc_services.auth import AuthService
+from aegis.v2 import company_pb2, auth_pb2
 
 
 @pytest.mark.asyncio
 async def test_company_search_with_query():
-    # This will cover the search_query logic in company.py
     service = CompanyService()
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "superadmin"}
 
-        # We don't need to mock the DB perfectly, just ensure it doesn't crash
-        # and reaches the search logic.
         with patch.object(
             service, "_list_entities_db_sync", return_value=[]
         ) as mock_db:
@@ -22,15 +20,83 @@ async def test_company_search_with_query():
             context = MagicMock()
             context.invocation_metadata.return_value = [("x-query", "test-search")]
 
-            await service.ListScans(
-                request, context
-            )  # Wait, ListScans is in ScanService
-            # Let's test ListCompanies
             await service.ListCompanies(request, context)
 
             mock_db.assert_called_once()
             args = mock_db.call_args[0]
-            assert args[0] == "test-search"  # search_query
+            assert args[0] == "test-search"
+
+
+@pytest.mark.asyncio
+async def test_auth_update_profile_success():
+    service = AuthService()
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
+
+        with patch.object(
+            service, "_update_profile_db_sync", return_value=0
+        ) as mock_db:  # SUCCESS=0
+            request = auth_pb2.UpdateProfileRequest(
+                name="New Name", avatar_url="http://new.avatar"
+            )
+            context = MagicMock()
+
+            response = await service.UpdateProfile(request, context)
+            assert response.success is True
+            mock_db.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_auth_update_email_success():
+    service = AuthService()
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
+
+        with patch.object(service, "_update_email_db_sync", return_value=0) as mock_db:
+            request = auth_pb2.UpdateEmailRequest(new_email="new@example.com")
+            context = MagicMock()
+
+            response = await service.UpdateEmail(request, context)
+            assert response.success is True
+            mock_db.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_auth_update_password_success():
+    service = AuthService()
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
+
+        with patch.object(
+            service, "_update_password_db_sync", return_value=0
+        ) as mock_db:
+            request = auth_pb2.UpdatePasswordRequest(
+                old_password="old", new_password="new"
+            )
+            context = MagicMock()
+
+            response = await service.UpdatePassword(request, context)
+            assert response.success is True
+            mock_db.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_auth_remove_avatar_success():
+    service = AuthService()
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
+
+        with patch.object(service, "_remove_avatar_db_sync", return_value=0) as mock_db:
+            request = auth_pb2.RemoveAvatarRequest()
+            context = MagicMock()
+
+            response = await service.RemoveAvatar(request, context)
+            assert response.success is True
+            mock_db.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -55,5 +121,4 @@ async def test_company_list_owner_visibility():
             await service.ListCompanies(request, context)
 
             mock_db.assert_called_once()
-            # For owner, company_id should be forced
             assert mock_db.call_args[0][2] == company_id

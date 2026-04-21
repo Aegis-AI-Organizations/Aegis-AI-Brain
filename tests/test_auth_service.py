@@ -38,7 +38,7 @@ async def test_login_success(auth_service, mock_db):
         email="test@example.com",
         password_hash=pwd_hash,
         is_active=True,
-        role=UserRole.operator,
+        role=UserRole.operateur,
     )
     mock_db.query.return_value.filter.return_value.first.return_value = user
 
@@ -92,7 +92,7 @@ async def test_login_db_error(auth_service, mock_db):
         email="test@example.com",
         password_hash=pwd_hash,
         is_active=True,
-        role=UserRole.operator,
+        role=UserRole.operateur,
     )
     mock_db.query.return_value.filter.return_value.first.return_value = user
     mock_db.commit.side_effect = Exception("DB error")

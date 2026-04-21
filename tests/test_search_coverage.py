@@ -2,7 +2,7 @@ import pytest
 import uuid
 from unittest.mock import MagicMock, patch
 from grpc_services.company import CompanyService
-from grpc_services.auth import AuthService
+from grpc_services.auth import AuthService, AuthErrorCode
 from aegis.v2 import company_pb2, auth_pb2
 
 
@@ -35,8 +35,8 @@ async def test_auth_update_profile_success():
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
 
         with patch.object(
-            service, "_update_profile_db_sync", return_value=0
-        ) as mock_db:  # SUCCESS=0
+            service, "_update_profile_db_sync", return_value=AuthErrorCode.SUCCESS
+        ) as mock_db:
             request = auth_pb2.UpdateProfileRequest(
                 name="New Name", avatar_url="http://new.avatar"
             )
@@ -54,7 +54,9 @@ async def test_auth_update_email_success():
     with patch("grpc_services.utils.get_identity") as mock_get_id:
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
 
-        with patch.object(service, "_update_email_db_sync", return_value=0) as mock_db:
+        with patch.object(
+            service, "_update_email_db_sync", return_value=AuthErrorCode.SUCCESS
+        ) as mock_db:
             request = auth_pb2.UpdateEmailRequest(new_email="new@example.com")
             context = MagicMock()
 
@@ -71,7 +73,7 @@ async def test_auth_update_password_success():
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
 
         with patch.object(
-            service, "_update_password_db_sync", return_value=0
+            service, "_update_password_db_sync", return_value=AuthErrorCode.SUCCESS
         ) as mock_db:
             request = auth_pb2.UpdatePasswordRequest(
                 old_password="old", new_password="new"
@@ -90,7 +92,9 @@ async def test_auth_remove_avatar_success():
     with patch("grpc_services.utils.get_identity") as mock_get_id:
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "operator"}
 
-        with patch.object(service, "_remove_avatar_db_sync", return_value=0) as mock_db:
+        with patch.object(
+            service, "_remove_avatar_db_sync", return_value=AuthErrorCode.SUCCESS
+        ) as mock_db:
             request = auth_pb2.RemoveAvatarRequest()
             context = MagicMock()
 

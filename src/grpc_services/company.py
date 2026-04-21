@@ -184,6 +184,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                             if isinstance(u.role, str)
                             else u.role.value,
                             member_count=0,
+                            avatar_url=u.avatar_url or "",
                         )
                     )
                 return result
@@ -192,6 +193,8 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 query = db.query(Company).options(
                     joinedload(Company.owner), joinedload(Company.members)
                 )
+                if company_id:
+                    query = query.filter(Company.id == company_id)
                 if search_query:
                     query = query.filter(
                         (Company.name.ilike(f"%{search_query}%"))
@@ -212,6 +215,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 for c in companies:
                     owner_email = c.owner.email if c.owner else ""
                     owner_id = str(c.owner_id) if c.owner_id else ""
+                    avatar_url = c.owner.avatar_url if c.owner else ""
                     result.append(
                         company_pb2.CompanySummary(
                             id=str(c.id),
@@ -220,6 +224,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                             owner_email=owner_email,
                             member_count=len(c.members),
                             deployment_token=c.deployment_token or "",
+                            avatar_url=avatar_url or "",
                         )
                     )
                 return result
@@ -235,11 +240,14 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         company_id = metadata.get("x-company-id", "")
 
         # RBAC: Only admin/superadmin/commercial can search everything
-        # Owners can only search their own company users
+        # Owners can only search their own company users or see their own company
         allowed_roles = ["superadmin", "admin", "commercial"]
         if identity["role"] not in allowed_roles:
             if action == "list-users" and company_id == str(identity["company_id"]):
                 pass  # Allowed
+            elif action == "list-companies":
+                # Force visibility to their own company only
+                company_id = str(identity["company_id"])
             else:
                 context.set_code(grpc.StatusCode.PERMISSION_DENIED)
                 return company_pb2.ListCompaniesResponse()

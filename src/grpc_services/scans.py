@@ -78,14 +78,20 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             scan_id=scan_id, status="PENDING", started_at=to_pb_timestamp(started_at)
         )
 
-    def _get_scan_status_db(self, scan_id, company_id):
+    def _get_scan_status_db(self, scan_id, company_id=None):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
-            cur.execute(
-                "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s AND company_id = %s",
-                (scan_id, company_id),
-            )
+            if company_id:
+                cur.execute(
+                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s AND company_id = %s",
+                    (scan_id, company_id),
+                )
+            else:
+                cur.execute(
+                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s",
+                    (scan_id,),
+                )
             row = cur.fetchone()
             cur.close()
             return row
@@ -95,7 +101,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
     @with_identity
     async def GetScanStatus(self, request, context, identity):
         company_id = identity.get("company_id")
-        if not company_id:
+        role = identity.get("role")
+
+        # Superadmin/Admin can see all scans
+        if role in ["superadmin", "admin"]:
+            company_id = None
+        elif not company_id:
             await context.abort(
                 grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
             )
@@ -121,14 +132,19 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             resp.completed_at.CopyFrom(to_pb_timestamp(completed_at))
         return resp
 
-    def _list_scans_db(self, company_id):
+    def _list_scans_db(self, company_id=None):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
-            cur.execute(
-                "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans WHERE company_id = %s ORDER BY started_at DESC",
-                (company_id,),
-            )
+            if company_id:
+                cur.execute(
+                    "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans WHERE company_id = %s ORDER BY started_at DESC",
+                    (company_id,),
+                )
+            else:
+                cur.execute(
+                    "SELECT id, temporal_workflow_id, target_image, status, started_at, completed_at FROM scans ORDER BY started_at DESC"
+                )
             rows = cur.fetchall()
             cur.close()
             return rows
@@ -138,7 +154,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
     @with_identity
     async def ListScans(self, request, context, identity):
         company_id = identity.get("company_id")
-        if not company_id:
+        role = identity.get("role")
+
+        # Superadmin/Admin see all scans
+        if role in ["superadmin", "admin"]:
+            company_id = None
+        elif not company_id:
             await context.abort(
                 grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
             )
@@ -160,14 +181,20 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             scans.append(detail)
         return scan_pb2.ListScansResponse(scans=scans)
 
-    def _get_scan_report_db(self, scan_id, company_id):
+    def _get_scan_report_db(self, scan_id, company_id=None):
         conn = get_db_connection()
         try:
             cur = conn.cursor()
-            cur.execute(
-                "SELECT report_pdf FROM scans WHERE id = %s AND company_id = %s",
-                (scan_id, company_id),
-            )
+            if company_id:
+                cur.execute(
+                    "SELECT report_pdf FROM scans WHERE id = %s AND company_id = %s",
+                    (scan_id, company_id),
+                )
+            else:
+                cur.execute(
+                    "SELECT report_pdf FROM scans WHERE id = %s",
+                    (scan_id,),
+                )
             row = cur.fetchone()
             cur.close()
             return row[0] if row else None
@@ -177,7 +204,11 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
     @with_identity
     async def GetScanReport(self, request, context, identity):
         company_id = identity.get("company_id")
-        if not company_id:
+        role = identity.get("role")
+
+        if role in ["superadmin", "admin"]:
+            company_id = None
+        elif not company_id:
             await context.abort(
                 grpc.StatusCode.UNAUTHENTICATED, "Authentication required"
             )

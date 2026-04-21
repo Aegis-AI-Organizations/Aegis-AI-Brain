@@ -50,6 +50,11 @@ class AuthServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordResponse.FromString,
                 _registered_method=True)
+        self.RemoveAvatar = channel.unary_unary(
+                '/aegis.v2.AuthService/RemoveAvatar',
+                request_serializer=aegis_dot_v2_dot_auth__pb2.RemoveAvatarRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_auth__pb2.RemoveAvatarResponse.FromString,
+                _registered_method=True)
 
 
 class AuthServiceServicer(object):
@@ -105,6 +110,13 @@ class AuthServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RemoveAvatar(self, request, context):
+        """RemoveAvatar deletes the authenticated user's profile picture.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AuthServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -142,6 +154,11 @@ def add_AuthServiceServicer_to_server(servicer, server):
                     servicer.UpdatePassword,
                     request_deserializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_auth__pb2.UpdatePasswordResponse.SerializeToString,
+            ),
+            'RemoveAvatar': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemoveAvatar,
+                    request_deserializer=aegis_dot_v2_dot_auth__pb2.RemoveAvatarRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_auth__pb2.RemoveAvatarResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -334,6 +351,33 @@ class AuthService(object):
             '/aegis.v2.AuthService/UpdatePassword',
             aegis_dot_v2_dot_auth__pb2.UpdatePasswordRequest.SerializeToString,
             aegis_dot_v2_dot_auth__pb2.UpdatePasswordResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RemoveAvatar(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.AuthService/RemoveAvatar',
+            aegis_dot_v2_dot_auth__pb2.RemoveAvatarRequest.SerializeToString,
+            aegis_dot_v2_dot_auth__pb2.RemoveAvatarResponse.FromString,
             options,
             channel_credentials,
             insecure,

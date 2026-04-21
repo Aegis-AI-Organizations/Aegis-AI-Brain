@@ -25,6 +25,11 @@ class CompanyServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_company__pb2.ListCompaniesRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_company__pb2.ListCompaniesResponse.FromString,
                 _registered_method=True)
+        self.OnboardCompany = channel.unary_unary(
+                '/aegis.v2.CompanyService/OnboardCompany',
+                request_serializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.FromString,
+                _registered_method=True)
 
 
 class CompanyServiceServicer(object):
@@ -45,6 +50,13 @@ class CompanyServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def OnboardCompany(self, request, context):
+        """OnboardCompany handles the creation of a new company and its owner in one step.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CompanyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -57,6 +69,11 @@ def add_CompanyServiceServicer_to_server(servicer, server):
                     servicer.ListCompanies,
                     request_deserializer=aegis_dot_v2_dot_company__pb2.ListCompaniesRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_company__pb2.ListCompaniesResponse.SerializeToString,
+            ),
+            'OnboardCompany': grpc.unary_unary_rpc_method_handler(
+                    servicer.OnboardCompany,
+                    request_deserializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -114,6 +131,33 @@ class CompanyService(object):
             '/aegis.v2.CompanyService/ListCompanies',
             aegis_dot_v2_dot_company__pb2.ListCompaniesRequest.SerializeToString,
             aegis_dot_v2_dot_company__pb2.ListCompaniesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def OnboardCompany(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.CompanyService/OnboardCompany',
+            aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.SerializeToString,
+            aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.FromString,
             options,
             channel_credentials,
             insecure,

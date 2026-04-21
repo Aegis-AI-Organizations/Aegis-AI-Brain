@@ -169,7 +169,18 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             if not user or not user.is_active:
                 return None, AuthErrorCode.USER_INACTIVE
 
-            return user, AuthErrorCode.SUCCESS
+            # Extract data while session is open to avoid DetachedInstanceError
+            user_data = {
+                "id": str(user.id),
+                "name": user.name or "",
+                "avatar_url": user.avatar_url or "",
+                "email": user.email,
+                "role": user.role if isinstance(user.role, str) else user.role.value,
+                "company_id": str(user.company_id) if user.company_id else "",
+                "company_name": user.company.name if user.company else "",
+            }
+
+            return user_data, AuthErrorCode.SUCCESS
 
     @with_identity(verified_only=True)
     async def GetMe(self, request, context, identity) -> auth_pb2.GetMeResponse:
@@ -190,12 +201,13 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             return auth_pb2.GetMeResponse()
 
         return auth_pb2.GetMeResponse(
-            id=str(user.id),
-            name=user.name if user.name else "",
-            email=user.email,
-            role=user.role if isinstance(user.role, str) else user.role.value,
-            company_id=str(user.company_id) if user.company_id else "",
-            company_name=user.company.name if user.company else "",
+            id=user["id"],  # Fix typo: user is now a dict
+            name=user["name"],
+            email=user["email"],
+            role=user["role"],
+            company_id=user["company_id"],
+            company_name=user["company_name"],
+            avatar_url=user["avatar_url"],
         )
 
     def _logout_db_sync(self, refresh_token: str) -> AuthErrorCode:
@@ -240,13 +252,17 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 
         return auth_pb2.LogoutResponse(success=True)
 
-    def _update_profile_db_sync(self, user_id: str, name: str) -> AuthErrorCode:
+    def _update_profile_db_sync(
+        self, user_id: str, name: str, avatar_url: str = None
+    ) -> AuthErrorCode:
         with self.session_factory() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
                 return AuthErrorCode.USER_NOT_FOUND
             try:
                 user.name = name
+                if avatar_url is not None:
+                    user.avatar_url = avatar_url
                 db.commit()
                 return AuthErrorCode.SUCCESS
             except Exception:
@@ -259,7 +275,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
     ) -> auth_pb2.UpdateProfileResponse:
         user_id = identity["user_id"]
         code = await asyncio.to_thread(
-            self._update_profile_db_sync, user_id, request.name
+            self._update_profile_db_sync, user_id, request.name, request.avatar_url
         )
         if code == AuthErrorCode.USER_NOT_FOUND:
             context.set_code(grpc.StatusCode.NOT_FOUND)

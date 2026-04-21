@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import UUID, uuid4
 from typing import List, Optional, TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, Boolean, DateTime, text, Enum
+from sqlalchemy import ForeignKey, String, Boolean, DateTime, text, Enum, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
@@ -33,12 +33,13 @@ class User(Base):
         ForeignKey("companies.id", ondelete="SET NULL"), nullable=True
     )
     name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    avatar_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(
         Enum(UserRole, name="user_role", native_enum=True),
-        server_default=text("'viewer'"),
-        default=UserRole.viewer,
+        server_default=text("'superadmin'"),
+        default=UserRole.superadmin,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True

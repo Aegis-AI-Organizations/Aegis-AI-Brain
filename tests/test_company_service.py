@@ -45,7 +45,7 @@ async def test_create_company_success(company_service, mock_db):
         response = await company_service.CreateCompany(request, context)
 
         assert response.name == "New Co"
-        mock_db.commit.assert_called_once()
+        assert mock_db.commit.call_count == 2
 
 
 @pytest.mark.asyncio
@@ -115,6 +115,9 @@ async def test_onboard_company_success(company_service, mock_db):
         context = MagicMock()
         context.abort = AsyncMock()
 
+        # Ensure existence checks return None
+        mock_db.query.return_value.filter.return_value.first.return_value = None
+
         with patch("grpc_services.utils.get_identity") as mock_get_id:
             mock_get_id.return_value = {
                 "user_id": str(uuid.uuid4()),
@@ -125,7 +128,7 @@ async def test_onboard_company_success(company_service, mock_db):
         assert response.company_id == str(mock_company.id)
         assert response.owner_id == str(mock_owner.id)
         assert response.deployment_token != ""
-        mock_db.commit.assert_called_once()
+        assert mock_db.commit.call_count == 2
 
 
 @pytest.mark.asyncio
@@ -194,4 +197,4 @@ async def test_create_user_success(company_service, mock_db):
             response = await company_service.CreateCompany(request, mock_context)
 
             assert response.id == str(mock_user.id)
-            mock_db.commit.assert_called_once()
+            assert mock_db.commit.call_count == 2

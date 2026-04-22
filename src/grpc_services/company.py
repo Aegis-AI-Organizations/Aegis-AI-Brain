@@ -11,6 +11,7 @@ from models.user import User, UserRole
 from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from utils.auth_utils import hash_password
+from models.audit_log import AuditLog
 import uuid
 
 logger = logging.getLogger(__name__)
@@ -142,6 +143,26 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(error)
             return company_pb2.OnboardCompanyResponse()
+
+        # Log the action in AuditLog
+        try:
+            with self.session_factory() as db:
+                audit = AuditLog(
+                    user_id=identity["user_id"],
+                    company_id=identity.get("company_id"),
+                    action="ONBOARD_COMPANY",
+                    target_type="COMPANY",
+                    target_id=company_id,
+                    ip_address=context.peer(),
+                    details={
+                        "company_name": request.company_name,
+                        "owner_email": request.owner_email,
+                    },
+                )
+                db.add(audit)
+                db.commit()
+        except Exception:
+            logger.exception("Failed to log audit for onboarding")
 
         return company_pb2.OnboardCompanyResponse(
             company_id=company_id, owner_id=owner_id, deployment_token=token
@@ -329,6 +350,28 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 context.set_code(grpc.StatusCode.INTERNAL)
                 context.set_details(error)
                 return company_pb2.CreateCompanyResponse()
+
+            # Log the action
+            try:
+                with self.session_factory() as db:
+                    audit = AuditLog(
+                        user_id=identity["user_id"],
+                        company_id=identity.get("company_id"),
+                        action="CREATE_USER",
+                        target_type="USER",
+                        target_id=user_id,
+                        ip_address=context.peer(),
+                        details={
+                            "name": request.name,
+                            "email": request.owner_email,
+                            "role": user_role,
+                            "company_id": company_id,
+                        },
+                    )
+                    db.add(audit)
+                    db.commit()
+            except Exception:
+                logger.exception("Failed to log audit for user creation")
 
             return company_pb2.CreateCompanyResponse(id=user_id, name=request.name)
 

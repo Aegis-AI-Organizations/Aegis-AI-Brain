@@ -8,6 +8,7 @@ import aegis.v2.company_pb2_grpc as company_pb2_grpc
 from config.db import get_session_factory
 from models.company import Company
 from models.user import User, UserRole
+from sqlalchemy import String
 from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from utils.auth_utils import hash_password
@@ -184,13 +185,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     query = query.filter(
                         (User.name.ilike(f"%{search_query}%"))
                         | (User.email.ilike(f"%{search_query}%"))
-                        | (
-                            User.id.cast(
-                                db.bind.dialect.type_compiler.process(
-                                    db.bind.dialect.type_descriptor(User.id.type)
-                                )
-                            ).ilike(f"%{search_query}%")
-                        )
+                        | (User.id.cast(String).ilike(f"%{search_query}%"))
                     )
                 users = query.order_by(User.name.asc()).all()
                 result = []
@@ -223,13 +218,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                         (Company.name.ilike(f"%{search_query}%"))
                         | (Company.members.any(User.name.ilike(f"%{search_query}%")))
                         | (Company.members.any(User.email.ilike(f"%{search_query}%")))
-                        | (
-                            Company.id.cast(
-                                db.bind.dialect.type_compiler.process(
-                                    db.bind.dialect.type_descriptor(Company.id.type)
-                                )
-                            ).ilike(f"%{search_query}%")
-                        )
+                        | (Company.id.cast(String).ilike(f"%{search_query}%"))
                     )
                 companies = query.all()
 

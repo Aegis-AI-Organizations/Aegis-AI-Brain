@@ -8,6 +8,8 @@ import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
 from .utils import to_pb_timestamp, with_identity
 from .broadcaster import broadcaster
 from config.config import BRAIN_TASK_QUEUE
+from models.audit_log import AuditLog
+from config.db import get_session_factory
 
 logger = logging.getLogger("aegis_brain_grpc")
 
@@ -15,6 +17,7 @@ logger = logging.getLogger("aegis_brain_grpc")
 class ScanService(scan_pb2_grpc.ScanServiceServicer):
     def __init__(self, temporal_client):
         self.temporal_client = temporal_client
+        self.session_factory = get_session_factory()
 
     def _start_scan_db(self, scan_id, workflow_id, target_image, company_id):
         conn = get_db_connection()
@@ -58,6 +61,23 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         started_at = await asyncio.to_thread(
             self._start_scan_db, scan_id, workflow_id, request.target_image, company_id
         )
+
+        # Log to Audit Trail
+        try:
+            with self.session_factory() as db:
+                audit = AuditLog(
+                    user_id=identity["user_id"],
+                    company_id=company_id,
+                    action="START_SCAN",
+                    target_type="SCAN",
+                    target_id=scan_id,
+                    ip_address=context.peer(),
+                    details={"target_image": request.target_image},
+                )
+                db.add(audit)
+                db.commit()
+        except Exception:
+            logger.exception("Failed to log scan start to audit trail")
 
         try:
             await self.temporal_client.start_workflow(

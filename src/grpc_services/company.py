@@ -15,6 +15,7 @@ from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
 from models.audit_log import AuditLog
 import uuid
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -421,3 +422,52 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     )
         finally:
             broadcaster.unregister(q)
+
+    @with_identity(verified_only=True)
+    async def ListAuditLogs(
+        self, request: company_pb2.ListAuditLogsRequest, context, identity
+    ) -> company_pb2.ListAuditLogsResponse:
+        # RBAC: only admins/superadmins can view audit logs
+        if identity["role"] not in ["superadmin", "admin"]:
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return company_pb2.ListAuditLogsResponse()
+
+        limit = request.limit if request.limit > 0 else 50
+        offset = request.offset if request.offset >= 0 else 0
+
+        logs, total = await asyncio.to_thread(
+            self._list_audit_logs_db_sync, limit, offset, request.company_id
+        )
+
+        return company_pb2.ListAuditLogsResponse(
+            logs=[
+                company_pb2.AuditLogEntry(
+                    id=str(log.id),
+                    user_id=str(log.user_id),
+                    company_id=str(log.company_id),
+                    action=log.action,
+                    target_type=log.target_type,
+                    target_id=log.target_id,
+                    details=json.dumps(log.details),
+                    ip_address=log.ip_address,
+                    timestamp=log.timestamp.isoformat(),
+                )
+                for log in logs
+            ],
+            total=total,
+        )
+
+    def _list_audit_logs_db_sync(self, limit, offset, company_id=None):
+        with self.session_factory() as db:
+            query = db.query(AuditLog)
+            if company_id:
+                query = query.filter(AuditLog.company_id == company_id)
+
+            total = query.count()
+            logs = (
+                query.order_by(AuditLog.timestamp.desc())
+                .limit(limit)
+                .offset(offset)
+                .all()
+            )
+            return logs, total

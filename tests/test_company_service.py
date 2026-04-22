@@ -51,6 +51,7 @@ async def test_create_company_success(company_service, mock_db):
                 name="New Co", owner_email="owner@test.com"
             )
             context = MagicMock()
+            context.peer.return_value = "127.0.0.1"
 
             response = await company_service.CreateCompany(request, context)
 

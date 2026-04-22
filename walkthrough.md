@@ -30,6 +30,7 @@ I have fixed several regressions in the test suites caused by the transition to 
 - **Dashboard**: Fixed `TypeError` in `Users.test.tsx` by adding `defaults.baseURL` to the Axios mock.
 - **Brain**: Updated `test_grpc_server.py` to handle the synchronous `broadcast` API and added missing `asyncio` imports.
 - **Brain Tests**: Resolved `TypeError` in `test_company_service.py` by using `AsyncMock` for `context.abort` and provided valid identity mocks to pass RBAC decorators.
+- **Audit Logging**: Updated commit assertions in `test_company_service.py` to account for the dual-commit pattern (entity creation + audit log entry).
 - **Coverage**: Increased Brain service test coverage to >80% by adding unit tests for `OnboardCompany`, `WatchTeams`, and administrative user creation.
 
 ## Verification

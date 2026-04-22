@@ -5,6 +5,7 @@ from models.refresh_token import RefreshToken
 from models.license import License
 from models.scan import Scan, Vulnerability, Evidence
 from models.audit_log import AuditLog
+from models.token_ledger import TokenLedger
 
 __all__ = [
     "Base",
@@ -17,4 +18,5 @@ __all__ = [
     "Vulnerability",
     "Evidence",
     "AuditLog",
+    "TokenLedger",
 ]

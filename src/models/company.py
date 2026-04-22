@@ -29,6 +29,9 @@ class Company(Base):
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True
     )
+    org_size: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    org_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    token_balance: Mapped[int] = mapped_column(server_default=text("0"), default=0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),

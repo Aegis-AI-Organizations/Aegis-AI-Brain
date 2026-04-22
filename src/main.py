@@ -16,9 +16,6 @@ async def main():
     )
 
     try:
-        from config.db import init_db
-
-        init_db()
         client = await Client.connect(TEMPORAL_HOST, namespace=TEMPORAL_NAMESPACE)
         logger.info("✅ Connected to Temporal!")
     except Exception as e:

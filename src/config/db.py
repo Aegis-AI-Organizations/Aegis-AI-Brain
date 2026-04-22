@@ -21,16 +21,6 @@ _engine = None
 _SessionLocal = None
 
 
-def init_db():
-    """Initializes the database by creating all tables defined in models."""
-    from models.base import Base
-
-    engine = get_engine()
-    logger.info("🛠️ Initializing database tables...")
-    Base.metadata.create_all(bind=engine)
-    logger.info("✅ Database tables initialized!")
-
-
 def _build_db_url() -> URL:
     """Builds the SQLAlchemy DB URL securely."""
     if not DB_PASSWORD:

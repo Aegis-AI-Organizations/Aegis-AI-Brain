@@ -203,9 +203,9 @@ async def test_scan_service_watch_status(mock_get_db):
     # Simulate a background update
     async def simulate_update():
         await asyncio.sleep(0.1)
-        await broadcaster.broadcast("test-id", "COMPLETED")
+        broadcaster.broadcast("scan", ("test-id", "COMPLETED"))
         # Send a different one to check filtering
-        await broadcaster.broadcast("other-id", "RUNNING")
+        broadcaster.broadcast("scan", ("other-id", "RUNNING"))
 
     asyncio.create_task(simulate_update())
 

@@ -389,6 +389,23 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             return company_pb2.CreateCompanyResponse()
 
+        # Log the action
+        try:
+            with self.session_factory() as db:
+                audit = AuditLog(
+                    user_id=identity["user_id"],
+                    company_id=identity.get("company_id"),
+                    action="CREATE_COMPANY",
+                    target_type="COMPANY",
+                    target_id=str(company.id),
+                    ip_address=context.peer(),
+                    details={"name": company.name, "owner_id": str(company.owner_id)},
+                )
+                db.add(audit)
+                db.commit()
+        except Exception:
+            logger.exception("Failed to log company creation")
+
         return company_pb2.CreateCompanyResponse(id=str(company.id), name=company.name)
 
     @with_identity(verified_only=True)

@@ -27,7 +27,7 @@ def _execute_status_update(scan_id: str, new_status: str):
         # Notify gRPC streams
         from grpc_services.broadcaster import broadcaster
 
-        broadcaster.broadcast(scan_id, new_status)
+        broadcaster.broadcast("scan", (scan_id, new_status))
     except Exception as e:
         conn.rollback()
         logger.error(f"Error updating scan {scan_id} status: {e}")

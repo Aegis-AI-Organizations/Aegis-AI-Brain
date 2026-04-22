@@ -246,7 +246,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             while True:
                 try:
                     update = await asyncio.wait_for(q.get(), timeout=20.0)
-                    scan_id, status = update
+                    event_type, data = update
+
+                    if event_type != "scan":
+                        continue
+
+                    scan_id, status = data
 
                     if not request.scan_id or request.scan_id == scan_id:
                         yield scan_pb2.WatchScanStatusResponse(

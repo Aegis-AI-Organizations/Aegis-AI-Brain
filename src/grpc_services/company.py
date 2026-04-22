@@ -11,6 +11,7 @@ from models.user import User, UserRole
 from sqlalchemy import String
 from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
+from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
 from models.audit_log import AuditLog
 import uuid
@@ -58,6 +59,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 owner.company_id = new_company.id
 
                 db.commit()
+                # Broadcast company creation
+                broadcaster.broadcast(
+                    "team", ("COMPANY_CREATED", str(new_company.id), new_company.name)
+                )
                 return new_company, CompanyCreateError.SUCCESS
             except Exception:
                 db.rollback()
@@ -109,6 +114,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 new_company.owner_id = new_owner.id
 
                 db.commit()
+                # Broadcast company creation
+                broadcaster.broadcast(
+                    "team", ("COMPANY_CREATED", str(new_company.id), new_company.name)
+                )
                 return (
                     str(new_company.id),
                     str(new_owner.id),
@@ -299,6 +308,8 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 )
                 db.add(new_user)
                 db.commit()
+                # Broadcast user creation
+                broadcaster.broadcast("team", ("USER_CREATED", str(new_user.id), name))
                 return str(new_user.id), None
             except Exception as e:
                 db.rollback()
@@ -378,3 +389,35 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             return company_pb2.CreateCompanyResponse()
 
         return company_pb2.CreateCompanyResponse(id=str(company.id), name=company.name)
+
+    @with_identity(verified_only=True)
+    async def WatchTeams(
+        self, request: company_pb2.WatchTeamsRequest, context, identity
+    ) -> company_pb2.WatchTeamsResponse:
+        # RBAC: only admins/superadmins/commercial can watch all team changes
+        # (Simplified for now, but could be restricted by company_id)
+        allowed_roles = ["superadmin", "admin", "commercial", "owner"]
+        if identity["role"] not in allowed_roles:
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return
+
+        q = broadcaster.register()
+        try:
+            while True:
+                try:
+                    update = await asyncio.wait_for(q.get(), timeout=20.0)
+                    event_type, data = update
+
+                    if event_type != "team":
+                        continue
+
+                    evt, eid, ename = data
+                    yield company_pb2.WatchTeamsResponse(
+                        event_type=evt, entity_id=eid, entity_name=ename
+                    )
+                except asyncio.TimeoutError:
+                    yield company_pb2.WatchTeamsResponse(
+                        event_type="HEARTBEAT", entity_id="", entity_name=""
+                    )
+        finally:
+            broadcaster.unregister(q)

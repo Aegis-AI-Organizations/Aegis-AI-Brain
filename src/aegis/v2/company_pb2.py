@@ -9,6 +9,14 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+_runtime_version.ValidateProtobufRuntimeVersion(
+    _runtime_version.Domain.PUBLIC,
+    5,
+    29,
+    3,
+    '',
+    'aegis/v2/company.proto'
+)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -16,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x61\x65gis/v2/company.proto\x12\x08\x61\x65gis.v2\"K\n\x14\x43reateCompanyRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n\x0bowner_email\x18\x02 \x01(\tR\nownerEmail\";\n\x15\x43reateCompanyResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"\xa1\x01\n\x15OnboardCompanyRequest\x12!\n\x0c\x63ompany_name\x18\x01 \x01(\tR\x0b\x63ompanyName\x12\x1d\n\nowner_name\x18\x02 \x01(\tR\townerName\x12\x1f\n\x0bowner_email\x18\x03 \x01(\tR\nownerEmail\x12%\n\x0eowner_password\x18\x04 \x01(\tR\rownerPassword\"}\n\x16OnboardCompanyResponse\x12\x1d\n\ncompany_id\x18\x01 \x01(\tR\tcompanyId\x12\x19\n\x08owner_id\x18\x02 \x01(\tR\x07ownerId\x12)\n\x10\x64\x65ployment_token\x18\x03 \x01(\tR\x0f\x64\x65ploymentToken\"\x16\n\x14ListCompaniesRequest\"O\n\x15ListCompaniesResponse\x12\x36\n\tcompanies\x18\x01 \x03(\x0b\x32\x18.aegis.v2.CompanySummaryR\tcompanies\"\xdd\x01\n\x0e\x43ompanySummary\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n\x08owner_id\x18\x03 \x01(\tR\x07ownerId\x12\x1f\n\x0bowner_email\x18\x04 \x01(\tR\nownerEmail\x12!\n\x0cmember_count\x18\x05 \x01(\x05R\x0bmemberCount\x12)\n\x10\x64\x65ployment_token\x18\x06 \x01(\tR\x0f\x64\x65ploymentToken\x12\x1d\n\navatar_url\x18\x07 \x01(\tR\tavatarUrl2\x89\x02\n\x0e\x43ompanyService\x12P\n\rCreateCompany\x12\x1e.aegis.v2.CreateCompanyRequest\x1a\x1f.aegis.v2.CreateCompanyResponse\x12P\n\rListCompanies\x12\x1e.aegis.v2.ListCompaniesRequest\x1a\x1f.aegis.v2.ListCompaniesResponse\x12S\n\x0eOnboardCompany\x12\x1f.aegis.v2.OnboardCompanyRequest\x1a .aegis.v2.OnboardCompanyResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x61\x65gis/v2/company.proto\x12\x08\x61\x65gis.v2\"\x13\n\x11WatchTeamsRequest\"q\n\x12WatchTeamsResponse\x12\x1d\n\nevent_type\x18\x01 \x01(\tR\teventType\x12\x1b\n\tentity_id\x18\x02 \x01(\tR\x08\x65ntityId\x12\x1f\n\x0b\x65ntity_name\x18\x03 \x01(\tR\nentityName\"K\n\x14\x43reateCompanyRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n\x0bowner_email\x18\x02 \x01(\tR\nownerEmail\";\n\x15\x43reateCompanyResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"\xa1\x01\n\x15OnboardCompanyRequest\x12!\n\x0c\x63ompany_name\x18\x01 \x01(\tR\x0b\x63ompanyName\x12\x1d\n\nowner_name\x18\x02 \x01(\tR\townerName\x12\x1f\n\x0bowner_email\x18\x03 \x01(\tR\nownerEmail\x12%\n\x0eowner_password\x18\x04 \x01(\tR\rownerPassword\"}\n\x16OnboardCompanyResponse\x12\x1d\n\ncompany_id\x18\x01 \x01(\tR\tcompanyId\x12\x19\n\x08owner_id\x18\x02 \x01(\tR\x07ownerId\x12)\n\x10\x64\x65ployment_token\x18\x03 \x01(\tR\x0f\x64\x65ploymentToken\"\x16\n\x14ListCompaniesRequest\"O\n\x15ListCompaniesResponse\x12\x36\n\tcompanies\x18\x01 \x03(\x0b\x32\x18.aegis.v2.CompanySummaryR\tcompanies\"\xdd\x01\n\x0e\x43ompanySummary\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n\x08owner_id\x18\x03 \x01(\tR\x07ownerId\x12\x1f\n\x0bowner_email\x18\x04 \x01(\tR\nownerEmail\x12!\n\x0cmember_count\x18\x05 \x01(\x05R\x0bmemberCount\x12)\n\x10\x64\x65ployment_token\x18\x06 \x01(\tR\x0f\x64\x65ploymentToken\x12\x1d\n\navatar_url\x18\x07 \x01(\tR\tavatarUrl2\xd4\x02\n\x0e\x43ompanyService\x12P\n\rCreateCompany\x12\x1e.aegis.v2.CreateCompanyRequest\x1a\x1f.aegis.v2.CreateCompanyResponse\x12P\n\rListCompanies\x12\x1e.aegis.v2.ListCompaniesRequest\x1a\x1f.aegis.v2.ListCompaniesResponse\x12S\n\x0eOnboardCompany\x12\x1f.aegis.v2.OnboardCompanyRequest\x1a .aegis.v2.OnboardCompanyResponse\x12I\n\nWatchTeams\x12\x1b.aegis.v2.WatchTeamsRequest\x1a\x1c.aegis.v2.WatchTeamsResponse0\x01\x42PZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,20 +32,24 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'aegis.v2.company_pb2', _glo
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'ZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2'
-  _globals['_CREATECOMPANYREQUEST']._serialized_start=36
-  _globals['_CREATECOMPANYREQUEST']._serialized_end=111
-  _globals['_CREATECOMPANYRESPONSE']._serialized_start=113
-  _globals['_CREATECOMPANYRESPONSE']._serialized_end=172
-  _globals['_ONBOARDCOMPANYREQUEST']._serialized_start=175
-  _globals['_ONBOARDCOMPANYREQUEST']._serialized_end=336
-  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_start=338
-  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_end=463
-  _globals['_LISTCOMPANIESREQUEST']._serialized_start=465
-  _globals['_LISTCOMPANIESREQUEST']._serialized_end=487
-  _globals['_LISTCOMPANIESRESPONSE']._serialized_start=489
-  _globals['_LISTCOMPANIESRESPONSE']._serialized_end=568
-  _globals['_COMPANYSUMMARY']._serialized_start=571
-  _globals['_COMPANYSUMMARY']._serialized_end=792
-  _globals['_COMPANYSERVICE']._serialized_start=795
-  _globals['_COMPANYSERVICE']._serialized_end=1060
+  _globals['_WATCHTEAMSREQUEST']._serialized_start=36
+  _globals['_WATCHTEAMSREQUEST']._serialized_end=55
+  _globals['_WATCHTEAMSRESPONSE']._serialized_start=57
+  _globals['_WATCHTEAMSRESPONSE']._serialized_end=170
+  _globals['_CREATECOMPANYREQUEST']._serialized_start=172
+  _globals['_CREATECOMPANYREQUEST']._serialized_end=247
+  _globals['_CREATECOMPANYRESPONSE']._serialized_start=249
+  _globals['_CREATECOMPANYRESPONSE']._serialized_end=308
+  _globals['_ONBOARDCOMPANYREQUEST']._serialized_start=311
+  _globals['_ONBOARDCOMPANYREQUEST']._serialized_end=472
+  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_start=474
+  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_end=599
+  _globals['_LISTCOMPANIESREQUEST']._serialized_start=601
+  _globals['_LISTCOMPANIESREQUEST']._serialized_end=623
+  _globals['_LISTCOMPANIESRESPONSE']._serialized_start=625
+  _globals['_LISTCOMPANIESRESPONSE']._serialized_end=704
+  _globals['_COMPANYSUMMARY']._serialized_start=707
+  _globals['_COMPANYSUMMARY']._serialized_end=928
+  _globals['_COMPANYSERVICE']._serialized_start=931
+  _globals['_COMPANYSERVICE']._serialized_end=1271
 # @@protoc_insertion_point(module_scope)

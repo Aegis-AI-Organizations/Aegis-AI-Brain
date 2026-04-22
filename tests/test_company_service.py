@@ -27,25 +27,35 @@ def mock_db(company_service):
 
 @pytest.mark.asyncio
 async def test_create_company_success(company_service, mock_db):
-    owner_id = uuid.uuid4()
-    owner = User(id=owner_id, email="owner@test.com")
-    mock_db.query.return_value.filter.return_value.first.side_effect = [
-        owner,  # Owner lookup
-        None,  # Name check
-    ]
+    with patch("grpc_services.company.Company") as mock_company_cls:
+        owner_id = uuid.uuid4()
+        owner = User(id=owner_id, email="owner@test.com")
+        mock_db.query.return_value.filter.return_value.first.side_effect = [
+            owner,  # Owner lookup
+            None,  # Name check
+        ]
 
-    with patch("grpc_services.utils.get_identity") as mock_get_id:
-        mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "superadmin"}
+        mock_company = MagicMock()
+        mock_company.id = uuid.uuid4()
+        mock_company.name = "New Co"
+        mock_company.owner_id = owner_id
+        mock_company_cls.return_value = mock_company
 
-        request = company_pb2.CreateCompanyRequest(
-            name="New Co", owner_email="owner@test.com"
-        )
-        context = MagicMock()
+        with patch("grpc_services.utils.get_identity") as mock_get_id:
+            mock_get_id.return_value = {
+                "user_id": str(uuid.uuid4()),
+                "role": "superadmin",
+            }
 
-        response = await company_service.CreateCompany(request, context)
+            request = company_pb2.CreateCompanyRequest(
+                name="New Co", owner_email="owner@test.com"
+            )
+            context = MagicMock()
 
-        assert response.name == "New Co"
-        assert mock_db.commit.call_count == 2
+            response = await company_service.CreateCompany(request, context)
+
+            assert response.name == "New Co"
+            assert mock_db.commit.call_count == 2
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, AsyncMock
 import grpc
 import uuid
 import asyncio
@@ -113,8 +113,14 @@ async def test_onboard_company_success(company_service, mock_db):
             owner_password="password",
         )
         context = MagicMock()
+        context.abort = AsyncMock()
 
-        response = await company_service.OnboardCompany(request, context)
+        with patch("grpc_services.utils.get_identity") as mock_get_id:
+            mock_get_id.return_value = {
+                "user_id": str(uuid.uuid4()),
+                "role": "superadmin",
+            }
+            response = await company_service.OnboardCompany(request, context)
 
         assert response.company_id == str(mock_company.id)
         assert response.owner_id == str(mock_owner.id)
@@ -164,12 +170,16 @@ async def test_create_user_success(company_service, mock_db):
 
         # Mock metadata for hijacking
         mock_context = MagicMock()
+        mock_context.abort = AsyncMock()
         mock_context.invocation_metadata.return_value = [
             ("x-action", "create-user"),
             ("x-user-password", "pass123"),
             ("x-user-role", "admin"),
             ("x-company-id", str(uuid.uuid4())),
         ]
+
+        # Ensure user doesn't exist check returns None
+        mock_db.query.return_value.filter.return_value.first.return_value = None
 
         with patch("grpc_services.utils.get_identity") as mock_get_id:
             mock_get_id.return_value = {

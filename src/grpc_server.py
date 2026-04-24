@@ -7,6 +7,7 @@ import aegis.v2.ping_pb2_grpc as ping_pb2_grpc
 import aegis.v2.scan_pb2_grpc as scan_pb2_grpc
 import aegis.v2.vulnerability_pb2_grpc as vulnerability_pb2_grpc
 import aegis.v2.company_pb2_grpc as company_pb2_grpc
+import aegis.v2.billing_pb2_grpc as billing_pb2_grpc
 
 from config.config import (
     GRPC_PORT,
@@ -20,6 +21,7 @@ from grpc_services.ping import PingService
 from grpc_services.scans import ScanService
 from grpc_services.vulnerabilities import VulnerabilityService
 from grpc_services.company import CompanyService
+from grpc_services.billing import BillingService
 from grpc_services.interceptors import AuthInterceptor
 
 logger = logging.getLogger("aegis_brain_grpc")
@@ -51,6 +53,7 @@ async def serve(port: str, temporal_client=None):
         VulnerabilityService(), server
     )
     company_pb2_grpc.add_CompanyServiceServicer_to_server(CompanyService(), server)
+    billing_pb2_grpc.add_BillingServiceServicer_to_server(BillingService(), server)
 
     listen_addr = f"0.0.0.0:{port}"
     try:

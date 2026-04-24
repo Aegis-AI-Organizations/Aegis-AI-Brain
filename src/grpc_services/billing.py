@@ -1,0 +1,199 @@
+import logging
+import asyncio
+import grpc
+
+import aegis.v2.billing_pb2 as billing_pb2
+import aegis.v2.billing_pb2_grpc as billing_pb2_grpc
+from config.db import get_session_factory
+from models.company import Company
+from models.token_ledger import TokenLedger
+from grpc_services.utils import with_identity
+
+logger = logging.getLogger(__name__)
+
+# Pricing Matrix as per Step 3 requirements
+PRICING_MATRIX = {"IP": 1, "API": 3, "WEBAPP": 5}
+
+
+class BillingService(billing_pb2_grpc.BillingServiceServicer):
+    """BillingService handles token balance and ledger management."""
+
+    def __init__(self):
+        self._session_factory = None
+
+    @property
+    def session_factory(self):
+        if self._session_factory is None:
+            self._session_factory = get_session_factory()
+        return self._session_factory
+
+    def _get_balance_db_sync(self, company_id: str):
+        with self.session_factory() as db:
+            company = db.query(Company).filter(Company.id == company_id).first()
+            if not company:
+                return None
+            return company.token_balance
+
+    @with_identity(verified_only=True)
+    async def GetBalance(
+        self, request: billing_pb2.GetBalanceRequest, context, identity
+    ) -> billing_pb2.GetBalanceResponse:
+        # RBAC: Owners can see their own balance, admins can see any
+        if (
+            identity["role"] == "owner"
+            and str(identity.get("company_id")) != request.company_id
+        ):
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return billing_pb2.GetBalanceResponse()
+
+        balance = await asyncio.to_thread(self._get_balance_db_sync, request.company_id)
+        if balance is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("Company not found")
+            return billing_pb2.GetBalanceResponse()
+
+        return billing_pb2.GetBalanceResponse(
+            company_id=request.company_id, balance=balance
+        )
+
+    def _get_ledger_db_sync(self, company_id: str, limit: int, offset: int):
+        with self.session_factory() as db:
+            query = db.query(TokenLedger).filter(TokenLedger.company_id == company_id)
+            total = query.count()
+            entries = (
+                query.order_by(TokenLedger.created_at.desc())
+                .limit(limit)
+                .offset(offset)
+                .all()
+            )
+            return entries, total
+
+    @with_identity(verified_only=True)
+    async def GetLedger(
+        self, request: billing_pb2.GetLedgerRequest, context, identity
+    ) -> billing_pb2.GetLedgerResponse:
+        # RBAC check
+        if (
+            identity["role"] == "owner"
+            and str(identity.get("company_id")) != request.company_id
+        ):
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return billing_pb2.GetLedgerResponse()
+
+        limit = request.limit if request.limit > 0 else 50
+        offset = request.offset if request.offset >= 0 else 0
+
+        entries, total = await asyncio.to_thread(
+            self._get_ledger_db_sync, request.company_id, limit, offset
+        )
+
+        proto_entries = [
+            billing_pb2.LedgerEntry(
+                id=str(e.id),
+                company_id=str(e.company_id),
+                amount=e.amount,
+                reason=e.reason,
+                scan_id=str(e.scan_id) if e.scan_id else "",
+                created_at=None,  # google.protobuf.Timestamp needs conversion if used strictly
+            )
+            for e in entries
+        ]
+
+        # Fill timestamps
+        for i, e in enumerate(entries):
+            proto_entries[i].created_at.FromDatetime(e.created_at)
+
+        return billing_pb2.GetLedgerResponse(entries=proto_entries, total=total)
+
+    def _adjust_tokens_db_sync(self, company_id: str, amount: int, reason: str):
+        with self.session_factory() as db:
+            try:
+                # Use FOR UPDATE to prevent race conditions on balance
+                company = (
+                    db.query(Company)
+                    .filter(Company.id == company_id)
+                    .with_for_update()
+                    .first()
+                )
+                if not company:
+                    return None, "Company not found"
+
+                # Check for negative balance if subtracting
+                if amount < 0 and company.token_balance + amount < 0:
+                    return None, "Insufficient token balance"
+
+                # ACID Transaction: Update balance and create ledger entry
+                company.token_balance += amount
+
+                ledger_entry = TokenLedger(
+                    company_id=company.id, amount=amount, reason=reason
+                )
+                db.add(ledger_entry)
+
+                db.commit()
+                return company.token_balance, None
+            except Exception as e:
+                db.rollback()
+                logger.exception("Failed to adjust tokens")
+                return None, str(e)
+
+    @with_identity(verified_only=True)
+    async def AdjustTokens(
+        self, request: billing_pb2.AdjustTokensRequest, context, identity
+    ) -> billing_pb2.AdjustTokensResponse:
+        # RBAC: Only SuperAdmin or Aegis Billing system can adjust tokens manually
+        if identity["role"] not in ["superadmin", "billing_aegis"]:
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return billing_pb2.AdjustTokensResponse()
+
+        balance, error = await asyncio.to_thread(
+            self._adjust_tokens_db_sync,
+            request.company_id,
+            request.amount,
+            request.reason,
+        )
+
+        if error:
+            status_code = (
+                grpc.StatusCode.FAILED_PRECONDITION
+                if "Insufficient" in error
+                else grpc.StatusCode.INTERNAL
+            )
+            context.set_code(status_code)
+            context.set_details(error)
+            return billing_pb2.AdjustTokensResponse()
+
+        return billing_pb2.AdjustTokensResponse(
+            company_id=request.company_id, balance=balance
+        )
+
+    @with_identity(verified_only=True)
+    async def PreFlightCheck(
+        self, request: billing_pb2.PreFlightCheckRequest, context, identity
+    ) -> billing_pb2.PreFlightCheckResponse:
+        # RBAC check
+        if (
+            identity["role"] == "owner"
+            and str(identity.get("company_id")) != request.company_id
+        ):
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return billing_pb2.PreFlightCheckResponse()
+
+        # 1. Calculate estimated cost based on Pricing Matrix
+        estimated_cost = (
+            request.target_config.ip_count * PRICING_MATRIX["IP"]
+            + request.target_config.api_count * PRICING_MATRIX["API"]
+            + request.target_config.webapp_count * PRICING_MATRIX["WEBAPP"]
+        )
+
+        # 2. Get current balance
+        balance = await asyncio.to_thread(self._get_balance_db_sync, request.company_id)
+        if balance is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            return billing_pb2.PreFlightCheckResponse()
+
+        return billing_pb2.PreFlightCheckResponse(
+            sufficient_balance=(balance >= estimated_cost),
+            estimated_cost=estimated_cost,
+            current_balance=balance,
+        )

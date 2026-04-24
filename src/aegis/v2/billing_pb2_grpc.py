@@ -35,6 +35,11 @@ class BillingServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_billing__pb2.PreFlightCheckRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_billing__pb2.PreFlightCheckResponse.FromString,
                 _registered_method=True)
+        self.GetUsageStats = channel.unary_unary(
+                '/aegis.v2.BillingService/GetUsageStats',
+                request_serializer=aegis_dot_v2_dot_billing__pb2.GetUsageStatsRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_billing__pb2.GetUsageStatsResponse.FromString,
+                _registered_method=True)
 
 
 class BillingServiceServicer(object):
@@ -69,6 +74,13 @@ class BillingServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetUsageStats(self, request, context):
+        """GetUsageStats retrieves aggregated consumption data for graphs.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_BillingServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -91,6 +103,11 @@ def add_BillingServiceServicer_to_server(servicer, server):
                     servicer.PreFlightCheck,
                     request_deserializer=aegis_dot_v2_dot_billing__pb2.PreFlightCheckRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_billing__pb2.PreFlightCheckResponse.SerializeToString,
+            ),
+            'GetUsageStats': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetUsageStats,
+                    request_deserializer=aegis_dot_v2_dot_billing__pb2.GetUsageStatsRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_billing__pb2.GetUsageStatsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -202,6 +219,33 @@ class BillingService(object):
             '/aegis.v2.BillingService/PreFlightCheck',
             aegis_dot_v2_dot_billing__pb2.PreFlightCheckRequest.SerializeToString,
             aegis_dot_v2_dot_billing__pb2.PreFlightCheckResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetUsageStats(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.BillingService/GetUsageStats',
+            aegis_dot_v2_dot_billing__pb2.GetUsageStatsRequest.SerializeToString,
+            aegis_dot_v2_dot_billing__pb2.GetUsageStatsResponse.FromString,
             options,
             channel_credentials,
             insecure,

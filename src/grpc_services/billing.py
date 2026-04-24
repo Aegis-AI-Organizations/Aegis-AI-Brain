@@ -191,9 +191,60 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
         if balance is None:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             return billing_pb2.PreFlightCheckResponse()
-
         return billing_pb2.PreFlightCheckResponse(
             sufficient_balance=(balance >= estimated_cost),
             estimated_cost=estimated_cost,
             current_balance=balance,
+        )
+
+    def _get_usage_stats_db_sync(self, company_id: str, days: int):
+        from sqlalchemy import func, cast, Date
+        from datetime import datetime, timedelta, timezone
+
+        with self.session_factory() as db:
+            since = datetime.now(timezone.utc) - timedelta(days=days)
+
+            # Query: Aggregate daily negative amounts (consumption)
+            # We filter for amount < 0 to only count "spending"
+            stats = (
+                db.query(
+                    cast(TokenLedger.created_at, Date).label("day"),
+                    func.abs(func.sum(TokenLedger.amount)).label("total"),
+                )
+                .filter(TokenLedger.company_id == company_id)
+                .filter(TokenLedger.created_at >= since)
+                .filter(TokenLedger.amount < 0)
+                .group_by(cast(TokenLedger.created_at, Date))
+                .order_by("day")
+                .all()
+            )
+
+            total_period = sum(s.total for s in stats)
+            usage_days = [
+                billing_pb2.UsageDay(date=s.day.isoformat(), total_consumed=s.total)
+                for s in stats
+            ]
+
+            return usage_days, total_period
+
+    @with_identity(verified_only=True)
+    async def GetUsageStats(
+        self, request: billing_pb2.GetUsageStatsRequest, context, identity
+    ) -> billing_pb2.GetUsageStatsResponse:
+        # RBAC check
+        if (
+            identity["role"] == "owner"
+            and str(identity.get("company_id")) != request.company_id
+        ):
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            return billing_pb2.GetUsageStatsResponse()
+
+        days = request.days if request.days > 0 else 30
+
+        usage_days, total_period = await asyncio.to_thread(
+            self._get_usage_stats_db_sync, request.company_id, days
+        )
+
+        return billing_pb2.GetUsageStatsResponse(
+            days=usage_days, total_period=total_period
         )

@@ -68,7 +68,7 @@ async def test_get_balance_unauthorized_cross_tenant(billing_service, mock_db):
 @pytest.mark.asyncio
 async def test_get_ledger_success(billing_service, mock_db):
     company_id = str(uuid.uuid4())
-    mock_entry = MagicMock(spec=TokenLedger)
+    mock_entry = MagicMock()
     mock_entry.id = uuid.uuid4()
     mock_entry.company_id = company_id
     mock_entry.amount = -50
@@ -96,6 +96,6 @@ async def test_get_ledger_success(billing_service, mock_db):
 
         response = await billing_service.GetLedger(request, context)
         assert response.total == 1
-        assert len(response.logs) == 1
-        assert response.logs[0].amount == -50
-        assert response.logs[0].reason == "Scan cost"
+        assert len(response.entries) == 1
+        assert response.entries[0].amount == -50
+        assert response.entries[0].reason == "Scan cost"

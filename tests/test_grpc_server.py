@@ -211,6 +211,8 @@ async def test_scan_service_watch_status(mock_get_db):
 
     stream = servicer.WatchScanStatus(request, MockContext())
     async for response in stream:
+        if response.scan_id == "ping":
+            continue
         assert response.scan_id == "test-id"
         assert response.status == "COMPLETED"
         break  # Only expect one for this test

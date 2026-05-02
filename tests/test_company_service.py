@@ -158,7 +158,9 @@ async def test_watch_company_updates_success(company_service):
             async def trigger():
                 await asyncio.sleep(0.1)
                 # Broadcast payload: (event, company_id, entity_id, entity_name)
-                broadcaster.broadcast("team", ("COMPANY_CREATED", "c1", "c1", "Company 1"))
+                broadcaster.broadcast(
+                    "team", ("COMPANY_CREATED", "c1", "c1", "Company 1")
+                )
 
             asyncio.create_task(trigger())
 

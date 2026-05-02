@@ -5,8 +5,8 @@ import uuid
 
 from grpc_services.billing import BillingService
 import aegis.v2.billing_pb2 as billing_pb2
-from models.company import Company
 from models.token_ledger import TokenLedger
+
 
 @pytest.fixture
 def billing_service():
@@ -14,12 +14,14 @@ def billing_service():
     service._session_factory = MagicMock()
     return service
 
+
 @pytest.fixture
 def mock_db(billing_service):
     db = MagicMock()
     billing_service._session_factory.return_value.__enter__.return_value = db
     billing_service._session_factory.return_value.__exit__.return_value = False
     return db
+
 
 @pytest.mark.asyncio
 async def test_get_balance_success(billing_service, mock_db):
@@ -30,7 +32,11 @@ async def test_get_balance_success(billing_service, mock_db):
     mock_db.query.return_value.filter.return_value.first.return_value = mock_company
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
-        mock_get_id.return_value = {"user_id": "u1", "company_id": company_id, "role": "owner"}
+        mock_get_id.return_value = {
+            "user_id": "u1",
+            "company_id": company_id,
+            "role": "owner",
+        }
 
         request = billing_pb2.GetBalanceRequest(company_id=company_id)
         context = MagicMock()
@@ -39,19 +45,25 @@ async def test_get_balance_success(billing_service, mock_db):
         assert response.balance == 500
         assert response.company_id == company_id
 
+
 @pytest.mark.asyncio
 async def test_get_balance_unauthorized_cross_tenant(billing_service, mock_db):
     my_company_id = str(uuid.uuid4())
     other_company_id = str(uuid.uuid4())
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
-        mock_get_id.return_value = {"user_id": "u1", "company_id": my_company_id, "role": "owner"}
+        mock_get_id.return_value = {
+            "user_id": "u1",
+            "company_id": my_company_id,
+            "role": "owner",
+        }
 
         request = billing_pb2.GetBalanceRequest(company_id=other_company_id)
         context = MagicMock()
 
         await billing_service.GetBalance(request, context)
         context.set_code.assert_called_with(grpc.StatusCode.PERMISSION_DENIED)
+
 
 @pytest.mark.asyncio
 async def test_get_ledger_success(billing_service, mock_db):
@@ -66,12 +78,20 @@ async def test_get_ledger_success(billing_service, mock_db):
 
     mock_query = mock_db.query.return_value.filter.return_value
     mock_query.count.return_value = 1
-    mock_query.order_by.return_value.limit.return_value.offset.return_value.all.return_value = [mock_entry]
+    mock_query.order_by.return_value.limit.return_value.offset.return_value.all.return_value = [
+        mock_entry
+    ]
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
-        mock_get_id.return_value = {"user_id": "u1", "company_id": company_id, "role": "owner"}
+        mock_get_id.return_value = {
+            "user_id": "u1",
+            "company_id": company_id,
+            "role": "owner",
+        }
 
-        request = billing_pb2.GetLedgerRequest(company_id=company_id, limit=10, offset=0)
+        request = billing_pb2.GetLedgerRequest(
+            company_id=company_id, limit=10, offset=0
+        )
         context = MagicMock()
 
         response = await billing_service.GetLedger(request, context)

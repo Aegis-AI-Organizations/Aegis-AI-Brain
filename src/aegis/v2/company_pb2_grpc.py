@@ -30,10 +30,10 @@ class CompanyServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.FromString,
                 _registered_method=True)
-        self.WatchTeams = channel.unary_stream(
-                '/aegis.v2.CompanyService/WatchTeams',
-                request_serializer=aegis_dot_v2_dot_company__pb2.WatchTeamsRequest.SerializeToString,
-                response_deserializer=aegis_dot_v2_dot_company__pb2.WatchTeamsResponse.FromString,
+        self.WatchCompanyUpdates = channel.unary_stream(
+                '/aegis.v2.CompanyService/WatchCompanyUpdates',
+                request_serializer=aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesResponse.FromString,
                 _registered_method=True)
         self.ListAuditLogs = channel.unary_unary(
                 '/aegis.v2.CompanyService/ListAuditLogs',
@@ -67,8 +67,8 @@ class CompanyServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def WatchTeams(self, request, context):
-        """WatchTeams streams updates about companies and users.
+    def WatchCompanyUpdates(self, request, context):
+        """WatchCompanyUpdates streams updates about companies and users.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -99,10 +99,10 @@ def add_CompanyServiceServicer_to_server(servicer, server):
                     request_deserializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.SerializeToString,
             ),
-            'WatchTeams': grpc.unary_stream_rpc_method_handler(
-                    servicer.WatchTeams,
-                    request_deserializer=aegis_dot_v2_dot_company__pb2.WatchTeamsRequest.FromString,
-                    response_serializer=aegis_dot_v2_dot_company__pb2.WatchTeamsResponse.SerializeToString,
+            'WatchCompanyUpdates': grpc.unary_stream_rpc_method_handler(
+                    servicer.WatchCompanyUpdates,
+                    request_deserializer=aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesResponse.SerializeToString,
             ),
             'ListAuditLogs': grpc.unary_unary_rpc_method_handler(
                     servicer.ListAuditLogs,
@@ -203,7 +203,7 @@ class CompanyService(object):
             _registered_method=True)
 
     @staticmethod
-    def WatchTeams(request,
+    def WatchCompanyUpdates(request,
             target,
             options=(),
             channel_credentials=None,
@@ -216,9 +216,9 @@ class CompanyService(object):
         return grpc.experimental.unary_stream(
             request,
             target,
-            '/aegis.v2.CompanyService/WatchTeams',
-            aegis_dot_v2_dot_company__pb2.WatchTeamsRequest.SerializeToString,
-            aegis_dot_v2_dot_company__pb2.WatchTeamsResponse.FromString,
+            '/aegis.v2.CompanyService/WatchCompanyUpdates',
+            aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesRequest.SerializeToString,
+            aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesResponse.FromString,
             options,
             channel_credentials,
             insecure,

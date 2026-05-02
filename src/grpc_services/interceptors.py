@@ -15,6 +15,8 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
         "/aegis.v2.AuthService/Refresh",
         "/aegis.v2.AuthService/Logout",
         "/aegis.v2.PingService/Ping",
+        "/aegis.v2.ScanService/UpdateScanStatus",
+        "/aegis.v2.InternalAuthService/VerifyToken",
     }
 
     @staticmethod

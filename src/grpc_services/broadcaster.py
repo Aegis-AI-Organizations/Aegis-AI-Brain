@@ -4,8 +4,11 @@ import asyncio
 class StatusBroadcaster:
     def __init__(self):
         self.queues = set()
+        self.loop = None
 
     def register(self):
+        if self.loop is None:
+            self.loop = asyncio.get_running_loop()
         q = asyncio.Queue()
         self.queues.add(q)
         return q
@@ -14,17 +17,10 @@ class StatusBroadcaster:
         self.queues.remove(q)
 
     def broadcast(self, event_type, data):
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            # Fallback for threads without an event loop
-            try:
-                loop = asyncio.get_event_loop_policy().get_event_loop()
-            except Exception:
-                return
-
+        if not self.loop:
+            return
         for q in self.queues:
-            loop.call_soon_threadsafe(q.put_nowait, (event_type, data))
+            self.loop.call_soon_threadsafe(q.put_nowait, (event_type, data))
 
 
 broadcaster = StatusBroadcaster()

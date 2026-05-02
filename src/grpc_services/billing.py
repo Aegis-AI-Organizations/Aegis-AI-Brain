@@ -83,21 +83,18 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
             self._get_ledger_db_sync, request.company_id, limit, offset
         )
 
-        proto_entries = [
-            billing_pb2.LedgerEntry(
+        proto_entries = []
+        for e in entries:
+            entry = billing_pb2.LedgerEntry(
                 id=str(e.id),
                 company_id=str(e.company_id),
                 amount=e.amount,
                 reason=e.reason,
                 scan_id=str(e.scan_id) if e.scan_id else "",
-                created_at=None,  # google.protobuf.Timestamp needs conversion if used strictly
             )
-            for e in entries
-        ]
-
-        # Fill timestamps
-        for i, e in enumerate(entries):
-            proto_entries[i].created_at.FromDatetime(e.created_at)
+            if e.created_at:
+                entry.created_at.FromDatetime(e.created_at)
+            proto_entries.append(entry)
 
         return billing_pb2.GetLedgerResponse(entries=proto_entries, total=total)
 

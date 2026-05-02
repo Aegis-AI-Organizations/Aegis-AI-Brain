@@ -73,7 +73,9 @@ async def test_get_ledger_success(billing_service, mock_db):
     mock_entry.amount = -50
     mock_entry.reason = "Scan cost"
     mock_entry.scan_id = uuid.uuid4()
-    mock_entry.created_at = MagicMock()
+    from datetime import datetime
+
+    mock_entry.created_at = datetime.now()
 
     mock_query = mock_db.query.return_value.filter.return_value
     mock_query.count.return_value = 1

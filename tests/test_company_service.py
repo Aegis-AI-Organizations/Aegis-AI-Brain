@@ -143,13 +143,13 @@ async def test_onboard_company_success(company_service, mock_db):
 
 
 @pytest.mark.asyncio
-async def test_watch_teams_success(company_service):
+async def test_watch_company_updates_success(company_service):
     from grpc_services.broadcaster import broadcaster
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "superadmin"}
 
-        request = company_pb2.WatchTeamsRequest()
+        request = company_pb2.WatchCompanyUpdatesRequest()
         context = MagicMock()
 
         # We need to simulate the queue and its response
@@ -157,11 +157,14 @@ async def test_watch_teams_success(company_service):
             # Trigger an update in background
             async def trigger():
                 await asyncio.sleep(0.1)
-                broadcaster.broadcast("team", ("COMPANY_CREATED", "c1", "Company 1"))
+                # Broadcast payload: (event, company_id, entity_id, entity_name)
+                broadcaster.broadcast(
+                    "team", ("COMPANY_CREATED", "c1", "c1", "Company 1")
+                )
 
             asyncio.create_task(trigger())
 
-            stream = company_service.WatchTeams(request, context)
+            stream = company_service.WatchCompanyUpdates(request, context)
             async for resp in stream:
                 yield resp
                 break

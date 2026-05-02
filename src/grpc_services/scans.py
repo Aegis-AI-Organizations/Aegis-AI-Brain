@@ -12,7 +12,6 @@ from models.audit_log import AuditLog
 from config.db import get_session_factory
 from activities.db_activities import (
     _execute_status_update,
-    _execute_save_vulnerabilities,
 )
 
 logger = logging.getLogger("aegis_brain_grpc")

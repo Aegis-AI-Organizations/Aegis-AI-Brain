@@ -298,30 +298,3 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         except Exception as e:
             logger.error(f"Failed to update scan status: {e}")
             return scan_pb2.UpdateScanStatusResponse(success=False)
-
-    async def CreateVulnerabilities(self, request, context):
-        """Allows Agents to report vulnerability findings."""
-        try:
-            vulnerabilities = []
-            for v in request.vulnerabilities:
-                vuln_dict = {
-                    "vuln_type": v.vuln_type,
-                    "severity": v.severity,
-                    "target_endpoint": v.target_endpoint,
-                    "description": v.description,
-                    "evidences": [
-                        {"payload_used": ev.payload_used, "loot_data": ev.loot_data}
-                        for ev in v.evidences
-                    ],
-                }
-                vulnerabilities.append(vuln_dict)
-
-            await asyncio.to_thread(
-                _execute_save_vulnerabilities, request.scan_id, vulnerabilities
-            )
-            return scan_pb2.CreateVulnerabilitiesResponse(
-                success=True, count=len(vulnerabilities)
-            )
-        except Exception as e:
-            logger.error(f"Failed to save vulnerabilities: {e}")
-            return scan_pb2.CreateVulnerabilitiesResponse(success=False, count=0)

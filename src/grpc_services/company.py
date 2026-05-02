@@ -39,7 +39,9 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             self._session_factory = get_session_factory()
         return self._session_factory
 
-    def _create_company_db_sync(self, name: str, owner_email: str):
+    def _create_company_db_sync(
+        self, name: str, owner_email: str, org_size: str = None, org_type: str = None
+    ):
         with self.session_factory() as db:
             # 1. Verify owner exists
             owner = db.query(User).filter(User.email == owner_email).first()
@@ -52,7 +54,9 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 return None, CompanyCreateError.NAME_EXISTS
 
             try:
-                new_company = Company(name=name, owner_id=owner.id)
+                new_company = Company(
+                    name=name, owner_id=owner.id, org_size=org_size, org_type=org_type
+                )
                 db.add(new_company)
                 db.flush()  # Get ID
 
@@ -76,6 +80,8 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         owner_name: str,
         owner_email: str,
         owner_password: str,
+        org_size: str = None,
+        org_type: str = None,
     ):
         with self.session_factory() as db:
             # 1. Check if email already exists
@@ -94,7 +100,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 # 3. Create Company
                 deployment_token = f"ag_{uuid.uuid4().hex}"
                 new_company = Company(
-                    name=company_name, deployment_token=deployment_token
+                    name=company_name,
+                    deployment_token=deployment_token,
+                    org_size=org_size,
+                    org_type=org_type,
                 )
                 db.add(new_company)
                 db.flush()  # Get ID
@@ -146,6 +155,8 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             request.owner_name,
             request.owner_email,
             request.owner_password,
+            company_pb2.OrganizationSize.Name(request.org_size),
+            company_pb2.OrganizationType.Name(request.org_type),
         )
 
         company_id, owner_id, token, error = res
@@ -209,6 +220,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                         if isinstance(u.role, str)
                         else u.role.value,
                         "member_count": 0,
+                        "token_balance": 0,
                     }
                     # Defensive check for proto field existence
                     if hasattr(company_pb2.CompanySummary, "avatar_url"):
@@ -246,6 +258,17 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                         "owner_email": owner_email,
                         "member_count": len(c.members),
                         "deployment_token": c.deployment_token or "",
+                        "org_size": company_pb2.OrganizationSize.Value(
+                            c.org_size
+                            if c.org_size
+                            else "ORGANIZATION_SIZE_UNSPECIFIED"
+                        ),
+                        "org_type": company_pb2.OrganizationType.Value(
+                            c.org_type
+                            if c.org_type
+                            else "ORGANIZATION_TYPE_UNSPECIFIED"
+                        ),
+                        "token_balance": c.token_balance,
                     }
                     if hasattr(company_pb2.CompanySummary, "avatar_url"):
                         summary_kwargs["avatar_url"] = (
@@ -382,11 +405,23 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             return company_pb2.CreateCompanyResponse()
 
         company, error = await asyncio.to_thread(
-            self._create_company_db_sync, request.name, request.owner_email
+            self._create_company_db_sync,
+            request.name,
+            request.owner_email,
+            company_pb2.OrganizationSize.Name(request.org_size),
+            company_pb2.OrganizationType.Name(request.org_type),
         )
 
         if error != CompanyCreateError.SUCCESS:
-            context.set_code(grpc.StatusCode.INTERNAL)
+            if error == CompanyCreateError.NAME_EXISTS:
+                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+                context.set_details("Company name already exists")
+            elif error == CompanyCreateError.OWNER_NOT_FOUND:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details("Owner user not found")
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details("Failed to create company")
             return company_pb2.CreateCompanyResponse()
 
         # Log the action
@@ -467,12 +502,18 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     target_id=log.target_id,
                     details=json.dumps(log.details),
                     ip_address=log.ip_address,
-                    timestamp=log.timestamp.isoformat(),
+                    timestamp=None,  # Handled below
                 )
                 for log in logs
             ],
             total=total,
         )
+
+        # Fill timestamps
+        for i, log in enumerate(logs):
+            res.logs[i].timestamp.FromDatetime(log.timestamp)
+
+        return res
 
     def _list_audit_logs_db_sync(self, limit, offset, company_id=None):
         with self.session_factory() as db:

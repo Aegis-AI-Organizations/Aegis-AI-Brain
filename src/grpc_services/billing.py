@@ -38,13 +38,11 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
     async def GetBalance(
         self, request: billing_pb2.GetBalanceRequest, context, identity
     ) -> billing_pb2.GetBalanceResponse:
-        # RBAC: Owners can see their own balance, admins can see any
-        if (
-            identity["role"] == "owner"
-            and str(identity.get("company_id")) != request.company_id
-        ):
-            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            return billing_pb2.GetBalanceResponse()
+        # RBAC: Owners and client roles can only see their own balance, admins can see any
+        if identity["role"] not in ["superadmin", "admin", "billing_aegis"]:
+            if str(identity.get("company_id")) != request.company_id:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                return billing_pb2.GetBalanceResponse()
 
         balance = await asyncio.to_thread(self._get_balance_db_sync, request.company_id)
         if balance is None:
@@ -72,13 +70,11 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
     async def GetLedger(
         self, request: billing_pb2.GetLedgerRequest, context, identity
     ) -> billing_pb2.GetLedgerResponse:
-        # RBAC check
-        if (
-            identity["role"] == "owner"
-            and str(identity.get("company_id")) != request.company_id
-        ):
-            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            return billing_pb2.GetLedgerResponse()
+        # RBAC: Non-admin roles can only see their own ledger
+        if identity["role"] not in ["superadmin", "admin", "billing_aegis"]:
+            if str(identity.get("company_id")) != request.company_id:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                return billing_pb2.GetLedgerResponse()
 
         limit = request.limit if request.limit > 0 else 50
         offset = request.offset if request.offset >= 0 else 0
@@ -171,13 +167,11 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
     async def PreFlightCheck(
         self, request: billing_pb2.PreFlightCheckRequest, context, identity
     ) -> billing_pb2.PreFlightCheckResponse:
-        # RBAC check
-        if (
-            identity["role"] == "owner"
-            and str(identity.get("company_id")) != request.company_id
-        ):
-            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            return billing_pb2.PreFlightCheckResponse()
+        # RBAC: Non-admin roles can only check their own balance
+        if identity["role"] not in ["superadmin", "admin", "billing_aegis"]:
+            if str(identity.get("company_id")) != request.company_id:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                return billing_pb2.PreFlightCheckResponse()
 
         # 1. Calculate estimated cost based on Pricing Matrix
         estimated_cost = (
@@ -231,13 +225,11 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
     async def GetUsageStats(
         self, request: billing_pb2.GetUsageStatsRequest, context, identity
     ) -> billing_pb2.GetUsageStatsResponse:
-        # RBAC check
-        if (
-            identity["role"] == "owner"
-            and str(identity.get("company_id")) != request.company_id
-        ):
-            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-            return billing_pb2.GetUsageStatsResponse()
+        # RBAC: Non-admin roles can only see their own usage stats
+        if identity["role"] not in ["superadmin", "admin", "billing_aegis"]:
+            if str(identity.get("company_id")) != request.company_id:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                return billing_pb2.GetUsageStatsResponse()
 
         days = request.days if request.days > 0 else 30
 

@@ -66,7 +66,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.commit()
                 # Broadcast company creation
                 broadcaster.broadcast(
-                    "team", ("COMPANY_CREATED", str(new_company.id), new_company.name)
+                    "team", ("COMPANY_CREATED", str(new_company.id), str(new_company.id), new_company.name)
                 )
                 return new_company, CompanyCreateError.SUCCESS
             except Exception:
@@ -126,7 +126,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.commit()
                 # Broadcast company creation
                 broadcaster.broadcast(
-                    "team", ("COMPANY_CREATED", str(new_company.id), new_company.name)
+                    "team", ("COMPANY_CREATED", str(new_company.id), str(new_company.id), new_company.name)
                 )
                 return (
                     str(new_company.id),
@@ -162,7 +162,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         company_id, owner_id, token, error = res
 
         if error:
-            context.set_code(grpc.StatusCode.INTERNAL)
+            if "already exists" in error:
+                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(error)
             return company_pb2.OnboardCompanyResponse()
 
@@ -333,7 +336,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.add(new_user)
                 db.commit()
                 # Broadcast user creation
-                broadcaster.broadcast("team", ("USER_CREATED", str(new_user.id), name))
+                broadcaster.broadcast("team", ("USER_CREATED", str(company_id), str(new_user.id), name))
                 return str(new_user.id), None
             except Exception as e:
                 db.rollback()
@@ -357,9 +360,13 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             user_password = metadata.get("x-user-password", "")
             company_id = metadata.get("x-company-id", "")
 
-            # If owner, force company_id
+            # If owner, force company_id and prevent creating high-level roles
             if identity["role"] == "owner":
-                company_id = str(identity["company_id"])
+                company_id = str(identity.get("company_id"))
+                if user_role in ["superadmin", "admin", "commercial"]:
+                    context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                    context.set_details("Owners cannot create administrative roles")
+                    return company_pb2.CreateCompanyResponse()
 
             user_id, error = await asyncio.to_thread(
                 self._create_user_db_sync,
@@ -464,7 +471,12 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     if event_type != "team":
                         continue
 
-                    evt, eid, ename = data
+                    evt, event_company_id, eid, ename = data
+                    
+                    # Filter cross-tenant events if caller is an owner
+                    if identity["role"] == "owner" and event_company_id != str(identity.get("company_id")):
+                        continue
+
                     yield company_pb2.WatchCompanyUpdatesResponse(
                         event_type=evt, entity_id=eid, entity_name=ename
                     )
@@ -491,7 +503,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             self._list_audit_logs_db_sync, limit, offset, request.company_id
         )
 
-        return company_pb2.ListAuditLogsResponse(
+        res = company_pb2.ListAuditLogsResponse(
             logs=[
                 company_pb2.AuditLogEntry(
                     id=str(log.id),

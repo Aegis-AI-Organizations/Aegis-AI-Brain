@@ -3,6 +3,7 @@ from config.db import get_db_connection
 
 logger = logging.getLogger(__name__)
 
+
 class InternalAuthService:
     """Internal service for verifying agent deployment tokens."""
 

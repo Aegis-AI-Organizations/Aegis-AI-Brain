@@ -5,7 +5,6 @@ import uuid
 
 from grpc_services.billing import BillingService
 import aegis.v2.billing_pb2 as billing_pb2
-from models.token_ledger import TokenLedger
 
 
 @pytest.fixture

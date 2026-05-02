@@ -62,7 +62,13 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.commit()
                 # Broadcast company creation
                 broadcaster.broadcast(
-                    "team", ("COMPANY_CREATED", str(new_company.id), str(new_company.id), new_company.name)
+                    "team",
+                    (
+                        "COMPANY_CREATED",
+                        str(new_company.id),
+                        str(new_company.id),
+                        new_company.name,
+                    ),
                 )
                 return new_company, CompanyCreateError.SUCCESS
             except Exception:
@@ -117,7 +123,13 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.commit()
                 # Broadcast company creation
                 broadcaster.broadcast(
-                    "team", ("COMPANY_CREATED", str(new_company.id), str(new_company.id), new_company.name)
+                    "team",
+                    (
+                        "COMPANY_CREATED",
+                        str(new_company.id),
+                        str(new_company.id),
+                        new_company.name,
+                    ),
                 )
                 return (
                     str(new_company.id),
@@ -313,7 +325,9 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.add(new_user)
                 db.commit()
                 # Broadcast user creation
-                broadcaster.broadcast("team", ("USER_CREATED", str(company_id), str(new_user.id), name))
+                broadcaster.broadcast(
+                    "team", ("USER_CREATED", str(company_id), str(new_user.id), name)
+                )
                 return str(new_user.id), None
             except Exception as e:
                 db.rollback()

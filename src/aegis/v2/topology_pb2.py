@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x61\x65gis/v2/topology.proto\x12\x08\x61\x65gis.v2\"7\n\x0fNetworkTopology\x12$\n\x05hosts\x18\x01 \x03(\x0b\x32\x0e.aegis.v2.HostR\x05hosts\"\xbb\x01\n\x04Host\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n\x08hostname\x18\x02 \x01(\tR\x08hostname\x12!\n\x0cip_addresses\x18\x03 \x03(\tR\x0bipAddresses\x12\x33\n\ncontainers\x18\x04 \x03(\x0b\x32\x13.aegis.v2.ContainerR\ncontainers\x12/\n\tprocesses\x18\x05 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\"\x9c\x01\n\tContainer\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05image\x18\x03 \x01(\tR\x05image\x12/\n\tprocesses\x18\x04 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\x12$\n\x05ports\x18\x05 \x03(\x0b\x32\x0e.aegis.v2.PortR\x05ports\"\x8a\x01\n\x07Process\x12\x10\n\x03pid\x18\x01 \x01(\x05R\x03pid\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12&\n\x0c\x63ommand_line\x18\x03 \x01(\tH\x00R\x0b\x63ommandLine\x88\x01\x01\x12\x17\n\x04user\x18\x04 \x01(\tH\x01R\x04user\x88\x01\x01\x42\x0f\n\r_command_lineB\x07\n\x05_user\"_\n\x04Port\x12\x16\n\x06number\x18\x01 \x01(\x05R\x06number\x12\x1a\n\x08protocol\x18\x02 \x01(\tR\x08protocol\x12\x19\n\x05state\x18\x03 \x01(\tH\x00R\x05state\x88\x01\x01\x42\x08\n\x06_stateBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x61\x65gis/v2/topology.proto\x12\x08\x61\x65gis.v2\"N\n\x15ReportTopologyRequest\x12\x35\n\x08topology\x18\x01 \x01(\x0b\x32\x19.aegis.v2.NetworkTopologyR\x08topology\"2\n\x16ReportTopologyResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"7\n\x0fNetworkTopology\x12$\n\x05hosts\x18\x01 \x03(\x0b\x32\x0e.aegis.v2.HostR\x05hosts\"\xbb\x01\n\x04Host\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n\x08hostname\x18\x02 \x01(\tR\x08hostname\x12!\n\x0cip_addresses\x18\x03 \x03(\tR\x0bipAddresses\x12\x33\n\ncontainers\x18\x04 \x03(\x0b\x32\x13.aegis.v2.ContainerR\ncontainers\x12/\n\tprocesses\x18\x05 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\"\x9c\x01\n\tContainer\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05image\x18\x03 \x01(\tR\x05image\x12/\n\tprocesses\x18\x04 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\x12$\n\x05ports\x18\x05 \x03(\x0b\x32\x0e.aegis.v2.PortR\x05ports\"\x8a\x01\n\x07Process\x12\x10\n\x03pid\x18\x01 \x01(\x05R\x03pid\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12&\n\x0c\x63ommand_line\x18\x03 \x01(\tH\x00R\x0b\x63ommandLine\x88\x01\x01\x12\x17\n\x04user\x18\x04 \x01(\tH\x01R\x04user\x88\x01\x01\x42\x0f\n\r_command_lineB\x07\n\x05_user\"_\n\x04Port\x12\x16\n\x06number\x18\x01 \x01(\x05R\x06number\x12\x1a\n\x08protocol\x18\x02 \x01(\tR\x08protocol\x12\x19\n\x05state\x18\x03 \x01(\tH\x00R\x05state\x88\x01\x01\x42\x08\n\x06_state2f\n\x0fTopologyService\x12S\n\x0eReportTopology\x12\x1f.aegis.v2.ReportTopologyRequest\x1a .aegis.v2.ReportTopologyResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,14 +32,20 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'aegis.v2.topology_pb2', _gl
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'ZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2'
-  _globals['_NETWORKTOPOLOGY']._serialized_start=37
-  _globals['_NETWORKTOPOLOGY']._serialized_end=92
-  _globals['_HOST']._serialized_start=95
-  _globals['_HOST']._serialized_end=282
-  _globals['_CONTAINER']._serialized_start=285
-  _globals['_CONTAINER']._serialized_end=441
-  _globals['_PROCESS']._serialized_start=444
-  _globals['_PROCESS']._serialized_end=582
-  _globals['_PORT']._serialized_start=584
-  _globals['_PORT']._serialized_end=679
+  _globals['_REPORTTOPOLOGYREQUEST']._serialized_start=37
+  _globals['_REPORTTOPOLOGYREQUEST']._serialized_end=115
+  _globals['_REPORTTOPOLOGYRESPONSE']._serialized_start=117
+  _globals['_REPORTTOPOLOGYRESPONSE']._serialized_end=167
+  _globals['_NETWORKTOPOLOGY']._serialized_start=169
+  _globals['_NETWORKTOPOLOGY']._serialized_end=224
+  _globals['_HOST']._serialized_start=227
+  _globals['_HOST']._serialized_end=414
+  _globals['_CONTAINER']._serialized_start=417
+  _globals['_CONTAINER']._serialized_end=573
+  _globals['_PROCESS']._serialized_start=576
+  _globals['_PROCESS']._serialized_end=714
+  _globals['_PORT']._serialized_start=716
+  _globals['_PORT']._serialized_end=811
+  _globals['_TOPOLOGYSERVICE']._serialized_start=813
+  _globals['_TOPOLOGYSERVICE']._serialized_end=915
 # @@protoc_insertion_point(module_scope)

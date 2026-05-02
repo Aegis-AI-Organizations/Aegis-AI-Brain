@@ -10,6 +10,10 @@ from .broadcaster import broadcaster
 from config.config import BRAIN_TASK_QUEUE
 from models.audit_log import AuditLog
 from config.db import get_session_factory
+from activities.db_activities import (
+    _execute_status_update,
+    _execute_save_vulnerabilities,
+)
 
 logger = logging.getLogger("aegis_brain_grpc")
 
@@ -283,3 +287,41 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
                     )
         finally:
             broadcaster.unregister(q)
+
+    async def UpdateScanStatus(self, request, context):
+        """Allows Agents to update the status of a scan."""
+        try:
+            await asyncio.to_thread(
+                _execute_status_update, request.scan_id, request.status
+            )
+            return scan_pb2.UpdateScanStatusResponse(success=True)
+        except Exception as e:
+            logger.error(f"Failed to update scan status: {e}")
+            return scan_pb2.UpdateScanStatusResponse(success=False)
+
+    async def CreateVulnerabilities(self, request, context):
+        """Allows Agents to report vulnerability findings."""
+        try:
+            vulnerabilities = []
+            for v in request.vulnerabilities:
+                vuln_dict = {
+                    "vuln_type": v.vuln_type,
+                    "severity": v.severity,
+                    "target_endpoint": v.target_endpoint,
+                    "description": v.description,
+                    "evidences": [
+                        {"payload_used": ev.payload_used, "loot_data": ev.loot_data}
+                        for ev in v.evidences
+                    ],
+                }
+                vulnerabilities.append(vuln_dict)
+
+            await asyncio.to_thread(
+                _execute_save_vulnerabilities, request.scan_id, vulnerabilities
+            )
+            return scan_pb2.CreateVulnerabilitiesResponse(
+                success=True, count=len(vulnerabilities)
+            )
+        except Exception as e:
+            logger.error(f"Failed to save vulnerabilities: {e}")
+            return scan_pb2.CreateVulnerabilitiesResponse(success=False, count=0)

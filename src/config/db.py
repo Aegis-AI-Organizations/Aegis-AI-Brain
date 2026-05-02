@@ -41,11 +41,19 @@ def _build_db_url() -> URL:
 
 
 def get_engine():
-    """Lazily initializes and returns the SQLAlchemy engine."""
+    """Lazily initializes and returns the SQLAlchemy engine with a connection pool."""
     global _engine
     if _engine is None:
         db_url = _build_db_url()
-        _engine = create_engine(db_url, echo=SQLALCHEMY_ECHO)
+        _engine = create_engine(
+            db_url,
+            echo=SQLALCHEMY_ECHO,
+            pool_size=20,          # Maintain up to 20 idle connections
+            max_overflow=10,       # Allow up to 10 extra connections during bursts
+            pool_timeout=30,       # Wait 30s for a connection from the pool
+            pool_recycle=1800,     # Recycle connections every 30 minutes
+            pool_pre_ping=True,    # Verify connection health before use
+        )
     return _engine
 
 

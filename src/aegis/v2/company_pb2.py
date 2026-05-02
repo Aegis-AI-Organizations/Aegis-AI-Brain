@@ -9,14 +9,23 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+_runtime_version.ValidateProtobufRuntimeVersion(
+    _runtime_version.Domain.PUBLIC,
+    5,
+    29,
+    3,
+    '',
+    'aegis/v2/company.proto'
+)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x61\x65gis/v2/company.proto\x12\x08\x61\x65gis.v2\"c\n\x14ListAuditLogsRequest\x12\x14\n\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n\x06offset\x18\x02 \x01(\x05R\x06offset\x12\x1d\n\ncompany_id\x18\x03 \x01(\tR\tcompanyId\"Z\n\x15ListAuditLogsResponse\x12+\n\x04logs\x18\x01 \x03(\x0b\x32\x17.aegis.v2.AuditLogEntryR\x04logs\x12\x14\n\x05total\x18\x02 \x01(\x05R\x05total\"\x84\x02\n\rAuditLogEntry\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x1d\n\ncompany_id\x18\x03 \x01(\tR\tcompanyId\x12\x16\n\x06\x61\x63tion\x18\x04 \x01(\tR\x06\x61\x63tion\x12\x1f\n\x0btarget_type\x18\x05 \x01(\tR\ntargetType\x12\x1b\n\ttarget_id\x18\x06 \x01(\tR\x08targetId\x12\x18\n\x07\x64\x65tails\x18\x07 \x01(\tR\x07\x64\x65tails\x12\x1d\n\nip_address\x18\x08 \x01(\tR\tipAddress\x12\x1c\n\ttimestamp\x18\t \x01(\tR\ttimestamp\"\x13\n\x11WatchTeamsRequest\"q\n\x12WatchTeamsResponse\x12\x1d\n\nevent_type\x18\x01 \x01(\tR\teventType\x12\x1b\n\tentity_id\x18\x02 \x01(\tR\x08\x65ntityId\x12\x1f\n\x0b\x65ntity_name\x18\x03 \x01(\tR\nentityName\"\xb9\x01\n\x14\x43reateCompanyRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n\x0bowner_email\x18\x02 \x01(\tR\nownerEmail\x12\x35\n\x08org_size\x18\x03 \x01(\x0e\x32\x1a.aegis.v2.OrganizationSizeR\x07orgSize\x12\x35\n\x08org_type\x18\x04 \x01(\x0e\x32\x1a.aegis.v2.OrganizationTypeR\x07orgType\";\n\x15\x43reateCompanyResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"\x8f\x02\n\x15OnboardCompanyRequest\x12!\n\x0c\x63ompany_name\x18\x01 \x01(\tR\x0b\x63ompanyName\x12\x1d\n\nowner_name\x18\x02 \x01(\tR\townerName\x12\x1f\n\x0bowner_email\x18\x03 \x01(\tR\nownerEmail\x12%\n\x0eowner_password\x18\x04 \x01(\tR\rownerPassword\x12\x35\n\x08org_size\x18\x05 \x01(\x0e\x32\x1a.aegis.v2.OrganizationSizeR\x07orgSize\x12\x35\n\x08org_type\x18\x06 \x01(\x0e\x32\x1a.aegis.v2.OrganizationTypeR\x07orgType\"}\n\x16OnboardCompanyResponse\x12\x1d\n\ncompany_id\x18\x01 \x01(\tR\tcompanyId\x12\x19\n\x08owner_id\x18\x02 \x01(\tR\x07ownerId\x12)\n\x10\x64\x65ployment_token\x18\x03 \x01(\tR\x0f\x64\x65ploymentToken\"\x16\n\x14ListCompaniesRequest\"O\n\x15ListCompaniesResponse\x12\x36\n\tcompanies\x18\x01 \x03(\x0b\x32\x18.aegis.v2.CompanySummaryR\tcompanies\"\xf0\x02\n\x0e\x43ompanySummary\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n\x08owner_id\x18\x03 \x01(\tR\x07ownerId\x12\x1f\n\x0bowner_email\x18\x04 \x01(\tR\nownerEmail\x12!\n\x0cmember_count\x18\x05 \x01(\x05R\x0bmemberCount\x12)\n\x10\x64\x65ployment_token\x18\x06 \x01(\tR\x0f\x64\x65ploymentToken\x12\x1d\n\navatar_url\x18\x07 \x01(\tR\tavatarUrl\x12\x35\n\x08org_size\x18\x08 \x01(\x0e\x32\x1a.aegis.v2.OrganizationSizeR\x07orgSize\x12\x35\n\x08org_type\x18\t \x01(\x0e\x32\x1a.aegis.v2.OrganizationTypeR\x07orgType\x12#\n\rtoken_balance\x18\n \x01(\x03R\x0ctokenBalance*\xc9\x02\n\x10OrganizationSize\x12!\n\x1dORGANIZATION_SIZE_UNSPECIFIED\x10\x00\x12\x17\n\x13ORGANIZATION_SIZE_1\x10\x01\x12\x1a\n\x16ORGANIZATION_SIZE_2_10\x10\x02\x12\x1b\n\x17ORGANIZATION_SIZE_11_50\x10\x03\x12\x1c\n\x18ORGANIZATION_SIZE_51_200\x10\x04\x12\x1d\n\x19ORGANIZATION_SIZE_201_500\x10\x05\x12\x1e\n\x1aORGANIZATION_SIZE_501_1000\x10\x06\x12\x1f\n\x1bORGANIZATION_SIZE_1001_5000\x10\x07\x12 \n\x1cORGANIZATION_SIZE_5001_10000\x10\x08\x12 \n\x1cORGANIZATION_SIZE_10001_PLUS\x10\t*\xff\x02\n\x10OrganizationType\x12!\n\x1dORGANIZATION_TYPE_UNSPECIFIED\x10\x00\x12\x30\n,ORGANIZATION_TYPE_IT_SERVICES_AND_CONSULTING\x10\x01\x12*\n&ORGANIZATION_TYPE_SOFTWARE_DEVELOPMENT\x10\x02\x12(\n$ORGANIZATION_TYPE_FINANCIAL_SERVICES\x10\x03\x12/\n+ORGANIZATION_TYPE_HOSPITALS_AND_HEALTH_CARE\x10\x04\x12\x1c\n\x18ORGANIZATION_TYPE_RETAIL\x10\x05\x12/\n+ORGANIZATION_TYPE_GOVERNMENT_ADMINISTRATION\x10\x06\x12#\n\x1fORGANIZATION_TYPE_MANUFACTURING\x10\x07\x12\x1b\n\x17ORGANIZATION_TYPE_OTHER\x10\x08\x32\xa6\x03\n\x0e\x43ompanyService\x12P\n\rCreateCompany\x12\x1e.aegis.v2.CreateCompanyRequest\x1a\x1f.aegis.v2.CreateCompanyResponse\x12P\n\rListCompanies\x12\x1e.aegis.v2.ListCompaniesRequest\x1a\x1f.aegis.v2.ListCompaniesResponse\x12S\n\x0eOnboardCompany\x12\x1f.aegis.v2.OnboardCompanyRequest\x1a .aegis.v2.OnboardCompanyResponse\x12I\n\nWatchTeams\x12\x1b.aegis.v2.WatchTeamsRequest\x1a\x1c.aegis.v2.WatchTeamsResponse0\x01\x12P\n\rListAuditLogs\x12\x1e.aegis.v2.ListAuditLogsRequest\x1a\x1f.aegis.v2.ListAuditLogsResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x61\x65gis/v2/company.proto\x12\x08\x61\x65gis.v2\x1a\x1fgoogle/protobuf/timestamp.proto\"c\n\x14ListAuditLogsRequest\x12\x14\n\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n\x06offset\x18\x02 \x01(\x05R\x06offset\x12\x1d\n\ncompany_id\x18\x03 \x01(\tR\tcompanyId\"Z\n\x15ListAuditLogsResponse\x12+\n\x04logs\x18\x01 \x03(\x0b\x32\x17.aegis.v2.AuditLogEntryR\x04logs\x12\x14\n\x05total\x18\x02 \x01(\x05R\x05total\"\xa0\x02\n\rAuditLogEntry\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x1d\n\ncompany_id\x18\x03 \x01(\tR\tcompanyId\x12\x16\n\x06\x61\x63tion\x18\x04 \x01(\tR\x06\x61\x63tion\x12\x1f\n\x0btarget_type\x18\x05 \x01(\tR\ntargetType\x12\x1b\n\ttarget_id\x18\x06 \x01(\tR\x08targetId\x12\x18\n\x07\x64\x65tails\x18\x07 \x01(\tR\x07\x64\x65tails\x12\x1d\n\nip_address\x18\x08 \x01(\tR\tipAddress\x12\x38\n\ttimestamp\x18\t \x01(\x0b\x32\x1a.google.protobuf.TimestampR\ttimestamp\"\x1c\n\x1aWatchCompanyUpdatesRequest\"z\n\x1bWatchCompanyUpdatesResponse\x12\x1d\n\nevent_type\x18\x01 \x01(\tR\teventType\x12\x1b\n\tentity_id\x18\x02 \x01(\tR\x08\x65ntityId\x12\x1f\n\x0b\x65ntity_name\x18\x03 \x01(\tR\nentityName\"\xb9\x01\n\x14\x43reateCompanyRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n\x0bowner_email\x18\x02 \x01(\tR\nownerEmail\x12\x35\n\x08org_size\x18\x03 \x01(\x0e\x32\x1a.aegis.v2.OrganizationSizeR\x07orgSize\x12\x35\n\x08org_type\x18\x04 \x01(\x0e\x32\x1a.aegis.v2.OrganizationTypeR\x07orgType\";\n\x15\x43reateCompanyResponse\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"\x8f\x02\n\x15OnboardCompanyRequest\x12!\n\x0c\x63ompany_name\x18\x01 \x01(\tR\x0b\x63ompanyName\x12\x1d\n\nowner_name\x18\x02 \x01(\tR\townerName\x12\x1f\n\x0bowner_email\x18\x03 \x01(\tR\nownerEmail\x12%\n\x0eowner_password\x18\x04 \x01(\tR\rownerPassword\x12\x35\n\x08org_size\x18\x05 \x01(\x0e\x32\x1a.aegis.v2.OrganizationSizeR\x07orgSize\x12\x35\n\x08org_type\x18\x06 \x01(\x0e\x32\x1a.aegis.v2.OrganizationTypeR\x07orgType\"}\n\x16OnboardCompanyResponse\x12\x1d\n\ncompany_id\x18\x01 \x01(\tR\tcompanyId\x12\x19\n\x08owner_id\x18\x02 \x01(\tR\x07ownerId\x12)\n\x10\x64\x65ployment_token\x18\x03 \x01(\tR\x0f\x64\x65ploymentToken\"\x16\n\x14ListCompaniesRequest\"O\n\x15ListCompaniesResponse\x12\x36\n\tcompanies\x18\x01 \x03(\x0b\x32\x18.aegis.v2.CompanySummaryR\tcompanies\"\xf0\x02\n\x0e\x43ompanySummary\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n\x08owner_id\x18\x03 \x01(\tR\x07ownerId\x12\x1f\n\x0bowner_email\x18\x04 \x01(\tR\nownerEmail\x12!\n\x0cmember_count\x18\x05 \x01(\x05R\x0bmemberCount\x12)\n\x10\x64\x65ployment_token\x18\x06 \x01(\tR\x0f\x64\x65ploymentToken\x12\x1d\n\navatar_url\x18\x07 \x01(\tR\tavatarUrl\x12\x35\n\x08org_size\x18\x08 \x01(\x0e\x32\x1a.aegis.v2.OrganizationSizeR\x07orgSize\x12\x35\n\x08org_type\x18\t \x01(\x0e\x32\x1a.aegis.v2.OrganizationTypeR\x07orgType\x12#\n\rtoken_balance\x18\n \x01(\x03R\x0ctokenBalance*\xc9\x02\n\x10OrganizationSize\x12!\n\x1dORGANIZATION_SIZE_UNSPECIFIED\x10\x00\x12\x17\n\x13ORGANIZATION_SIZE_1\x10\x01\x12\x1a\n\x16ORGANIZATION_SIZE_2_10\x10\x02\x12\x1b\n\x17ORGANIZATION_SIZE_11_50\x10\x03\x12\x1c\n\x18ORGANIZATION_SIZE_51_200\x10\x04\x12\x1d\n\x19ORGANIZATION_SIZE_201_500\x10\x05\x12\x1e\n\x1aORGANIZATION_SIZE_501_1000\x10\x06\x12\x1f\n\x1bORGANIZATION_SIZE_1001_5000\x10\x07\x12 \n\x1cORGANIZATION_SIZE_5001_10000\x10\x08\x12 \n\x1cORGANIZATION_SIZE_10001_PLUS\x10\t*\xff\x02\n\x10OrganizationType\x12!\n\x1dORGANIZATION_TYPE_UNSPECIFIED\x10\x00\x12\x30\n,ORGANIZATION_TYPE_IT_SERVICES_AND_CONSULTING\x10\x01\x12*\n&ORGANIZATION_TYPE_SOFTWARE_DEVELOPMENT\x10\x02\x12(\n$ORGANIZATION_TYPE_FINANCIAL_SERVICES\x10\x03\x12/\n+ORGANIZATION_TYPE_HOSPITALS_AND_HEALTH_CARE\x10\x04\x12\x1c\n\x18ORGANIZATION_TYPE_RETAIL\x10\x05\x12/\n+ORGANIZATION_TYPE_GOVERNMENT_ADMINISTRATION\x10\x06\x12#\n\x1fORGANIZATION_TYPE_MANUFACTURING\x10\x07\x12\x1b\n\x17ORGANIZATION_TYPE_OTHER\x10\x08\x32\xc1\x03\n\x0e\x43ompanyService\x12P\n\rCreateCompany\x12\x1e.aegis.v2.CreateCompanyRequest\x1a\x1f.aegis.v2.CreateCompanyResponse\x12P\n\rListCompanies\x12\x1e.aegis.v2.ListCompaniesRequest\x1a\x1f.aegis.v2.ListCompaniesResponse\x12S\n\x0eOnboardCompany\x12\x1f.aegis.v2.OnboardCompanyRequest\x1a .aegis.v2.OnboardCompanyResponse\x12\x64\n\x13WatchCompanyUpdates\x12$.aegis.v2.WatchCompanyUpdatesRequest\x1a%.aegis.v2.WatchCompanyUpdatesResponse0\x01\x12P\n\rListAuditLogs\x12\x1e.aegis.v2.ListAuditLogsRequest\x1a\x1f.aegis.v2.ListAuditLogsResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,34 +33,34 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'aegis.v2.company_pb2', _glo
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'ZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2'
-  _globals['_ORGANIZATIONSIZE']._serialized_start=1755
-  _globals['_ORGANIZATIONSIZE']._serialized_end=2084
-  _globals['_ORGANIZATIONTYPE']._serialized_start=2087
-  _globals['_ORGANIZATIONTYPE']._serialized_end=2470
-  _globals['_LISTAUDITLOGSREQUEST']._serialized_start=36
-  _globals['_LISTAUDITLOGSREQUEST']._serialized_end=135
-  _globals['_LISTAUDITLOGSRESPONSE']._serialized_start=137
-  _globals['_LISTAUDITLOGSRESPONSE']._serialized_end=227
-  _globals['_AUDITLOGENTRY']._serialized_start=230
-  _globals['_AUDITLOGENTRY']._serialized_end=490
-  _globals['_WATCHTEAMSREQUEST']._serialized_start=492
-  _globals['_WATCHTEAMSREQUEST']._serialized_end=511
-  _globals['_WATCHTEAMSRESPONSE']._serialized_start=513
-  _globals['_WATCHTEAMSRESPONSE']._serialized_end=626
-  _globals['_CREATECOMPANYREQUEST']._serialized_start=629
-  _globals['_CREATECOMPANYREQUEST']._serialized_end=814
-  _globals['_CREATECOMPANYRESPONSE']._serialized_start=816
-  _globals['_CREATECOMPANYRESPONSE']._serialized_end=875
-  _globals['_ONBOARDCOMPANYREQUEST']._serialized_start=878
-  _globals['_ONBOARDCOMPANYREQUEST']._serialized_end=1149
-  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_start=1151
-  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_end=1276
-  _globals['_LISTCOMPANIESREQUEST']._serialized_start=1278
-  _globals['_LISTCOMPANIESREQUEST']._serialized_end=1300
-  _globals['_LISTCOMPANIESRESPONSE']._serialized_start=1302
-  _globals['_LISTCOMPANIESRESPONSE']._serialized_end=1381
-  _globals['_COMPANYSUMMARY']._serialized_start=1384
-  _globals['_COMPANYSUMMARY']._serialized_end=1752
-  _globals['_COMPANYSERVICE']._serialized_start=2473
-  _globals['_COMPANYSERVICE']._serialized_end=2895
+  _globals['_ORGANIZATIONSIZE']._serialized_start=1834
+  _globals['_ORGANIZATIONSIZE']._serialized_end=2163
+  _globals['_ORGANIZATIONTYPE']._serialized_start=2166
+  _globals['_ORGANIZATIONTYPE']._serialized_end=2549
+  _globals['_LISTAUDITLOGSREQUEST']._serialized_start=69
+  _globals['_LISTAUDITLOGSREQUEST']._serialized_end=168
+  _globals['_LISTAUDITLOGSRESPONSE']._serialized_start=170
+  _globals['_LISTAUDITLOGSRESPONSE']._serialized_end=260
+  _globals['_AUDITLOGENTRY']._serialized_start=263
+  _globals['_AUDITLOGENTRY']._serialized_end=551
+  _globals['_WATCHCOMPANYUPDATESREQUEST']._serialized_start=553
+  _globals['_WATCHCOMPANYUPDATESREQUEST']._serialized_end=581
+  _globals['_WATCHCOMPANYUPDATESRESPONSE']._serialized_start=583
+  _globals['_WATCHCOMPANYUPDATESRESPONSE']._serialized_end=705
+  _globals['_CREATECOMPANYREQUEST']._serialized_start=708
+  _globals['_CREATECOMPANYREQUEST']._serialized_end=893
+  _globals['_CREATECOMPANYRESPONSE']._serialized_start=895
+  _globals['_CREATECOMPANYRESPONSE']._serialized_end=954
+  _globals['_ONBOARDCOMPANYREQUEST']._serialized_start=957
+  _globals['_ONBOARDCOMPANYREQUEST']._serialized_end=1228
+  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_start=1230
+  _globals['_ONBOARDCOMPANYRESPONSE']._serialized_end=1355
+  _globals['_LISTCOMPANIESREQUEST']._serialized_start=1357
+  _globals['_LISTCOMPANIESREQUEST']._serialized_end=1379
+  _globals['_LISTCOMPANIESRESPONSE']._serialized_start=1381
+  _globals['_LISTCOMPANIESRESPONSE']._serialized_end=1460
+  _globals['_COMPANYSUMMARY']._serialized_start=1463
+  _globals['_COMPANYSUMMARY']._serialized_end=1831
+  _globals['_COMPANYSERVICE']._serialized_start=2552
+  _globals['_COMPANYSERVICE']._serialized_end=3001
 # @@protoc_insertion_point(module_scope)

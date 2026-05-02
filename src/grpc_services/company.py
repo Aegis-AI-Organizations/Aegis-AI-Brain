@@ -409,9 +409,9 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         return company_pb2.CreateCompanyResponse(id=str(company.id), name=company.name)
 
     @with_identity(verified_only=True)
-    async def WatchTeams(
-        self, request: company_pb2.WatchTeamsRequest, context, identity
-    ) -> company_pb2.WatchTeamsResponse:
+    async def WatchCompanyUpdates(
+        self, request: company_pb2.WatchCompanyUpdatesRequest, context, identity
+    ) -> company_pb2.WatchCompanyUpdatesResponse:
         # RBAC: only admins/superadmins/commercial can watch all team changes
         # (Simplified for now, but could be restricted by company_id)
         allowed_roles = ["superadmin", "admin", "commercial", "owner"]
@@ -430,11 +430,11 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                         continue
 
                     evt, eid, ename = data
-                    yield company_pb2.WatchTeamsResponse(
+                    yield company_pb2.WatchCompanyUpdatesResponse(
                         event_type=evt, entity_id=eid, entity_name=ename
                     )
                 except asyncio.TimeoutError:
-                    yield company_pb2.WatchTeamsResponse(
+                    yield company_pb2.WatchCompanyUpdatesResponse(
                         event_type="HEARTBEAT", entity_id="", entity_name=""
                     )
         finally:

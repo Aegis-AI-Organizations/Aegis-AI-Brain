@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import grpc
 import uuid
 
@@ -26,8 +26,10 @@ def mock_db(auth_service):
 @pytest.mark.asyncio
 async def test_verify_token_success(auth_service, mock_db):
     company_id = uuid.uuid4()
-    mock_company = Company(id=company_id, deployment_token="valid-token", is_active=True)
-    
+    mock_company = Company(
+        id=company_id, deployment_token="valid-token", is_active=True
+    )
+
     mock_db.query.return_value.filter.return_value.first.return_value = mock_company
 
     request = internal_auth_pb2.VerifyTokenRequest(token="valid-token")
@@ -54,10 +56,7 @@ async def test_verify_token_invalid(auth_service, mock_db):
 
 @pytest.mark.asyncio
 async def test_verify_token_inactive_company(auth_service, mock_db):
-    company_id = uuid.uuid4()
-    mock_company = Company(id=company_id, deployment_token="inactive-token", is_active=False)
-    
-    # The current implementation filters by is_active=True in the query, 
+    # The current implementation filters by is_active=True in the query,
     # so first() will return None if filtered in query, or we can mock the behavior.
     mock_db.query.return_value.filter.return_value.first.return_value = None
 

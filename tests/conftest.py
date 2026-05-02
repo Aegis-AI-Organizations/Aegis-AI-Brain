@@ -16,3 +16,21 @@ if not os.getenv("POSTGRES_PASSWORD"):
 @pytest.fixture(scope="session")
 def anyio_backend():
     return "asyncio"
+
+
+@pytest.fixture(autouse=True)
+def reset_broadcaster():
+    """Reset the global broadcaster between tests.
+
+    pytest-asyncio (strict mode) creates a new event loop per test. The
+    broadcaster singleton caches its loop reference, so without this reset
+    it would hold a reference to the *previous* test's closed loop and
+    silently drop broadcasts (RuntimeError: Event loop is closed).
+    """
+    from grpc_services.broadcaster import broadcaster
+
+    broadcaster.loop = None
+    broadcaster.queues = set()
+    yield
+    broadcaster.loop = None
+    broadcaster.queues = set()

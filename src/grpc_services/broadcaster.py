@@ -7,8 +7,9 @@ class StatusBroadcaster:
         self.loop = None
 
     def register(self):
-        if self.loop is None:
-            self.loop = asyncio.get_running_loop()
+        # Always refresh the loop reference: pytest-asyncio creates a new event
+        # loop per test, so a cached reference would point to a closed loop.
+        self.loop = asyncio.get_running_loop()
         q = asyncio.Queue()
         self.queues.add(q)
         return q

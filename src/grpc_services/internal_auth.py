@@ -1,6 +1,5 @@
 import logging
 import asyncio
-import grpc
 import aegis.v2.internal_auth_pb2 as internal_auth_pb2
 import aegis.v2.internal_auth_pb2_grpc as internal_auth_pb2_grpc
 from config.db import get_db_connection
@@ -9,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class InternalAuthService(internal_auth_pb2_grpc.InternalAuthServiceServicer):
-    """gRPC service for verifying agent deployment tokens."""
+    """gRPC service for verifying agent deployment tokens. Caching is handled by the API Gateway."""
 
     def _verify_token_db_sync(self, token: str) -> str:
         """Synchronously verifies an agent token and returns the company_id."""
@@ -44,9 +43,9 @@ class InternalAuthService(internal_auth_pb2_grpc.InternalAuthServiceServicer):
 
         if not company_id:
             return internal_auth_pb2.VerifyTokenResponse(
-                valid=False, company_id=""
+                valid=False, tenant_id=""
             )
 
         return internal_auth_pb2.VerifyTokenResponse(
-            valid=True, company_id=company_id
+            valid=True, tenant_id=company_id
         )

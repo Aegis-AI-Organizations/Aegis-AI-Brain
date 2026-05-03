@@ -16,6 +16,7 @@ dependencies = [
     { name = "grpcio" },
     { name = "grpcio-tools" },
     { name = "kubernetes" },
+    { name = "minio" },
     { name = "protobuf" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
@@ -27,7 +28,6 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "clickhouse-connect" },
-    { name = "minio" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
@@ -42,7 +42,7 @@ requires-dist = [
     { name = "grpcio", specifier = ">=1.80.0" },
     { name = "grpcio-tools", specifier = ">=1.80.0" },
     { name = "kubernetes", specifier = ">=29.0.0" },
-    { name = "minio", marker = "extra == 'dev'", specifier = ">=7.2.5" },
+    { name = "minio", specifier = ">=7.2.5" },
     { name = "protobuf", specifier = ">=6.31.1,<7.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.10" },
     { name = "pydantic", specifier = ">=2.6.3" },

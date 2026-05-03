@@ -16,6 +16,7 @@ from utils.auth_utils import hash_password
 from models.audit_log import AuditLog
 import uuid
 import json
+from google.protobuf.timestamp_pb2 import Timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -486,21 +487,24 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             self._list_audit_logs_db_sync, limit, offset, request.company_id
         )
 
+        logs_entries = []
+        for log in logs:
+            entry = company_pb2.AuditLogEntry(
+                id=str(log.id),
+                user_id=str(log.user_id),
+                company_id=str(log.company_id),
+                action=log.action,
+                target_type=log.target_type,
+                target_id=log.target_id,
+                details=json.dumps(log.details),
+                ip_address=log.ip_address,
+            )
+            if log.timestamp:
+                entry.timestamp.FromDatetime(log.timestamp)
+            logs_entries.append(entry)
+
         return company_pb2.ListAuditLogsResponse(
-            logs=[
-                company_pb2.AuditLogEntry(
-                    id=str(log.id),
-                    user_id=str(log.user_id),
-                    company_id=str(log.company_id),
-                    action=log.action,
-                    target_type=log.target_type,
-                    target_id=log.target_id,
-                    details=json.dumps(log.details),
-                    ip_address=log.ip_address,
-                    timestamp=log.timestamp.isoformat(),
-                )
-                for log in logs
-            ],
+            logs=logs_entries,
             total=total,
         )
 

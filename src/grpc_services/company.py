@@ -16,7 +16,6 @@ from utils.auth_utils import hash_password
 from models.audit_log import AuditLog
 import uuid
 import json
-from google.protobuf.timestamp_pb2 import Timestamp
 
 logger = logging.getLogger(__name__)
 

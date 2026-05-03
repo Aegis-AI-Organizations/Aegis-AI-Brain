@@ -19,6 +19,7 @@ import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
 
 logger = logging.getLogger("aegis_brain_agent")
 
+
 class AgentService(agent_pb2_grpc.AgentServiceServicer):
     def __init__(self):
         self.session_factory = get_session_factory()

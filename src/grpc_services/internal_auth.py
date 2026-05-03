@@ -37,15 +37,9 @@ class InternalAuthService(internal_auth_pb2_grpc.InternalAuthServiceServicer):
         self, request: internal_auth_pb2.VerifyTokenRequest, context
     ) -> internal_auth_pb2.VerifyTokenResponse:
         """gRPC handler for token verification."""
-        company_id = await asyncio.to_thread(
-            self._verify_token_db_sync, request.token
-        )
+        company_id = await asyncio.to_thread(self._verify_token_db_sync, request.token)
 
         if not company_id:
-            return internal_auth_pb2.VerifyTokenResponse(
-                valid=False, tenant_id=""
-            )
+            return internal_auth_pb2.VerifyTokenResponse(valid=False, tenant_id="")
 
-        return internal_auth_pb2.VerifyTokenResponse(
-            valid=True, tenant_id=company_id
-        )
+        return internal_auth_pb2.VerifyTokenResponse(valid=True, tenant_id=company_id)

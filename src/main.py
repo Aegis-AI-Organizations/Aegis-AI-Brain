@@ -5,12 +5,13 @@ from temporalio.client import Client
 from config.config import TEMPORAL_HOST, TEMPORAL_NAMESPACE, GRPC_PORT
 from config.db import get_engine
 from models.base import Base
-# Ensure all models are loaded before create_all
-import models.user
-import models.company
-import models.agent
-import models.audit_log
-import models.refresh_token
+
+# Ensure all models are loaded before create_all (needed for SQLAlchemy)
+import models.user as _user  # noqa: F401
+import models.company as _company  # noqa: F401
+import models.agent as _agent  # noqa: F401
+import models.audit_log as _audit  # noqa: F401
+import models.refresh_token as _refresh  # noqa: F401
 
 from worker import start_worker
 from grpc_server import serve
@@ -24,7 +25,7 @@ async def main():
         f"🧠 Aegis AI Brain starting... Connecting to Temporal at {TEMPORAL_HOST}"
     )
 
-    # Automatically create missing database tables (for local dev parity)
+    # Automatically create missing database tables
     try:
         engine = get_engine()
         Base.metadata.create_all(bind=engine)

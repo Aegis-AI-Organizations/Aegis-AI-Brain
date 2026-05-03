@@ -13,10 +13,9 @@ class InternalAuthService:
         try:
             conn = get_db_connection()
             cur = conn.cursor()
-            # Assuming a table 'deployment_tokens' exists with columns 'token' and 'company_id'
-            # and that it's active.
+            # Deployment tokens are stored directly in the 'companies' table
             cur.execute(
-                "SELECT company_id FROM deployment_tokens WHERE token = %s AND is_active = TRUE",
+                "SELECT id FROM companies WHERE deployment_token = %s",
                 (token,),
             )
             row = cur.fetchone()

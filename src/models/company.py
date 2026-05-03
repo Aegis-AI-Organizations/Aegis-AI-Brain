@@ -10,6 +10,7 @@ from models.base import Base
 
 if TYPE_CHECKING:
     from models.user import User
+    from models.agent import Agent
 
 
 class Company(Base):
@@ -44,6 +45,10 @@ class Company(Base):
 
     members: Mapped[List[User]] = relationship(
         "User", primaryjoin="Company.id == User.company_id", back_populates="company"
+    )
+
+    agents: Mapped[List[Agent]] = relationship(
+        "Agent", back_populates="company", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

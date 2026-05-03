@@ -9,6 +9,14 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+_runtime_version.ValidateProtobufRuntimeVersion(
+    _runtime_version.Domain.PUBLIC,
+    5,
+    29,
+    3,
+    '',
+    'aegis/v2/scan.proto'
+)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -17,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x61\x65gis/v2/scan.proto\x12\x08\x61\x65gis.v2\x1a\x1fgoogle/protobuf/timestamp.proto\"5\n\x10StartScanRequest\x12!\n\x0ctarget_image\x18\x01 \x01(\tR\x0btargetImage\"\x7f\n\x11StartScanResponse\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\x12\x39\n\nstarted_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\"/\n\x14GetScanStatusRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\"\x97\x02\n\x15GetScanStatusResponse\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\x12\x39\n\nstarted_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\x12=\n\x0c\x63ompleted_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0b\x63ompletedAt\x12\x30\n\x14temporal_workflow_id\x18\x05 \x01(\tR\x12temporalWorkflowId\x12!\n\x0ctarget_image\x18\x06 \x01(\tR\x0btargetImage\"\x12\n\x10ListScansRequest\"\xb0\x02\n\x0bScanDetails\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x30\n\x14temporal_workflow_id\x18\x02 \x01(\tR\x12temporalWorkflowId\x12!\n\x0ctarget_image\x18\x03 \x01(\tR\x0btargetImage\x12\x16\n\x06status\x18\x04 \x01(\tR\x06status\x12\x39\n\nstarted_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\x12=\n\x0c\x63ompleted_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0b\x63ompletedAt\x12!\n\x0c\x63ompany_name\x18\x07 \x01(\tR\x0b\x63ompanyName\"@\n\x11ListScansResponse\x12+\n\x05scans\x18\x01 \x03(\x0b\x32\x15.aegis.v2.ScanDetailsR\x05scans\"/\n\x14GetScanReportRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\"2\n\x15GetScanReportResponse\x12\x19\n\x08pdf_data\x18\x01 \x01(\x0cR\x07pdfData\"1\n\x16WatchScanStatusRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\"J\n\x17WatchScanStatusResponse\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\"J\n\x17UpdateScanStatusRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\"4\n\x18UpdateScanStatusResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success2\xf2\x03\n\x0bScanService\x12\x44\n\tStartScan\x12\x1a.aegis.v2.StartScanRequest\x1a\x1b.aegis.v2.StartScanResponse\x12P\n\rGetScanStatus\x12\x1e.aegis.v2.GetScanStatusRequest\x1a\x1f.aegis.v2.GetScanStatusResponse\x12\x44\n\tListScans\x12\x1a.aegis.v2.ListScansRequest\x1a\x1b.aegis.v2.ListScansResponse\x12P\n\rGetScanReport\x12\x1e.aegis.v2.GetScanReportRequest\x1a\x1f.aegis.v2.GetScanReportResponse\x12X\n\x0fWatchScanStatus\x12 .aegis.v2.WatchScanStatusRequest\x1a!.aegis.v2.WatchScanStatusResponse0\x01\x12Y\n\x10UpdateScanStatus\x12!.aegis.v2.UpdateScanStatusRequest\x1a\".aegis.v2.UpdateScanStatusResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x61\x65gis/v2/scan.proto\x12\x08\x61\x65gis.v2\x1a\x1fgoogle/protobuf/timestamp.proto\"5\n\x10StartScanRequest\x12!\n\x0ctarget_image\x18\x01 \x01(\tR\x0btargetImage\"\x7f\n\x11StartScanResponse\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\x12\x39\n\nstarted_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\"/\n\x14GetScanStatusRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\"\x97\x02\n\x15GetScanStatusResponse\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\x12\x39\n\nstarted_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\x12=\n\x0c\x63ompleted_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0b\x63ompletedAt\x12\x30\n\x14temporal_workflow_id\x18\x05 \x01(\tR\x12temporalWorkflowId\x12!\n\x0ctarget_image\x18\x06 \x01(\tR\x0btargetImage\"\x12\n\x10ListScansRequest\"\xb0\x02\n\x0bScanDetails\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x30\n\x14temporal_workflow_id\x18\x02 \x01(\tR\x12temporalWorkflowId\x12!\n\x0ctarget_image\x18\x03 \x01(\tR\x0btargetImage\x12\x16\n\x06status\x18\x04 \x01(\tR\x06status\x12\x39\n\nstarted_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\x12=\n\x0c\x63ompleted_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0b\x63ompletedAt\x12!\n\x0c\x63ompany_name\x18\x07 \x01(\tR\x0b\x63ompanyName\"@\n\x11ListScansResponse\x12+\n\x05scans\x18\x01 \x03(\x0b\x32\x15.aegis.v2.ScanDetailsR\x05scans\"/\n\x14GetScanReportRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\"2\n\x15GetScanReportResponse\x12\x19\n\x08pdf_data\x18\x01 \x01(\x0cR\x07pdfData\"1\n\x16WatchScanStatusRequest\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\"J\n\x17WatchScanStatusResponse\x12\x17\n\x07scan_id\x18\x01 \x01(\tR\x06scanId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status2\x97\x03\n\x0bScanService\x12\x44\n\tStartScan\x12\x1a.aegis.v2.StartScanRequest\x1a\x1b.aegis.v2.StartScanResponse\x12P\n\rGetScanStatus\x12\x1e.aegis.v2.GetScanStatusRequest\x1a\x1f.aegis.v2.GetScanStatusResponse\x12\x44\n\tListScans\x12\x1a.aegis.v2.ListScansRequest\x1a\x1b.aegis.v2.ListScansResponse\x12P\n\rGetScanReport\x12\x1e.aegis.v2.GetScanReportRequest\x1a\x1f.aegis.v2.GetScanReportResponse\x12X\n\x0fWatchScanStatus\x12 .aegis.v2.WatchScanStatusRequest\x1a!.aegis.v2.WatchScanStatusResponse0\x01\x42PZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -47,10 +55,6 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_WATCHSCANSTATUSREQUEST']._serialized_end=1124
   _globals['_WATCHSCANSTATUSRESPONSE']._serialized_start=1126
   _globals['_WATCHSCANSTATUSRESPONSE']._serialized_end=1200
-  _globals['_UPDATESCANSTATUSREQUEST']._serialized_start=1202
-  _globals['_UPDATESCANSTATUSREQUEST']._serialized_end=1276
-  _globals['_UPDATESCANSTATUSRESPONSE']._serialized_start=1278
-  _globals['_UPDATESCANSTATUSRESPONSE']._serialized_end=1330
-  _globals['_SCANSERVICE']._serialized_start=1333
-  _globals['_SCANSERVICE']._serialized_end=1831
+  _globals['_SCANSERVICE']._serialized_start=1203
+  _globals['_SCANSERVICE']._serialized_end=1610
 # @@protoc_insertion_point(module_scope)

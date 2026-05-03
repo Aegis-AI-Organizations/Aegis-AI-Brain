@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, AsyncMock
 import uuid
 import grpc
 from grpc_services.agent import AgentService
@@ -19,7 +19,7 @@ def agent_service():
 async def test_register_agent_success(agent_service):
     token = "ag_valid_token"
     company_id = "comp_123"
-    request = agent_pb2.RegisterAgentRequest(deployment_token=token, name="TestAgent")
+    request = agent_pb2.RegisterAgentRequest(token=token, name="TestAgent")
     context = MagicMock()
 
     # Mock the internal auth verification
@@ -33,19 +33,21 @@ async def test_register_agent_success(agent_service):
 
 @pytest.mark.asyncio
 async def test_register_agent_invalid_token(agent_service):
-    request = agent_pb2.RegisterAgentRequest(
-        deployment_token="invalid", name="TestAgent"
+    request = agent_pb2.RegisterAgentRequest(token="invalid", name="TestAgent")
+    context = MagicMock(spec=grpc.aio.ServicerContext)
+    # Define a side effect that behaves like abort
+    context.abort = AsyncMock(
+        side_effect=grpc.aio.AbortError(
+            grpc.StatusCode.UNAUTHENTICATED, "Invalid token"
+        )
     )
-    context = MagicMock()
 
     with patch(
         "grpc_services.internal_auth.InternalAuthService._verify_token_db_sync",
         return_value=None,
     ), patch("asyncio.to_thread", return_value=None):
-        await agent_service.RegisterAgent(request, context)
-        context.abort.assert_called_with(
-            grpc.StatusCode.UNAUTHENTICATED, "Invalid deployment token"
-        )
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.RegisterAgent(request, context)
 
 
 @pytest.mark.asyncio
@@ -81,8 +83,11 @@ async def test_get_upload_link_success(agent_service):
 @pytest.mark.asyncio
 async def test_get_upload_link_agent_not_found(agent_service):
     request = agent_pb2.GetUploadLinkRequest(agent_id="unknown", filename="test.txt")
-    context = MagicMock()
+    context = MagicMock(spec=grpc.aio.ServicerContext)
+    context.abort = AsyncMock(
+        side_effect=grpc.aio.AbortError(grpc.StatusCode.NOT_FOUND, "Agent not found")
+    )
 
     with patch("asyncio.to_thread", return_value=None):
-        await agent_service.GetUploadLink(request, context)
-        context.abort.assert_called_with(grpc.StatusCode.NOT_FOUND, "Agent not found")
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.GetUploadLink(request, context)

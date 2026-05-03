@@ -24,7 +24,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             MINIO_ENDPOINT,
             access_key=MINIO_ACCESS_KEY,
             secret_key=MINIO_SECRET_KEY,
-            secure=MINIO_SECURE
+            secure=MINIO_SECURE,
         )
 
     async def RegisterAgent(self, request, context):
@@ -39,6 +39,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             )
 
         from grpc_services.internal_auth import InternalAuthService
+
         # Reuse existing token verification logic
         company_id = await asyncio.to_thread(
             InternalAuthService()._verify_token_db_sync, token
@@ -57,11 +58,11 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                     id=agent_id,
                     company_id=company_id,
                     name=request.name if request.name else f"Agent-{agent_id[:8]}",
-                    status="IDLE"
+                    status="IDLE",
                 )
                 db.add(agent)
                 db.commit()
-        
+
         try:
             await asyncio.to_thread(_save_agent)
             logger.info(f"New agent onboarded: {agent_id} for company {company_id}")
@@ -76,6 +77,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         """
         Updates the agent's state (IDLE, UPLOADING, etc.) and last_seen timestamp.
         """
+
         def _update_status():
             with self.session_factory() as db:
                 agent = db.query(Agent).filter(Agent.id == request.agent_id).first()
@@ -105,7 +107,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         """
         agent_id = request.agent_id
         filename = request.filename
-        
+
         # 1. Verify agent existence
         def _check_agent():
             with self.session_factory() as db:
@@ -126,7 +128,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                 self.minio_client.presigned_put_object,
                 MINIO_INGEST_BUCKET,
                 object_name,
-                expires=timedelta(hours=1)
+                expires=timedelta(hours=1),
             )
             logger.info(f"Generated upload link for agent {agent_id}: {object_name}")
             return agent_pb2.GetUploadLinkResponse(url=url, method="PUT")

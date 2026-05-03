@@ -23,6 +23,8 @@ dev = [
     "pytest-asyncio>=0.23.0",
     "pytest-cov>=5.0.0",
     "pytest-timeout>=2.3.0",
+    "clickhouse-connect>=0.7.0",
+    "minio>=7.2.5",
 ]
 
 [build-system]

@@ -2,10 +2,18 @@ import asyncio
 import logging
 import uuid
 import grpc
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from minio import Minio
 
 from config.db import get_session_factory
 from models.agent import Agent
+from config.config import (
+    MINIO_ENDPOINT, 
+    MINIO_ACCESS_KEY, 
+    MINIO_SECRET_KEY, 
+    MINIO_SECURE, 
+    MINIO_INGEST_BUCKET
+)
 import aegis.v2.agent_pb2 as agent_pb2
 import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
 
@@ -14,6 +22,13 @@ logger = logging.getLogger("aegis_brain_agent")
 class AgentService(agent_pb2_grpc.AgentServiceServicer):
     def __init__(self):
         self.session_factory = get_session_factory()
+        # Initialize MinIO client
+        self.minio_client = Minio(
+            MINIO_ENDPOINT,
+            access_key=MINIO_ACCESS_KEY,
+            secret_key=MINIO_SECRET_KEY,
+            secure=MINIO_SECURE
+        )
 
     async def RegisterAgent(self, request, context):
         """
@@ -81,10 +96,33 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
     async def GetUploadLink(self, request, context):
         """
         Generates a presigned MinIO URL for the agent to upload infrastructure files/logs.
+        Path pattern: agents/{agent_id}/{timestamp}_{filename}
         """
-        # Placeholder logic for MinIO presigned URL generation
-        logger.info(f"Upload link requested by agent {request.agent_id} for file {request.filename}")
+        agent_id = request.agent_id
+        filename = request.filename
         
-        # In the future, this will use a MinIO client to generate a real presigned URL
-        mock_url = f"http://minio:9000/aegis-ingest/{request.agent_id}/{request.filename}?token=mock-presigned-signature"
-        return agent_pb2.GetUploadLinkResponse(url=mock_url, method="PUT")
+        # 1. Verify agent existence
+        def _check_agent():
+            with self.session_factory() as db:
+                return db.query(Agent).filter(Agent.id == agent_id).first() is not None
+
+        if not await asyncio.to_thread(_check_agent):
+            await context.abort(grpc.StatusCode.NOT_FOUND, f"Agent {agent_id} not found")
+
+        # 2. Sanitize and build object name
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        object_name = f"agents/{agent_id}/{timestamp}_{filename}"
+
+        try:
+            # 3. Generate presigned URL for PUT (valid for 1 hour)
+            url = await asyncio.to_thread(
+                self.minio_client.presigned_put_object,
+                MINIO_INGEST_BUCKET,
+                object_name,
+                expires=timedelta(hours=1)
+            )
+            logger.info(f"Generated upload link for agent {agent_id}: {object_name}")
+            return agent_pb2.GetUploadLinkResponse(url=url, method="PUT")
+        except Exception as e:
+            logger.error(f"Failed to generate MinIO presigned URL: {e}")
+            await context.abort(grpc.StatusCode.INTERNAL, "Error generating upload link")

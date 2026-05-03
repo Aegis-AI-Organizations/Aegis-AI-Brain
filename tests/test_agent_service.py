@@ -20,7 +20,7 @@ async def test_register_agent_success(agent_service):
     token = "ag_valid_token"
     company_id = "comp_123"
     request = agent_pb2.RegisterAgentRequest(token=token, name="TestAgent")
-    context = MagicMock()
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
 
     # Mock the internal auth verification
     with patch(
@@ -34,12 +34,10 @@ async def test_register_agent_success(agent_service):
 @pytest.mark.asyncio
 async def test_register_agent_invalid_token(agent_service):
     request = agent_pb2.RegisterAgentRequest(token="invalid", name="TestAgent")
-    context = MagicMock(spec=grpc.aio.ServicerContext)
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
     # Define a side effect that behaves like abort
-    context.abort = AsyncMock(
-        side_effect=grpc.aio.AbortError(
-            grpc.StatusCode.UNAUTHENTICATED, "Invalid token"
-        )
+    context.abort.side_effect = grpc.aio.AbortError(
+        grpc.StatusCode.UNAUTHENTICATED, "Invalid token"
     )
 
     with patch(
@@ -54,7 +52,7 @@ async def test_register_agent_invalid_token(agent_service):
 async def test_update_agent_status_success(agent_service):
     agent_id = str(uuid.uuid4())
     request = agent_pb2.UpdateAgentStatusRequest(agent_id=agent_id, status="IDLE")
-    context = MagicMock()
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
 
     with patch("asyncio.to_thread", return_value=True):
         response = await agent_service.UpdateAgentStatus(request, context)
@@ -65,16 +63,13 @@ async def test_update_agent_status_success(agent_service):
 async def test_get_upload_link_success(agent_service):
     agent_id = str(uuid.uuid4())
     request = agent_pb2.GetUploadLinkRequest(agent_id=agent_id, filename="logs.tar.gz")
-    context = MagicMock()
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
 
     agent_mock = MagicMock()
     agent_mock.company_id = "c1"
 
-    with patch("asyncio.to_thread", return_value=agent_mock), patch.object(
-        agent_service.minio_client,
-        "presigned_put_object",
-        return_value="http://minio/upload",
-    ):
+    with patch("asyncio.to_thread", side_effect=[agent_mock, "http://minio/upload"]):
+        # We mock asyncio.to_thread directly to avoid issues with mocked MinIO methods
         response = await agent_service.GetUploadLink(request, context)
         assert response.url == "http://minio/upload"
         assert response.method == "PUT"
@@ -83,9 +78,9 @@ async def test_get_upload_link_success(agent_service):
 @pytest.mark.asyncio
 async def test_get_upload_link_agent_not_found(agent_service):
     request = agent_pb2.GetUploadLinkRequest(agent_id="unknown", filename="test.txt")
-    context = MagicMock(spec=grpc.aio.ServicerContext)
-    context.abort = AsyncMock(
-        side_effect=grpc.aio.AbortError(grpc.StatusCode.NOT_FOUND, "Agent not found")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(
+        grpc.StatusCode.NOT_FOUND, "Agent not found"
     )
 
     with patch("asyncio.to_thread", return_value=None):

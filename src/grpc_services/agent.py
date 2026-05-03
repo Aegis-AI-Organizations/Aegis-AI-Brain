@@ -8,11 +8,8 @@ from minio import Minio
 from config.db import get_session_factory
 from models.agent import Agent
 from config.config import (
-    MINIO_ENDPOINT, 
-    MINIO_ACCESS_KEY, 
-    MINIO_SECRET_KEY, 
-    MINIO_SECURE, 
-    MINIO_INGEST_BUCKET
+    MINIO_SECURE,
+    MINIO_INGEST_BUCKET,
 )
 import aegis.v2.agent_pb2 as agent_pb2
 import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
@@ -37,7 +34,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         """
         token = request.token
         if not token or not token.startswith("ag_"):
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid deployment token format")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Invalid deployment token format"
+            )
 
         from grpc_services.internal_auth import InternalAuthService
         # Reuse existing token verification logic
@@ -46,7 +45,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         )
 
         if not company_id:
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid or inactive deployment token")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, "Invalid or inactive deployment token"
+            )
 
         agent_id = str(uuid.uuid4())
         
@@ -67,7 +68,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.RegisterAgentResponse(agent_id=agent_id)
         except Exception as e:
             logger.error(f"Failed to register agent: {e}")
-            await context.abort(grpc.StatusCode.INTERNAL, "Database error during registration")
+            await context.abort(
+                grpc.StatusCode.INTERNAL, "Database error during registration"
+            )
 
     async def UpdateAgentStatus(self, request, context):
         """
@@ -87,11 +90,13 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             success = await asyncio.to_thread(_update_status)
             if not success:
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Agent not found")
-                
+
             return agent_pb2.UpdateAgentStatusResponse(success=True)
         except Exception as e:
             logger.error(f"Failed to update agent status: {e}")
-            await context.abort(grpc.StatusCode.INTERNAL, "Database error during status update")
+            await context.abort(
+                grpc.StatusCode.INTERNAL, "Database error during status update"
+            )
 
     async def GetUploadLink(self, request, context):
         """
@@ -107,7 +112,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                 return db.query(Agent).filter(Agent.id == agent_id).first() is not None
 
         if not await asyncio.to_thread(_check_agent):
-            await context.abort(grpc.StatusCode.NOT_FOUND, f"Agent {agent_id} not found")
+            await context.abort(
+                grpc.StatusCode.NOT_FOUND, f"Agent {agent_id} not found"
+            )
 
         # 2. Sanitize and build object name
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -125,4 +132,6 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.GetUploadLinkResponse(url=url, method="PUT")
         except Exception as e:
             logger.error(f"Failed to generate MinIO presigned URL: {e}")
-            await context.abort(grpc.StatusCode.INTERNAL, "Error generating upload link")
+            await context.abort(
+                grpc.StatusCode.INTERNAL, "Error generating upload link"
+            )

@@ -283,4 +283,3 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
                     )
         finally:
             broadcaster.unregister(q)
-

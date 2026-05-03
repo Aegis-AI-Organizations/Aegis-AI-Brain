@@ -11,6 +11,7 @@ from models.base import Base
 if TYPE_CHECKING:
     from models.company import Company
 
+
 class Agent(Base):
     """Agent model mapped to the 'agents' table."""
 

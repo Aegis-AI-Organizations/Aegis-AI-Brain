@@ -55,7 +55,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             )
 
         agent_id = str(uuid.uuid4())
-        
+
         def _save_agent():
             with self.session_factory() as db:
                 agent = Agent(

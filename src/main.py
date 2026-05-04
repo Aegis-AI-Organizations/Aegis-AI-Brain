@@ -40,7 +40,12 @@ async def main():
         logger.error(f"❌ Failed to connect to Temporal: {e}")
         return
 
-    await asyncio.gather(start_worker(client), serve(GRPC_PORT, client))
+    from services.agent_watcher import start_agent_watcher
+    await asyncio.gather(
+        start_worker(client), 
+        serve(GRPC_PORT, client),
+        start_agent_watcher()
+    )
 
 
 if __name__ == "__main__":

@@ -29,6 +29,11 @@ class AgentServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_agent__pb2.GetUploadLinkRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_agent__pb2.GetUploadLinkResponse.FromString,
                 _registered_method=True)
+        self.VerifyAgentSecret = channel.unary_unary(
+                '/aegis.v2.AgentService/VerifyAgentSecret',
+                request_serializer=aegis_dot_v2_dot_agent__pb2.VerifyAgentSecretRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_agent__pb2.VerifyAgentSecretResponse.FromString,
+                _registered_method=True)
 
 
 class AgentServiceServicer(object):
@@ -55,6 +60,13 @@ class AgentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def VerifyAgentSecret(self, request, context):
+        """VerifyAgentSecret validates an operational secret against an agent ID.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AgentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -72,6 +84,11 @@ def add_AgentServiceServicer_to_server(servicer, server):
                     servicer.GetUploadLink,
                     request_deserializer=aegis_dot_v2_dot_agent__pb2.GetUploadLinkRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_agent__pb2.GetUploadLinkResponse.SerializeToString,
+            ),
+            'VerifyAgentSecret': grpc.unary_unary_rpc_method_handler(
+                    servicer.VerifyAgentSecret,
+                    request_deserializer=aegis_dot_v2_dot_agent__pb2.VerifyAgentSecretRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_agent__pb2.VerifyAgentSecretResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -155,6 +172,33 @@ class AgentService(object):
             '/aegis.v2.AgentService/GetUploadLink',
             aegis_dot_v2_dot_agent__pb2.GetUploadLinkRequest.SerializeToString,
             aegis_dot_v2_dot_agent__pb2.GetUploadLinkResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def VerifyAgentSecret(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.AgentService/VerifyAgentSecret',
+            aegis_dot_v2_dot_agent__pb2.VerifyAgentSecretRequest.SerializeToString,
+            aegis_dot_v2_dot_agent__pb2.VerifyAgentSecretResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -20,6 +20,7 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
         "/aegis.v2.AgentService/RegisterAgent",
         "/aegis.v2.AgentService/UpdateAgentStatus",
         "/aegis.v2.AgentService/GetUploadLink",
+        "/aegis.v2.AgentService/VerifyAgentSecret",
     }
 
     @staticmethod

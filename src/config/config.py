@@ -24,6 +24,14 @@ DB_NAME = os.getenv("POSTGRES_DB", "aegis_db")
 DB_USER = os.getenv("POSTGRES_USER", "aegis_admin")
 DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 
+# Redis Configuration
+_REDIS_HOST_ENV = os.getenv("REDIS_HOST", "localhost:6379")
+REDIS_HOST = _REDIS_HOST_ENV
+REDIS_PORT = "6379"
+if ":" in _REDIS_HOST_ENV:
+    REDIS_HOST, REDIS_PORT = _REDIS_HOST_ENV.split(":", 1)
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+
 # SQL Engine Debugging
 SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
 

@@ -2,6 +2,8 @@ import asyncio
 import logging
 import uuid
 import grpc
+import secrets
+import bcrypt
 from datetime import datetime, timezone, timedelta
 from minio import Minio
 
@@ -55,6 +57,10 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             )
 
         agent_id = str(uuid.uuid4())
+        # Generate a 256-bit secure secret (32 bytes -> hex string)
+        agent_secret = secrets.token_hex(32)
+        # Hash the secret using bcrypt
+        token_hash = bcrypt.hashpw(agent_secret.encode(), bcrypt.gensalt()).decode()
 
         def _save_agent():
             with self.session_factory() as db:
@@ -63,6 +69,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                     company_id=company_id,
                     name=request.name if request.name else f"Agent-{agent_id[:8]}",
                     status="IDLE",
+                    token_hash=token_hash,
                 )
                 db.add(agent)
                 db.commit()
@@ -70,7 +77,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         try:
             await asyncio.to_thread(_save_agent)
             logger.info(f"New agent onboarded: {agent_id} for company {company_id}")
-            return agent_pb2.RegisterAgentResponse(agent_id=agent_id)
+            return agent_pb2.RegisterAgentResponse(
+                agent_id=agent_id, agent_secret=agent_secret
+            )
         except Exception as e:
             logger.error(f"Failed to register agent: {e}")
             await context.abort(
@@ -141,3 +150,30 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             await context.abort(
                 grpc.StatusCode.INTERNAL, "Error generating upload link"
             )
+
+    async def VerifyAgentSecret(self, request, context):
+        """
+        Validates an operational secret against an agent ID.
+        Used by the Gateway to ensure the agent is authorized and is who they say they are.
+        """
+        agent_id = request.agent_id
+        secret = request.secret
+
+        def _verify():
+            with self.session_factory() as db:
+                agent = db.query(Agent).filter(Agent.id == agent_id).first()
+                if not agent or not agent.token_hash:
+                    return False, ""
+
+                # Verify bcrypt hash
+                is_valid = bcrypt.checkpw(secret.encode(), agent.token_hash.encode())
+                return is_valid, agent.company_id
+
+        try:
+            valid, company_id = await asyncio.to_thread(_verify)
+            return agent_pb2.VerifyAgentSecretResponse(
+                valid=valid, tenant_id=str(company_id) if valid else ""
+            )
+        except Exception as e:
+            logger.error(f"Error during agent secret verification: {e}")
+            return agent_pb2.VerifyAgentSecretResponse(valid=False, tenant_id="")

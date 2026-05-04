@@ -22,6 +22,7 @@ class Agent(Base):
         ForeignKey("companies.id", ondelete="CASCADE"), nullable=False
     )
     name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    token_hash: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(
         String(50), server_default=text("'IDLE'"), default="IDLE"
     )

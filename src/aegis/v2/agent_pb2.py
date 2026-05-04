@@ -9,14 +9,6 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-_runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC,
-    5,
-    29,
-    3,
-    '',
-    'aegis/v2/agent.proto'
-)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -24,7 +16,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x61\x65gis/v2/agent.proto\x12\x08\x61\x65gis.v2\"@\n\x14RegisterAgentRequest\x12\x14\n\x05token\x18\x01 \x01(\tR\x05token\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"2\n\x15RegisterAgentResponse\x12\x19\n\x08\x61gent_id\x18\x01 \x01(\tR\x07\x61gentId\"M\n\x18UpdateAgentStatusRequest\x12\x19\n\x08\x61gent_id\x18\x01 \x01(\tR\x07\x61gentId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\"5\n\x19UpdateAgentStatusResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"p\n\x14GetUploadLinkRequest\x12\x19\n\x08\x61gent_id\x18\x01 \x01(\tR\x07\x61gentId\x12\x1a\n\x08\x66ilename\x18\x02 \x01(\tR\x08\x66ilename\x12!\n\x0c\x63ontent_type\x18\x03 \x01(\tR\x0b\x63ontentType\"A\n\x15GetUploadLinkResponse\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x16\n\x06method\x18\x02 \x01(\tR\x06method2\x90\x02\n\x0c\x41gentService\x12P\n\rRegisterAgent\x12\x1e.aegis.v2.RegisterAgentRequest\x1a\x1f.aegis.v2.RegisterAgentResponse\x12\\\n\x11UpdateAgentStatus\x12\".aegis.v2.UpdateAgentStatusRequest\x1a#.aegis.v2.UpdateAgentStatusResponse\x12P\n\rGetUploadLink\x12\x1e.aegis.v2.GetUploadLinkRequest\x1a\x1f.aegis.v2.GetUploadLinkResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x61\x65gis/v2/agent.proto\x12\x08\x61\x65gis.v2\"@\n\x14RegisterAgentRequest\x12\x14\n\x05token\x18\x01 \x01(\tR\x05token\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"U\n\x15RegisterAgentResponse\x12\x19\n\x08\x61gent_id\x18\x01 \x01(\tR\x07\x61gentId\x12!\n\x0c\x61gent_secret\x18\x02 \x01(\tR\x0b\x61gentSecret\"M\n\x18UpdateAgentStatusRequest\x12\x19\n\x08\x61gent_id\x18\x01 \x01(\tR\x07\x61gentId\x12\x16\n\x06status\x18\x02 \x01(\tR\x06status\"5\n\x19UpdateAgentStatusResponse\x12\x18\n\x07success\x18\x01 \x01(\x08R\x07success\"p\n\x14GetUploadLinkRequest\x12\x19\n\x08\x61gent_id\x18\x01 \x01(\tR\x07\x61gentId\x12\x1a\n\x08\x66ilename\x18\x02 \x01(\tR\x08\x66ilename\x12!\n\x0c\x63ontent_type\x18\x03 \x01(\tR\x0b\x63ontentType\"A\n\x15GetUploadLinkResponse\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x16\n\x06method\x18\x02 \x01(\tR\x06method2\x90\x02\n\x0c\x41gentService\x12P\n\rRegisterAgent\x12\x1e.aegis.v2.RegisterAgentRequest\x1a\x1f.aegis.v2.RegisterAgentResponse\x12\\\n\x11UpdateAgentStatus\x12\".aegis.v2.UpdateAgentStatusRequest\x1a#.aegis.v2.UpdateAgentStatusResponse\x12P\n\rGetUploadLink\x12\x1e.aegis.v2.GetUploadLinkRequest\x1a\x1f.aegis.v2.GetUploadLinkResponseBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,15 +27,15 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_REGISTERAGENTREQUEST']._serialized_start=34
   _globals['_REGISTERAGENTREQUEST']._serialized_end=98
   _globals['_REGISTERAGENTRESPONSE']._serialized_start=100
-  _globals['_REGISTERAGENTRESPONSE']._serialized_end=150
-  _globals['_UPDATEAGENTSTATUSREQUEST']._serialized_start=152
-  _globals['_UPDATEAGENTSTATUSREQUEST']._serialized_end=229
-  _globals['_UPDATEAGENTSTATUSRESPONSE']._serialized_start=231
-  _globals['_UPDATEAGENTSTATUSRESPONSE']._serialized_end=284
-  _globals['_GETUPLOADLINKREQUEST']._serialized_start=286
-  _globals['_GETUPLOADLINKREQUEST']._serialized_end=398
-  _globals['_GETUPLOADLINKRESPONSE']._serialized_start=400
-  _globals['_GETUPLOADLINKRESPONSE']._serialized_end=465
-  _globals['_AGENTSERVICE']._serialized_start=468
-  _globals['_AGENTSERVICE']._serialized_end=740
+  _globals['_REGISTERAGENTRESPONSE']._serialized_end=185
+  _globals['_UPDATEAGENTSTATUSREQUEST']._serialized_start=187
+  _globals['_UPDATEAGENTSTATUSREQUEST']._serialized_end=264
+  _globals['_UPDATEAGENTSTATUSRESPONSE']._serialized_start=266
+  _globals['_UPDATEAGENTSTATUSRESPONSE']._serialized_end=319
+  _globals['_GETUPLOADLINKREQUEST']._serialized_start=321
+  _globals['_GETUPLOADLINKREQUEST']._serialized_end=433
+  _globals['_GETUPLOADLINKRESPONSE']._serialized_start=435
+  _globals['_GETUPLOADLINKRESPONSE']._serialized_end=500
+  _globals['_AGENTSERVICE']._serialized_start=503
+  _globals['_AGENTSERVICE']._serialized_end=775
 # @@protoc_insertion_point(module_scope)

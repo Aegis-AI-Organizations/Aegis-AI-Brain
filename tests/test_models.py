@@ -5,7 +5,9 @@ from models import (
     Base,
     Company,
     User,
+    UserActivationStatus,
     UserRole,
+    OnboardingInvitation,
     RefreshToken,
     License,
     Scan,
@@ -56,6 +58,7 @@ def test_user_creation_and_role_enum(db_session: Session):
     assert user.password_hash == pwd_hash
     assert user.role == UserRole.superadmin
     assert user.is_active is True
+    assert user.activation_status == UserActivationStatus.active
 
 
 def test_company_user_relationships(db_session: Session):
@@ -104,6 +107,26 @@ def test_refresh_token(db_session: Session):
     assert token.user == user
     assert user.refresh_tokens == [token]
     assert token.revoked is False
+
+
+def test_onboarding_invitation(db_session: Session):
+    """Tests first-login invitation persistence and relationship to a user."""
+    user = User(email="invitee@test.com", password_hash="hash")
+    expires = datetime.now(UTC) + timedelta(hours=72)
+    invitation = OnboardingInvitation(
+        user=user,
+        token_hash="invitation_hash_abc",
+        expires_at=expires,
+    )
+
+    db_session.add_all([user, invitation])
+    db_session.commit()
+
+    assert invitation.user_id == user.id
+    assert invitation.user == user
+    assert user.onboarding_invitations == [invitation]
+    assert invitation.is_used is False
+    assert invitation.is_expired is False
 
 
 def test_scan_vulnerability_evidence_chain(db_session: Session):

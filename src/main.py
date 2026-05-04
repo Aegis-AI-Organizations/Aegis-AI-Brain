@@ -41,10 +41,9 @@ async def main():
         return
 
     from services.agent_watcher import start_agent_watcher
+
     await asyncio.gather(
-        start_worker(client), 
-        serve(GRPC_PORT, client),
-        start_agent_watcher()
+        start_worker(client), serve(GRPC_PORT, client), start_agent_watcher()
     )
 
 

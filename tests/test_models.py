@@ -5,6 +5,7 @@ from models import (
     Base,
     Company,
     User,
+    UserActivationStatus,
     UserRole,
     RefreshToken,
     License,
@@ -56,6 +57,7 @@ def test_user_creation_and_role_enum(db_session: Session):
     assert user.password_hash == pwd_hash
     assert user.role == UserRole.superadmin
     assert user.is_active is True
+    assert user.activation_status == UserActivationStatus.active
 
 
 def test_company_user_relationships(db_session: Session):

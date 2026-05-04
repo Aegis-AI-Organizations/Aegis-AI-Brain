@@ -7,7 +7,7 @@ import aegis.v2.company_pb2 as company_pb2
 import aegis.v2.company_pb2_grpc as company_pb2_grpc
 from config.db import get_session_factory
 from models.company import Company
-from models.user import User, UserRole
+from models.user import User, UserRole, UserActivationStatus
 from sqlalchemy import String
 from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
@@ -75,7 +75,6 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         company_name: str,
         owner_name: str,
         owner_email: str,
-        owner_password: str,
     ):
         with self.session_factory() as db:
             # 1. Check if email already exists
@@ -99,14 +98,17 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.add(new_company)
                 db.flush()  # Get ID
 
-                # 4. Create Owner User
+                # 4. Create Owner User in a pending state.
+                # Placeholder keeps password_hash non-null until setup-password replaces it.
+                placeholder_password = uuid.uuid4().hex
                 new_owner = User(
                     name=owner_name,
                     email=owner_email,
-                    password_hash=hash_password(owner_password),
+                    password_hash=hash_password(placeholder_password),
                     role=UserRole.owner,
                     company_id=new_company.id,
-                    is_active=True,
+                    is_active=False,
+                    activation_status=UserActivationStatus.pending_activation,
                 )
                 db.add(new_owner)
                 db.flush()  # Get Owner ID
@@ -145,7 +147,6 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             request.company_name,
             request.owner_name,
             request.owner_email,
-            request.owner_password,
         )
 
         company_id, owner_id, token, error = res

@@ -29,6 +29,13 @@ class UserRole(str, enum.Enum):
     viewer = "viewer"
 
 
+class UserActivationStatus(str, enum.Enum):
+    """Lifecycle status for user account activation."""
+
+    active = "active"
+    pending_activation = "pending_activation"
+
+
 class User(Base):
     """User model mapped to the 'users' table."""
 
@@ -49,6 +56,11 @@ class User(Base):
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True
+    )
+    activation_status: Mapped[UserActivationStatus] = mapped_column(
+        Enum(UserActivationStatus, name="user_activation_status", native_enum=True),
+        server_default=text("'active'"),
+        default=UserActivationStatus.active,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

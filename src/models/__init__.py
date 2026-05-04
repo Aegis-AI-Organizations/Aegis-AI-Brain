@@ -1,6 +1,6 @@
 from models.base import Base
 from models.company import Company
-from models.user import User, UserRole
+from models.user import User, UserRole, UserActivationStatus
 from models.refresh_token import RefreshToken
 from models.license import License
 from models.scan import Scan, Vulnerability, Evidence
@@ -12,6 +12,7 @@ __all__ = [
     "Company",
     "User",
     "UserRole",
+    "UserActivationStatus",
     "RefreshToken",
     "License",
     "Scan",

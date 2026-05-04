@@ -7,7 +7,7 @@ import asyncio
 from grpc_services.company import CompanyService
 import aegis.v2.company_pb2 as company_pb2
 from models.company import Company
-from models.user import User
+from models.user import User, UserActivationStatus, UserRole
 
 
 @pytest.fixture
@@ -121,7 +121,6 @@ async def test_onboard_company_success(company_service, mock_db):
             company_name="New Co",
             owner_name="Owner",
             owner_email="owner@test.com",
-            owner_password="password",
         )
         context = MagicMock()
         context.abort = AsyncMock()
@@ -139,6 +138,15 @@ async def test_onboard_company_success(company_service, mock_db):
         assert response.company_id == str(mock_company.id)
         assert response.owner_id == str(mock_owner.id)
         assert response.deployment_token != ""
+        mock_user_cls.assert_called_once()
+        owner_kwargs = mock_user_cls.call_args.kwargs
+        assert owner_kwargs["role"] == UserRole.owner
+        assert owner_kwargs["is_active"] is False
+        assert (
+            owner_kwargs["activation_status"]
+            == UserActivationStatus.pending_activation
+        )
+        assert owner_kwargs["password_hash"]
         assert mock_db.commit.call_count == 2
 
 

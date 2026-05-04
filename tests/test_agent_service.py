@@ -119,9 +119,7 @@ async def test_update_agent_status_not_found(agent_service):
 async def test_update_agent_status_error(agent_service):
     request = agent_pb2.UpdateAgentStatusRequest(agent_id="a1", status="IDLE")
     context = AsyncMock(spec=grpc.aio.ServicerContext)
-    context.abort.side_effect = grpc.aio.AbortError(
-        grpc.StatusCode.INTERNAL, "Error"
-    )
+    context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "Error")
 
     with patch("asyncio.to_thread", side_effect=Exception("error")):
         with pytest.raises(grpc.aio.AbortError):
@@ -132,9 +130,7 @@ async def test_update_agent_status_error(agent_service):
 async def test_get_upload_link_error(agent_service):
     request = agent_pb2.GetUploadLinkRequest(agent_id="a1", filename="test.txt")
     context = AsyncMock(spec=grpc.aio.ServicerContext)
-    context.abort.side_effect = grpc.aio.AbortError(
-        grpc.StatusCode.INTERNAL, "Error"
-    )
+    context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "Error")
 
     with patch("asyncio.to_thread", side_effect=[True, Exception("minio error")]):
         with pytest.raises(grpc.aio.AbortError):

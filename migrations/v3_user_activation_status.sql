@@ -8,4 +8,3 @@ END $$;
 
 ALTER TABLE users
     ADD COLUMN IF NOT EXISTS activation_status user_activation_status NOT NULL DEFAULT 'active';
-

@@ -11,6 +11,7 @@ from models.base import Base
 
 if TYPE_CHECKING:
     from models.company import Company
+    from models.onboarding_invitation import OnboardingInvitation
     from models.refresh_token import RefreshToken
 
 
@@ -79,6 +80,11 @@ class User(Base):
     )
     refresh_tokens: Mapped[List[RefreshToken]] = relationship(
         "RefreshToken", back_populates="user", cascade="all, delete-orphan"
+    )
+    onboarding_invitations: Mapped[List[OnboardingInvitation]] = relationship(
+        "OnboardingInvitation",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self) -> str:

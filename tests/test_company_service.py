@@ -7,7 +7,9 @@ import asyncio
 from grpc_services.company import CompanyService
 import aegis.v2.company_pb2 as company_pb2
 from models.company import Company
+from models.onboarding_invitation import OnboardingInvitation
 from models.user import User, UserActivationStatus, UserRole
+from utils.token_utils import hash_token
 
 
 @pytest.fixture
@@ -107,7 +109,10 @@ async def test_list_companies_success(company_service, mock_db):
 async def test_onboard_company_success(company_service, mock_db):
     with patch("grpc_services.company.Company") as mock_company_cls, patch(
         "grpc_services.company.User"
-    ) as mock_user_cls:
+    ) as mock_user_cls, patch(
+        "grpc_services.company.generate_opaque_token",
+        return_value="aegis_inv_raw-token",
+    ):
         mock_company = MagicMock()
         mock_company.id = uuid.uuid4()
         mock_company.name = "New Co"
@@ -143,10 +148,18 @@ async def test_onboard_company_success(company_service, mock_db):
         assert owner_kwargs["role"] == UserRole.owner
         assert owner_kwargs["is_active"] is False
         assert (
-            owner_kwargs["activation_status"]
-            == UserActivationStatus.pending_activation
+            owner_kwargs["activation_status"] == UserActivationStatus.pending_activation
         )
         assert owner_kwargs["password_hash"]
+        invitation = next(
+            call.args[0]
+            for call in mock_db.add.call_args_list
+            if isinstance(call.args[0], OnboardingInvitation)
+        )
+        assert invitation.user_id == mock_owner.id
+        assert invitation.token_hash == hash_token("aegis_inv_raw-token")
+        assert invitation.token_hash != "aegis_inv_raw-token"
+        assert invitation.expires_at is not None
         assert mock_db.commit.call_count == 2
 
 

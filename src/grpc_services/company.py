@@ -2,22 +2,26 @@ import logging
 import asyncio
 import enum
 import grpc
+from datetime import datetime, timedelta, timezone
 
 import aegis.v2.company_pb2 as company_pb2
 import aegis.v2.company_pb2_grpc as company_pb2_grpc
 from config.db import get_session_factory
 from models.company import Company
-from models.user import User, UserRole
+from models.onboarding_invitation import OnboardingInvitation
+from models.user import User, UserRole, UserActivationStatus
 from sqlalchemy import String
 from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
+from utils.token_utils import generate_opaque_token, hash_token
 from models.audit_log import AuditLog
 import uuid
 import json
 
 logger = logging.getLogger(__name__)
+ONBOARDING_INVITATION_TTL_HOURS = 72
 
 
 class CompanyCreateError(enum.Enum):
@@ -81,20 +85,19 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         company_name: str,
         owner_name: str,
         owner_email: str,
-        owner_password: str,
     ):
         with self.session_factory() as db:
             # 1. Check if email already exists
             existing_user = db.query(User).filter(User.email == owner_email).first()
             if existing_user:
-                return None, None, None, "User already exists with this email"
+                return None, None, None, None, "User already exists with this email"
 
             # 2. Check if company name already exists
             existing_company = (
                 db.query(Company).filter(Company.name == company_name).first()
             )
             if existing_company:
-                return None, None, None, "Company already exists with this name"
+                return None, None, None, None, "Company already exists with this name"
 
             try:
                 # 3. Create Company
@@ -105,19 +108,32 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.add(new_company)
                 db.flush()  # Get ID
 
-                # 4. Create Owner User
+                # 4. Create Owner User in a pending state.
+                # Placeholder keeps password_hash non-null until setup-password replaces it.
+                placeholder_password = uuid.uuid4().hex
                 new_owner = User(
                     name=owner_name,
                     email=owner_email,
-                    password_hash=hash_password(owner_password),
+                    password_hash=hash_password(placeholder_password),
                     role=UserRole.owner,
                     company_id=new_company.id,
-                    is_active=True,
+                    is_active=False,
+                    activation_status=UserActivationStatus.pending_activation,
                 )
                 db.add(new_owner)
                 db.flush()  # Get Owner ID
 
-                # 5. Link Owner back to Company
+                # 5. Generate first-login invitation token.
+                invitation_token = generate_opaque_token("aegis_inv_")
+                invitation = OnboardingInvitation(
+                    user_id=new_owner.id,
+                    token_hash=hash_token(invitation_token),
+                    expires_at=datetime.now(timezone.utc)
+                    + timedelta(hours=ONBOARDING_INVITATION_TTL_HOURS),
+                )
+                db.add(invitation)
+
+                # 6. Link Owner back to Company
                 new_company.owner_id = new_owner.id
 
                 db.commit()
@@ -135,12 +151,13 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     str(new_company.id),
                     str(new_owner.id),
                     deployment_token,
+                    invitation_token,
                     None,
                 )
             except Exception as e:
                 db.rollback()
                 logger.exception("Failed to onboard company")
-                return None, None, None, f"Database error: {str(e)}"
+                return None, None, None, None, f"Database error: {str(e)}"
 
     @with_identity(verified_only=True)
     async def OnboardCompany(
@@ -157,10 +174,9 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             request.company_name,
             request.owner_name,
             request.owner_email,
-            request.owner_password,
         )
 
-        company_id, owner_id, token, error = res
+        company_id, owner_id, token, invitation_token, error = res
 
         if error:
             if "already exists" in error:
@@ -183,6 +199,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     details={
                         "company_name": request.company_name,
                         "owner_email": request.owner_email,
+                        "invitation_generated": bool(invitation_token),
                     },
                 )
                 db.add(audit)

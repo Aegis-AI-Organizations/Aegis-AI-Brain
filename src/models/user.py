@@ -11,6 +11,7 @@ from models.base import Base
 
 if TYPE_CHECKING:
     from models.company import Company
+    from models.onboarding_invitation import OnboardingInvitation
     from models.refresh_token import RefreshToken
 
 
@@ -27,6 +28,13 @@ class UserRole(str, enum.Enum):
     billing_client = "billing_client"
     operateur = "operateur"
     viewer = "viewer"
+
+
+class UserActivationStatus(str, enum.Enum):
+    """Lifecycle status for user account activation."""
+
+    active = "active"
+    pending_activation = "pending_activation"
 
 
 class User(Base):
@@ -50,6 +58,11 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True
     )
+    activation_status: Mapped[UserActivationStatus] = mapped_column(
+        Enum(UserActivationStatus, name="user_activation_status", native_enum=True),
+        server_default=text("'active'"),
+        default=UserActivationStatus.active,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
@@ -67,6 +80,11 @@ class User(Base):
     )
     refresh_tokens: Mapped[List[RefreshToken]] = relationship(
         "RefreshToken", back_populates="user", cascade="all, delete-orphan"
+    )
+    onboarding_invitations: Mapped[List[OnboardingInvitation]] = relationship(
+        "OnboardingInvitation",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self) -> str:

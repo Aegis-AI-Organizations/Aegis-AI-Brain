@@ -86,3 +86,84 @@ async def test_get_upload_link_agent_not_found(agent_service):
     with patch("asyncio.to_thread", return_value=None):
         with pytest.raises(grpc.aio.AbortError):
             await agent_service.GetUploadLink(request, context)
+
+
+@pytest.mark.asyncio
+async def test_register_agent_db_error(agent_service):
+    request = agent_pb2.RegisterAgentRequest(token="ag_valid", name="TestAgent")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "DB Error")
+
+    with patch(
+        "grpc_services.internal_auth.InternalAuthService._verify_token_db_sync",
+        side_effect=Exception("db error"),
+    ):
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.RegisterAgent(request, context)
+
+
+@pytest.mark.asyncio
+async def test_update_agent_status_not_found(agent_service):
+    request = agent_pb2.UpdateAgentStatusRequest(agent_id="unknown", status="IDLE")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(
+        grpc.StatusCode.NOT_FOUND, "Not found"
+    )
+
+    with patch("asyncio.to_thread", return_value=None):
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.UpdateAgentStatus(request, context)
+
+
+@pytest.mark.asyncio
+async def test_update_agent_status_error(agent_service):
+    request = agent_pb2.UpdateAgentStatusRequest(agent_id="a1", status="IDLE")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "Error")
+
+    with patch("asyncio.to_thread", side_effect=Exception("error")):
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.UpdateAgentStatus(request, context)
+
+
+@pytest.mark.asyncio
+async def test_get_upload_link_error(agent_service):
+    request = agent_pb2.GetUploadLinkRequest(agent_id="a1", filename="test.txt")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "Error")
+
+    with patch("asyncio.to_thread", side_effect=[True, Exception("minio error")]):
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.GetUploadLink(request, context)
+
+
+@pytest.mark.asyncio
+async def test_verify_agent_secret_success(agent_service):
+    request = agent_pb2.VerifyAgentSecretRequest(agent_id="a1", secret="s1")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+
+    with patch("asyncio.to_thread", return_value=("t1", True)):
+        response = await agent_service.VerifyAgentSecret(request, context)
+        assert response.valid is True
+        assert response.tenant_id == "t1"
+
+
+@pytest.mark.asyncio
+async def test_verify_agent_secret_invalid(agent_service):
+    request = agent_pb2.VerifyAgentSecretRequest(agent_id="a1", secret="s2")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+
+    with patch("asyncio.to_thread", return_value=(None, False)):
+        response = await agent_service.VerifyAgentSecret(request, context)
+        assert response.valid is False
+
+
+@pytest.mark.asyncio
+async def test_verify_agent_secret_error(agent_service):
+    request = agent_pb2.VerifyAgentSecretRequest(agent_id="a1", secret="s1")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "Error")
+
+    with patch("asyncio.to_thread", side_effect=Exception("error")):
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.VerifyAgentSecret(request, context)

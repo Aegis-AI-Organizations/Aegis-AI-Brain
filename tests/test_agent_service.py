@@ -86,6 +86,8 @@ async def test_get_upload_link_agent_not_found(agent_service):
     with patch("asyncio.to_thread", return_value=None):
         with pytest.raises(grpc.aio.AbortError):
             await agent_service.GetUploadLink(request, context)
+
+
 @pytest.mark.asyncio
 async def test_register_agent_db_error(agent_service):
     request = agent_pb2.RegisterAgentRequest(token="ag_valid", name="TestAgent")

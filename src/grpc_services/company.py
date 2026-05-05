@@ -101,9 +101,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
 
             try:
                 # 3. Create Company
-                deployment_token = f"ag_{uuid.uuid4().hex}"
+                deployment_token = generate_opaque_token("ag_")
                 new_company = Company(
-                    name=company_name, deployment_token=deployment_token
+                    name=company_name,
+                    deployment_token=hash_token(deployment_token),
                 )
                 db.add(new_company)
                 db.flush()  # Get ID
@@ -277,7 +278,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                         "owner_id": owner_id,
                         "owner_email": owner_email,
                         "member_count": len(c.members),
-                        "deployment_token": c.deployment_token or "",
+                        "deployment_token": "",
                     }
                     if hasattr(company_pb2.CompanySummary, "avatar_url"):
                         summary_kwargs["avatar_url"] = (

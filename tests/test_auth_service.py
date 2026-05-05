@@ -7,9 +7,12 @@ import uuid
 
 from grpc_services.auth import AuthService
 import aegis.v2.auth_pb2 as auth_pb2
-from models.user import User, UserRole
+import models.agent  # noqa: F401 - registers SQLAlchemy relationship targets.
+from models.onboarding_invitation import OnboardingInvitation
+from models.user import User, UserActivationStatus, UserRole
 from models.refresh_token import RefreshToken
-from utils.auth_utils import hash_password
+from utils.auth_utils import hash_password, verify_password
+from utils.token_utils import hash_token
 
 
 @pytest.fixture
@@ -189,3 +192,112 @@ async def test_logout_exception(auth_service, mock_db):
     response = await auth_service.Logout(request, context)
     assert response.success is False
     context.set_code.assert_called_with(grpc.StatusCode.INTERNAL)
+
+
+@pytest.mark.asyncio
+async def test_setup_password_success(auth_service, mock_db):
+    user = User(
+        id=uuid.uuid4(),
+        email="owner@example.com",
+        password_hash=hash_password("placeholder"),
+        role=UserRole.owner,
+        is_active=False,
+        activation_status=UserActivationStatus.pending_activation,
+    )
+    invitation = OnboardingInvitation(
+        user=user,
+        token_hash=hash_token("aegis_inv_valid"),
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+    )
+    mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = invitation
+
+    request = auth_pb2.SetupPasswordRequest(
+        invitation_token="aegis_inv_valid",
+        new_password="NewStrongPassword123!",
+    )
+    context = MagicMock()
+
+    response = await auth_service.SetupPassword(request, context)
+
+    assert response.access_token != ""
+    assert response.refresh_token != ""
+    assert user.is_active is True
+    assert user.activation_status == UserActivationStatus.active
+    assert verify_password("NewStrongPassword123!", user.password_hash)
+    assert invitation.used_at is not None
+    mock_db.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_setup_password_invalid_token(auth_service, mock_db):
+    mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = None
+
+    request = auth_pb2.SetupPasswordRequest(
+        invitation_token="missing",
+        new_password="NewStrongPassword123!",
+    )
+    context = MagicMock()
+
+    response = await auth_service.SetupPassword(request, context)
+
+    assert response.access_token == ""
+    context.set_code.assert_called_with(grpc.StatusCode.UNAUTHENTICATED)
+
+
+@pytest.mark.asyncio
+async def test_setup_password_used_token(auth_service, mock_db):
+    user = User(
+        id=uuid.uuid4(),
+        email="owner@example.com",
+        password_hash=hash_password("placeholder"),
+        role=UserRole.owner,
+        is_active=False,
+        activation_status=UserActivationStatus.pending_activation,
+    )
+    invitation = OnboardingInvitation(
+        user=user,
+        token_hash=hash_token("aegis_inv_used"),
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        used_at=datetime.now(timezone.utc),
+    )
+    mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = invitation
+
+    request = auth_pb2.SetupPasswordRequest(
+        invitation_token="aegis_inv_used",
+        new_password="NewStrongPassword123!",
+    )
+    context = MagicMock()
+
+    response = await auth_service.SetupPassword(request, context)
+
+    assert response.access_token == ""
+    context.set_code.assert_called_with(grpc.StatusCode.UNAUTHENTICATED)
+
+
+@pytest.mark.asyncio
+async def test_setup_password_non_pending_user(auth_service, mock_db):
+    user = User(
+        id=uuid.uuid4(),
+        email="owner@example.com",
+        password_hash=hash_password("existing"),
+        role=UserRole.owner,
+        is_active=True,
+        activation_status=UserActivationStatus.active,
+    )
+    invitation = OnboardingInvitation(
+        user=user,
+        token_hash=hash_token("aegis_inv_active"),
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+    )
+    mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = invitation
+
+    request = auth_pb2.SetupPasswordRequest(
+        invitation_token="aegis_inv_active",
+        new_password="NewStrongPassword123!",
+    )
+    context = MagicMock()
+
+    response = await auth_service.SetupPassword(request, context)
+
+    assert response.access_token == ""
+    context.set_code.assert_called_with(grpc.StatusCode.UNAUTHENTICATED)

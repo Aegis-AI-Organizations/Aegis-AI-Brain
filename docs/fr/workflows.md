@@ -19,14 +19,16 @@ Le workflow le plus critique d'Aegis. Une fois éveillé par `StartScan`, le Bra
 
 ## Flux Métier (Workflows de Service)
 
-### 1. Onboarding Manuel (MVP)
-Aujourd'hui, l'onboarding est une opération atomique gérée par les administrateurs Aegis.
+### 1. Onboarding Client Post-Paiement (MVP)
+L'onboarding est géré par les administrateurs Aegis après paiement. Il crée le tenant client et prépare le compte owner, mais le owner reste inactif tant que l'invitation première connexion n'a pas été utilisée.
 
 1.  **Requête gRPC** : L'API Gateway appelle `OnboardCompany`.
 2.  **Création de l'Entité** : Le `CompanyService` crée l'enregistrement `Company` en base de données.
-3.  **Génération du Token** : Un `deployment_token` brut opaque (`ag_...`) est généré pour le bootstrap agent. Seul son hash SHA-256 est persisté.
-4.  **Initialisation du Propriétaire** : L'utilisateur "Owner" est créé et lié à l'entreprise.
-5.  **Réponse Atomique** : Le système retourne une seule fois le token de déploiement brut pour configuration immédiate de l'Agent. Les lectures suivantes n'exposent jamais le hash comme un token utilisable.
+3.  **Génération du Token** : Un `deployment_token` unique (`ag_...`) est généré via `secrets.token_hex`.
+4.  **Initialisation du Propriétaire** : L'utilisateur "Owner" est créé, lié à l'entreprise, marqué inactif et placé en statut `pending_activation`.
+5.  **Création de l'Invitation** : Un token d'invitation première connexion à usage unique (`aegis_inv_...`) est généré, hashé en base PostgreSQL et stocké avec une date d'expiration.
+6.  **Réponse d'Onboarding** : Le système retourne le token de déploiement et le token d'invitation brut. Il ne retourne pas d'identifiants owner.
+7.  **Activation du Owner** : L'API Gateway appelle `AuthService.SetupPassword` avec le token d'invitation et le nouveau mot de passe. Le Brain vérifie que l'invitation est valide, non utilisée et non expirée, hash le mot de passe, active le owner, marque l'invitation comme utilisée et crée les tokens de session initiaux.
 
 ## Périmètre Zero Trust
 Le Brain tourne dans l'enclave aveugle `aegis-system`. Protégé par les contraintes réseaux de Cilium, il reste **le seul et unique composant** formellement apte à adresser la base de données `aegis-postgres-mvp`.

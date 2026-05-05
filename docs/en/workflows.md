@@ -19,14 +19,16 @@ The most critical workflow in Aegis AI. When triggered through the gRPC `StartSc
 
 ## Service Logic Flows
 
-### 1. Manual Onboarding (MVP)
-Onboarding is currently an atomic operation managed by Aegis administrators.
+### 1. Post-payment Client Onboarding (MVP)
+Onboarding is managed by Aegis administrators after payment. It creates the customer tenant and prepares the owner account, but the owner remains inactive until the first-login invitation is redeemed.
 
 1.  **gRPC Request**: The API Gateway calls internal `OnboardCompany` rpc.
 2.  **Entity Creation**: `CompanyService` saves the new `Company` record to PostgreSQL.
-3.  **Token Generation**: A raw opaque `deployment_token` (`ag_` prefix) is generated for the agent bootstrap flow. Only its SHA-256 hash is persisted.
-4.  **Owner Initialization**: The initial "Owner" user is created and linked to the company.
-5.  **Atomic Response**: The system returns the raw deployment token once for immediate agent configuration. Later reads never expose the token hash as a usable token.
+3.  **Token Generation**: A unique 32-char hex `deployment_token` (`ag_` prefix) is generated via `secrets.token_hex`.
+4.  **Owner Initialization**: The initial "Owner" user is created, linked to the company, marked inactive, and assigned the `pending_activation` status.
+5.  **Invitation Creation**: A one-time first-login invitation token (`aegis_inv_` prefix) is generated, hashed in PostgreSQL, and stored with an expiration date.
+6.  **Onboarding Response**: The system returns the deployment token and raw invitation token. It does not return owner credentials.
+7.  **Owner Activation**: The API Gateway calls `AuthService.SetupPassword` with the invitation token and the new password. The Brain validates that the invitation is unused and not expired, hashes the password, activates the owner, marks the invitation as used, and creates the initial session tokens.
 
 ## Zero Trust Security Scope
 The Brain is securely locked away within `aegis-system`. By Cilium Network Policies, it is the solitary component explicitly permitted inward ingress traffic to the `aegis-postgres-mvp` namespace.

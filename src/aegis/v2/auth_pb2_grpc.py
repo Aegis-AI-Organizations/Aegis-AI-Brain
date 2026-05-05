@@ -30,6 +30,11 @@ class AuthServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_auth__pb2.LogoutRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_auth__pb2.LogoutResponse.FromString,
                 _registered_method=True)
+        self.SetupPassword = channel.unary_unary(
+                '/aegis.v2.AuthService/SetupPassword',
+                request_serializer=aegis_dot_v2_dot_auth__pb2.SetupPasswordRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_auth__pb2.SetupPasswordResponse.FromString,
+                _registered_method=True)
         self.GetMe = channel.unary_unary(
                 '/aegis.v2.AuthService/GetMe',
                 request_serializer=aegis_dot_v2_dot_auth__pb2.GetMeRequest.SerializeToString,
@@ -77,6 +82,13 @@ class AuthServiceServicer(object):
 
     def Logout(self, request, context):
         """Logout invalidates a refresh token.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SetupPassword(self, request, context):
+        """SetupPassword activates an invited owner account and creates a session.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -134,6 +146,11 @@ def add_AuthServiceServicer_to_server(servicer, server):
                     servicer.Logout,
                     request_deserializer=aegis_dot_v2_dot_auth__pb2.LogoutRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_auth__pb2.LogoutResponse.SerializeToString,
+            ),
+            'SetupPassword': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetupPassword,
+                    request_deserializer=aegis_dot_v2_dot_auth__pb2.SetupPasswordRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_auth__pb2.SetupPasswordResponse.SerializeToString,
             ),
             'GetMe': grpc.unary_unary_rpc_method_handler(
                     servicer.GetMe,
@@ -243,6 +260,33 @@ class AuthService(object):
             '/aegis.v2.AuthService/Logout',
             aegis_dot_v2_dot_auth__pb2.LogoutRequest.SerializeToString,
             aegis_dot_v2_dot_auth__pb2.LogoutResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetupPassword(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.AuthService/SetupPassword',
+            aegis_dot_v2_dot_auth__pb2.SetupPasswordRequest.SerializeToString,
+            aegis_dot_v2_dot_auth__pb2.SetupPasswordResponse.FromString,
             options,
             channel_credentials,
             insecure,

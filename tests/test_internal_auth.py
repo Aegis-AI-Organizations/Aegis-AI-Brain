@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 from grpc_services.internal_auth import InternalAuthService
+from utils.token_utils import hash_token
 
 
 def test_verify_token_success():
@@ -14,6 +15,10 @@ def test_verify_token_success():
         result = service._verify_token_db_sync("ag_valid_token")
 
     assert result == "company-abc"
+    mock_cursor.execute.assert_called_once_with(
+        "SELECT id FROM companies WHERE deployment_token = %s",
+        (hash_token("ag_valid_token"),),
+    )
     mock_conn.close.assert_called_once()
 
 

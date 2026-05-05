@@ -13,9 +13,11 @@ import aegis.v2.auth_pb2_grpc as auth_pb2_grpc
 from config.config import JWT_SECRET
 from config.db import get_session_factory
 from sqlalchemy.orm import joinedload
+from models.onboarding_invitation import OnboardingInvitation
 from models.refresh_token import RefreshToken
-from models.user import User
+from models.user import User, UserActivationStatus
 from utils.auth_utils import verify_password, hash_password
+from utils.token_utils import hash_token
 from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
@@ -61,6 +63,18 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         """Helper to hash refresh tokens consistently."""
         return hashlib.sha256(token.encode()).hexdigest()
 
+    def _create_session_tokens(self, db, user: User):
+        access_token = self._generate_access_token(user)
+        raw_refresh_token = str(uuid.uuid4())
+        db.add(
+            RefreshToken(
+                user_id=user.id,
+                token_hash=self._hash_token(raw_refresh_token),
+                expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            )
+        )
+        return access_token, raw_refresh_token
+
     def _login_db_sync(self, request: auth_pb2.LoginRequest):
         """Synchronous part of Login logic."""
         with self.session_factory() as db:
@@ -71,19 +85,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             if not user.is_active:
                 return None, AuthErrorCode.USER_INACTIVE
 
-            # Generate tokens
-            access_token = self._generate_access_token(user)
-            raw_refresh_token = str(uuid.uuid4())
-            token_hash = self._hash_token(raw_refresh_token)
-
-            # Store hashed refresh token
-            db_refresh_token = RefreshToken(
-                user_id=user.id,
-                token_hash=token_hash,
-                expires_at=datetime.now(timezone.utc) + timedelta(days=7),
-            )
             try:
-                db.add(db_refresh_token)
+                access_token, raw_refresh_token = self._create_session_tokens(db, user)
                 db.commit()
             except Exception:
                 db.rollback()
@@ -91,6 +94,77 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 return None, AuthErrorCode.DB_ERROR
 
             return (access_token, raw_refresh_token), AuthErrorCode.SUCCESS
+
+    def _setup_password_db_sync(self, invitation_token: str, new_password: str):
+        with self.session_factory() as db:
+            invitation = (
+                db.query(OnboardingInvitation)
+                .options(joinedload(OnboardingInvitation.user))
+                .filter(OnboardingInvitation.token_hash == hash_token(invitation_token))
+                .first()
+            )
+
+            if not invitation or invitation.is_used or invitation.is_expired:
+                return None, AuthErrorCode.INVALID_TOKEN
+
+            user = invitation.user
+            if not user:
+                return None, AuthErrorCode.USER_NOT_FOUND
+
+            if (
+                user.activation_status != UserActivationStatus.pending_activation
+                or user.is_active
+            ):
+                return None, AuthErrorCode.INVALID_TOKEN
+
+            try:
+                user.password_hash = hash_password(new_password)
+                user.is_active = True
+                user.activation_status = UserActivationStatus.active
+                invitation.used_at = datetime.now(timezone.utc)
+                access_token, refresh_token = self._create_session_tokens(db, user)
+                db.commit()
+                return (access_token, refresh_token), AuthErrorCode.SUCCESS
+            except Exception:
+                db.rollback()
+                logger.exception(
+                    "Database error during setup-password for user ID: %s", user.id
+                )
+                return None, AuthErrorCode.DB_ERROR
+
+    async def SetupPassword(
+        self, request: auth_pb2.SetupPasswordRequest, context
+    ) -> auth_pb2.SetupPasswordResponse:
+        """Activates an invited account and starts a user session."""
+        try:
+            result, code = await asyncio.to_thread(
+                self._setup_password_db_sync,
+                request.invitation_token,
+                request.new_password,
+            )
+        except Exception:
+            logger.exception("Unexpected error in SetupPassword RPC")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal service error")
+            return auth_pb2.SetupPasswordResponse()
+
+        if code != AuthErrorCode.SUCCESS:
+            if code == AuthErrorCode.INVALID_TOKEN:
+                context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+                context.set_details("Invalid or expired invitation token")
+            elif code == AuthErrorCode.USER_NOT_FOUND:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details("Invited user not found")
+            else:
+                context.set_code(grpc.StatusCode.INTERNAL)
+                context.set_details("Internal activation error")
+            return auth_pb2.SetupPasswordResponse()
+
+        access_token, refresh_token = result
+        return auth_pb2.SetupPasswordResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+        )
 
     async def Login(
         self, request: auth_pb2.LoginRequest, context

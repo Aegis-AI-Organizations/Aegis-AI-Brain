@@ -24,9 +24,9 @@ Aujourd'hui, l'onboarding est une opération atomique gérée par les administra
 
 1.  **Requête gRPC** : L'API Gateway appelle `OnboardCompany`.
 2.  **Création de l'Entité** : Le `CompanyService` crée l'enregistrement `Company` en base de données.
-3.  **Génération du Token** : Un `deployment_token` unique (`ag_...`) est généré via `secrets.token_hex`.
+3.  **Génération du Token** : Un `deployment_token` brut opaque (`ag_...`) est généré pour le bootstrap agent. Seul son hash SHA-256 est persisté.
 4.  **Initialisation du Propriétaire** : L'utilisateur "Owner" est créé et lié à l'entreprise.
-5.  **Réponse Atomique** : Le système retourne les identifiants et le token de déploiement pour configuration immédiate de l'Agent.
+5.  **Réponse Atomique** : Le système retourne une seule fois le token de déploiement brut pour configuration immédiate de l'Agent. Les lectures suivantes n'exposent jamais le hash comme un token utilisable.
 
 ## Périmètre Zero Trust
 Le Brain tourne dans l'enclave aveugle `aegis-system`. Protégé par les contraintes réseaux de Cilium, il reste **le seul et unique composant** formellement apte à adresser la base de données `aegis-postgres-mvp`.

@@ -3,6 +3,7 @@ import asyncio
 import aegis.v2.internal_auth_pb2 as internal_auth_pb2
 import aegis.v2.internal_auth_pb2_grpc as internal_auth_pb2_grpc
 from config.db import get_db_connection
+from utils.token_utils import hash_token
 
 logger = logging.getLogger(__name__)
 
@@ -14,12 +15,12 @@ class InternalAuthService(internal_auth_pb2_grpc.InternalAuthServiceServicer):
         """Synchronously verifies an agent token and returns the company_id."""
         conn = None
         try:
+            token_hash = hash_token(token)
             conn = get_db_connection()
             cur = conn.cursor()
-            # Deployment tokens are stored directly in the 'companies' table
             cur.execute(
                 "SELECT id FROM companies WHERE deployment_token = %s",
-                (token,),
+                (token_hash,),
             )
             row = cur.fetchone()
             cur.close()

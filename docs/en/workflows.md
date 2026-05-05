@@ -24,9 +24,9 @@ Onboarding is currently an atomic operation managed by Aegis administrators.
 
 1.  **gRPC Request**: The API Gateway calls internal `OnboardCompany` rpc.
 2.  **Entity Creation**: `CompanyService` saves the new `Company` record to PostgreSQL.
-3.  **Token Generation**: A unique 32-char hex `deployment_token` (`ag_` prefix) is generated via `secrets.token_hex`.
+3.  **Token Generation**: A raw opaque `deployment_token` (`ag_` prefix) is generated for the agent bootstrap flow. Only its SHA-256 hash is persisted.
 4.  **Owner Initialization**: The initial "Owner" user is created and linked to the company.
-5.  **Atomic Response**: The system returns the credentials and deployment token for immediate agent configuration.
+5.  **Atomic Response**: The system returns the raw deployment token once for immediate agent configuration. Later reads never expose the token hash as a usable token.
 
 ## Zero Trust Security Scope
 The Brain is securely locked away within `aegis-system`. By Cilium Network Policies, it is the solitary component explicitly permitted inward ingress traffic to the `aegis-postgres-mvp` namespace.

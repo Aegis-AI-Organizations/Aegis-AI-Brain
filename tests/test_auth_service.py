@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import grpc
 from datetime import datetime, timedelta, timezone
 import hashlib
@@ -8,6 +8,7 @@ import uuid
 from grpc_services.auth import AuthService
 import aegis.v2.auth_pb2 as auth_pb2
 import models.agent  # noqa: F401 - registers SQLAlchemy relationship targets.
+from models.company import Company
 from models.onboarding_invitation import OnboardingInvitation
 from models.user import User, UserActivationStatus, UserRole
 from models.refresh_token import RefreshToken
@@ -196,8 +197,11 @@ async def test_logout_exception(auth_service, mock_db):
 
 @pytest.mark.asyncio
 async def test_setup_password_success(auth_service, mock_db):
+    company = Company(id=uuid.uuid4(), name="Acme Corp")
     user = User(
         id=uuid.uuid4(),
+        company=company,
+        company_id=company.id,
         email="owner@example.com",
         password_hash=hash_password("placeholder"),
         role=UserRole.owner,
@@ -217,10 +221,13 @@ async def test_setup_password_success(auth_service, mock_db):
     )
     context = MagicMock()
 
-    response = await auth_service.SetupPassword(request, context)
+    with patch("grpc_services.auth.generate_opaque_token", return_value="ag_once"):
+        response = await auth_service.SetupPassword(request, context)
 
     assert response.access_token != ""
     assert response.refresh_token != ""
+    assert response.agent_token == "ag_once"
+    assert company.deployment_token == hash_token("ag_once")
     assert user.is_active is True
     assert user.activation_status == UserActivationStatus.active
     assert verify_password("NewStrongPassword123!", user.password_hash)
@@ -276,8 +283,11 @@ async def test_setup_password_used_token(auth_service, mock_db):
 
 @pytest.mark.asyncio
 async def test_setup_password_non_pending_user(auth_service, mock_db):
+    company = Company(id=uuid.uuid4(), name="Acme Corp")
     user = User(
         id=uuid.uuid4(),
+        company=company,
+        company_id=company.id,
         email="owner@example.com",
         password_hash=hash_password("existing"),
         role=UserRole.owner,

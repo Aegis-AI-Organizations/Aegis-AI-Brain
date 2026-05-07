@@ -100,12 +100,9 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 return None, None, None, None, "Company already exists with this name"
 
             try:
-                # 3. Create Company
-                deployment_token = generate_opaque_token("ag_")
-                new_company = Company(
-                    name=company_name,
-                    deployment_token=hash_token(deployment_token),
-                )
+                # 3. Create Company. The agent deployment token is generated later
+                # during owner activation so the customer can see it exactly once.
+                new_company = Company(name=company_name)
                 db.add(new_company)
                 db.flush()  # Get ID
 
@@ -151,7 +148,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 return (
                     str(new_company.id),
                     str(new_owner.id),
-                    deployment_token,
+                    "",
                     invitation_token,
                     None,
                 )

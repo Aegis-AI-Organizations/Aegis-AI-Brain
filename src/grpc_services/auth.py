@@ -17,7 +17,7 @@ from models.onboarding_invitation import OnboardingInvitation
 from models.refresh_token import RefreshToken
 from models.user import User, UserActivationStatus
 from utils.auth_utils import verify_password, hash_password
-from utils.token_utils import hash_token
+from utils.token_utils import generate_opaque_token, hash_token
 from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         with self.session_factory() as db:
             invitation = (
                 db.query(OnboardingInvitation)
-                .options(joinedload(OnboardingInvitation.user))
+                .options(joinedload(OnboardingInvitation.user).joinedload(User.company))
                 .filter(OnboardingInvitation.token_hash == hash_token(invitation_token))
                 .first()
             )
@@ -110,6 +110,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             user = invitation.user
             if not user:
                 return None, AuthErrorCode.USER_NOT_FOUND
+            if not user.company:
+                return None, AuthErrorCode.USER_NOT_FOUND
 
             if (
                 user.activation_status != UserActivationStatus.pending_activation
@@ -118,13 +120,15 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 return None, AuthErrorCode.INVALID_TOKEN
 
             try:
+                agent_token = generate_opaque_token("ag_")
                 user.password_hash = hash_password(new_password)
                 user.is_active = True
                 user.activation_status = UserActivationStatus.active
+                user.company.deployment_token = hash_token(agent_token)
                 invitation.used_at = datetime.now(timezone.utc)
                 access_token, refresh_token = self._create_session_tokens(db, user)
                 db.commit()
-                return (access_token, refresh_token), AuthErrorCode.SUCCESS
+                return (access_token, refresh_token, agent_token), AuthErrorCode.SUCCESS
             except Exception:
                 db.rollback()
                 logger.exception(
@@ -160,10 +164,11 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 context.set_details("Internal activation error")
             return auth_pb2.SetupPasswordResponse()
 
-        access_token, refresh_token = result
+        access_token, refresh_token, agent_token = result
         return auth_pb2.SetupPasswordResponse(
             access_token=access_token,
             refresh_token=refresh_token,
+            agent_token=agent_token,
         )
 
     async def Login(

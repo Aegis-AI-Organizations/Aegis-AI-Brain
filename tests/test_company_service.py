@@ -111,7 +111,7 @@ async def test_onboard_company_success(company_service, mock_db):
         "grpc_services.company.User"
     ) as mock_user_cls, patch(
         "grpc_services.company.generate_opaque_token",
-        side_effect=["ag_raw-token", "aegis_inv_raw-token"],
+        return_value="aegis_inv_raw-token",
     ):
         mock_company = MagicMock()
         mock_company.id = uuid.uuid4()
@@ -142,10 +142,9 @@ async def test_onboard_company_success(company_service, mock_db):
 
         assert response.company_id == str(mock_company.id)
         assert response.owner_id == str(mock_owner.id)
-        assert response.deployment_token == "ag_raw-token"
+        assert response.deployment_token == ""
         company_kwargs = mock_company_cls.call_args.kwargs
-        assert company_kwargs["deployment_token"] == hash_token("ag_raw-token")
-        assert company_kwargs["deployment_token"] != "ag_raw-token"
+        assert "deployment_token" not in company_kwargs
         mock_user_cls.assert_called_once()
         owner_kwargs = mock_user_cls.call_args.kwargs
         assert owner_kwargs["role"] == UserRole.owner

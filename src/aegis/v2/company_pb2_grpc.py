@@ -30,6 +30,16 @@ class CompanyServiceStub(object):
                 request_serializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.SerializeToString,
                 response_deserializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.FromString,
                 _registered_method=True)
+        self.RotateAgentToken = channel.unary_unary(
+                '/aegis.v2.CompanyService/RotateAgentToken',
+                request_serializer=aegis_dot_v2_dot_company__pb2.RotateAgentTokenRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_company__pb2.RotateAgentTokenResponse.FromString,
+                _registered_method=True)
+        self.RevokeAgentToken = channel.unary_unary(
+                '/aegis.v2.CompanyService/RevokeAgentToken',
+                request_serializer=aegis_dot_v2_dot_company__pb2.RevokeAgentTokenRequest.SerializeToString,
+                response_deserializer=aegis_dot_v2_dot_company__pb2.RevokeAgentTokenResponse.FromString,
+                _registered_method=True)
         self.WatchCompanyUpdates = channel.unary_stream(
                 '/aegis.v2.CompanyService/WatchCompanyUpdates',
                 request_serializer=aegis_dot_v2_dot_company__pb2.WatchCompanyUpdatesRequest.SerializeToString,
@@ -67,6 +77,20 @@ class CompanyServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RotateAgentToken(self, request, context):
+        """RotateAgentToken generates a new deployment token for a company.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RevokeAgentToken(self, request, context):
+        """RevokeAgentToken invalidates the current deployment token for a company.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def WatchCompanyUpdates(self, request, context):
         """WatchCompanyUpdates streams updates about companies and users.
         """
@@ -98,6 +122,16 @@ def add_CompanyServiceServicer_to_server(servicer, server):
                     servicer.OnboardCompany,
                     request_deserializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.FromString,
                     response_serializer=aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.SerializeToString,
+            ),
+            'RotateAgentToken': grpc.unary_unary_rpc_method_handler(
+                    servicer.RotateAgentToken,
+                    request_deserializer=aegis_dot_v2_dot_company__pb2.RotateAgentTokenRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_company__pb2.RotateAgentTokenResponse.SerializeToString,
+            ),
+            'RevokeAgentToken': grpc.unary_unary_rpc_method_handler(
+                    servicer.RevokeAgentToken,
+                    request_deserializer=aegis_dot_v2_dot_company__pb2.RevokeAgentTokenRequest.FromString,
+                    response_serializer=aegis_dot_v2_dot_company__pb2.RevokeAgentTokenResponse.SerializeToString,
             ),
             'WatchCompanyUpdates': grpc.unary_stream_rpc_method_handler(
                     servicer.WatchCompanyUpdates,
@@ -192,6 +226,60 @@ class CompanyService(object):
             '/aegis.v2.CompanyService/OnboardCompany',
             aegis_dot_v2_dot_company__pb2.OnboardCompanyRequest.SerializeToString,
             aegis_dot_v2_dot_company__pb2.OnboardCompanyResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RotateAgentToken(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.CompanyService/RotateAgentToken',
+            aegis_dot_v2_dot_company__pb2.RotateAgentTokenRequest.SerializeToString,
+            aegis_dot_v2_dot_company__pb2.RotateAgentTokenResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RevokeAgentToken(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aegis.v2.CompanyService/RevokeAgentToken',
+            aegis_dot_v2_dot_company__pb2.RevokeAgentTokenRequest.SerializeToString,
+            aegis_dot_v2_dot_company__pb2.RevokeAgentTokenResponse.FromString,
             options,
             channel_credentials,
             insecure,

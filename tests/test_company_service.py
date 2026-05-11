@@ -7,6 +7,7 @@ import asyncio
 from grpc_services.company import CompanyService
 import aegis.v2.company_pb2 as company_pb2
 from models.company import Company
+import models.agent  # noqa: F401 - registers SQLAlchemy relationship targets.
 from models.onboarding_invitation import OnboardingInvitation
 from models.user import User, UserActivationStatus, UserRole
 from utils.token_utils import hash_token
@@ -163,6 +164,99 @@ async def test_onboard_company_success(company_service, mock_db):
         assert invitation.token_hash != "aegis_inv_raw-token"
         assert invitation.expires_at is not None
         assert mock_db.commit.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_rotate_agent_token_success_for_owner(company_service, mock_db):
+    company_id = str(uuid.uuid4())
+    company = Company(id=uuid.UUID(company_id), name="Tenant")
+    mock_db.query.return_value.filter.return_value.first.return_value = company
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id, patch(
+        "grpc_services.company.generate_opaque_token",
+        return_value="ag_rotated-token",
+    ):
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": company_id,
+        }
+
+        response = await company_service.RotateAgentToken(
+            company_pb2.RotateAgentTokenRequest(), MagicMock()
+        )
+
+    assert response.agent_token == "ag_rotated-token"
+    assert company.deployment_token == hash_token("ag_rotated-token")
+    mock_db.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_rotate_agent_token_denies_cross_company_owner(company_service):
+    company_id = str(uuid.uuid4())
+    other_company_id = str(uuid.uuid4())
+    context = MagicMock()
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": company_id,
+        }
+
+        response = await company_service.RotateAgentToken(
+            company_pb2.RotateAgentTokenRequest(company_id=other_company_id),
+            context,
+        )
+
+    assert response.agent_token == ""
+    context.set_code.assert_called_with(grpc.StatusCode.PERMISSION_DENIED)
+
+
+@pytest.mark.asyncio
+async def test_revoke_agent_token_success_for_owner(company_service, mock_db):
+    company_id = str(uuid.uuid4())
+    company = Company(
+        id=uuid.UUID(company_id),
+        name="Tenant",
+        deployment_token=hash_token("ag_existing-token"),
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = company
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": company_id,
+        }
+
+        response = await company_service.RevokeAgentToken(
+            company_pb2.RevokeAgentTokenRequest(), MagicMock()
+        )
+
+    assert response.success is True
+    assert company.deployment_token is None
+    mock_db.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_revoke_agent_token_returns_not_found(company_service, mock_db):
+    mock_db.query.return_value.filter.return_value.first.return_value = None
+    context = MagicMock()
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "admin",
+            "company_id": str(uuid.uuid4()),
+        }
+
+        response = await company_service.RevokeAgentToken(
+            company_pb2.RevokeAgentTokenRequest(), context
+        )
+
+    assert response.success is False
+    context.set_code.assert_called_with(grpc.StatusCode.NOT_FOUND)
 
 
 @pytest.mark.asyncio

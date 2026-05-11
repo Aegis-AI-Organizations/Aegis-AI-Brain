@@ -17,7 +17,7 @@ from models.onboarding_invitation import OnboardingInvitation
 from models.refresh_token import RefreshToken
 from models.user import User, UserActivationStatus
 from utils.auth_utils import verify_password, hash_password
-from utils.token_utils import generate_opaque_token, hash_token
+from utils.token_utils import generate_agent_token, hash_token
 from grpc_services.utils import with_identity
 
 logger = logging.getLogger(__name__)
@@ -120,7 +120,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 return None, AuthErrorCode.INVALID_TOKEN
 
             try:
-                agent_token = generate_opaque_token("ag_")
+                agent_token = generate_agent_token()
                 user.password_hash = hash_password(new_password)
                 user.is_active = True
                 user.activation_status = UserActivationStatus.active

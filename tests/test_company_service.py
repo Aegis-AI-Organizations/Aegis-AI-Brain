@@ -12,6 +12,8 @@ from models.onboarding_invitation import OnboardingInvitation
 from models.user import User, UserActivationStatus, UserRole
 from utils.token_utils import hash_token
 
+VALID_AGENT_TOKEN = "ag_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
+
 
 @pytest.fixture
 def company_service():
@@ -173,8 +175,8 @@ async def test_rotate_agent_token_success_for_owner(company_service, mock_db):
     mock_db.query.return_value.filter.return_value.first.return_value = company
 
     with patch("grpc_services.utils.get_identity") as mock_get_id, patch(
-        "grpc_services.company.generate_opaque_token",
-        return_value="ag_rotated-token",
+        "grpc_services.company.generate_agent_token",
+        return_value=VALID_AGENT_TOKEN,
     ):
         mock_get_id.return_value = {
             "user_id": str(uuid.uuid4()),
@@ -186,8 +188,8 @@ async def test_rotate_agent_token_success_for_owner(company_service, mock_db):
             company_pb2.RotateAgentTokenRequest(), MagicMock()
         )
 
-    assert response.agent_token == "ag_rotated-token"
-    assert company.deployment_token == hash_token("ag_rotated-token")
+    assert response.agent_token == VALID_AGENT_TOKEN
+    assert company.deployment_token == hash_token(VALID_AGENT_TOKEN)
     mock_db.commit.assert_called_once()
 
 
@@ -219,7 +221,7 @@ async def test_revoke_agent_token_success_for_owner(company_service, mock_db):
     company = Company(
         id=uuid.UUID(company_id),
         name="Tenant",
-        deployment_token=hash_token("ag_existing-token"),
+        deployment_token=hash_token(VALID_AGENT_TOKEN),
     )
     mock_db.query.return_value.filter.return_value.first.return_value = company
 

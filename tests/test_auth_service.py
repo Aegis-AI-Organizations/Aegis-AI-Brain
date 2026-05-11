@@ -15,6 +15,8 @@ from models.refresh_token import RefreshToken
 from utils.auth_utils import hash_password, verify_password
 from utils.token_utils import hash_token
 
+VALID_AGENT_TOKEN = "ag_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
+
 
 @pytest.fixture
 def auth_service():
@@ -221,13 +223,15 @@ async def test_setup_password_success(auth_service, mock_db):
     )
     context = MagicMock()
 
-    with patch("grpc_services.auth.generate_opaque_token", return_value="ag_once"):
+    with patch(
+        "grpc_services.auth.generate_agent_token", return_value=VALID_AGENT_TOKEN
+    ):
         response = await auth_service.SetupPassword(request, context)
 
     assert response.access_token != ""
     assert response.refresh_token != ""
-    assert response.agent_token == "ag_once"
-    assert company.deployment_token == hash_token("ag_once")
+    assert response.agent_token == VALID_AGENT_TOKEN
+    assert company.deployment_token == hash_token(VALID_AGENT_TOKEN)
     assert user.is_active is True
     assert user.activation_status == UserActivationStatus.active
     assert verify_password("NewStrongPassword123!", user.password_hash)

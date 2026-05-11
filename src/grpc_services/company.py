@@ -15,7 +15,7 @@ from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
-from utils.token_utils import generate_opaque_token, hash_token
+from utils.token_utils import generate_agent_token, generate_opaque_token, hash_token
 from models.audit_log import AuditLog
 import uuid
 import json
@@ -239,7 +239,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 return None, "not_found"
 
             try:
-                agent_token = generate_opaque_token("ag_")
+                agent_token = generate_agent_token()
                 company.deployment_token = hash_token(agent_token)
                 db.commit()
                 return agent_token, None

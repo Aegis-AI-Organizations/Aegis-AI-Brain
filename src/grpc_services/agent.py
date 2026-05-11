@@ -18,6 +18,7 @@ from config.config import (
 )
 import aegis.v2.agent_pb2 as agent_pb2
 import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
+from utils.token_utils import is_valid_agent_token_format
 
 logger = logging.getLogger("aegis_brain_agent")
 
@@ -39,7 +40,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         Returns a unique agent_id.
         """
         token = request.token
-        if not token or not token.startswith("ag_"):
+        if not is_valid_agent_token_format(token):
             await context.abort(
                 grpc.StatusCode.UNAUTHENTICATED, "Invalid deployment token format"
             )

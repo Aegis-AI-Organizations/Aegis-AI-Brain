@@ -3,7 +3,7 @@ import asyncio
 import aegis.v2.internal_auth_pb2 as internal_auth_pb2
 import aegis.v2.internal_auth_pb2_grpc as internal_auth_pb2_grpc
 from config.db import get_db_connection
-from utils.token_utils import hash_token
+from utils.token_utils import hash_token, is_valid_agent_token_format
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +13,9 @@ class InternalAuthService(internal_auth_pb2_grpc.InternalAuthServiceServicer):
 
     def _verify_token_db_sync(self, token: str) -> str:
         """Synchronously verifies an agent token and returns the company_id."""
+        if not is_valid_agent_token_format(token):
+            return None
+
         conn = None
         try:
             token_hash = hash_token(token)

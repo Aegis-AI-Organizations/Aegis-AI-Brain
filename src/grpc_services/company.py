@@ -43,6 +43,29 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             self._session_factory = get_session_factory()
         return self._session_factory
 
+    def _resolve_agent_token_company_id(self, request_company_id: str, identity):
+        role = identity["role"]
+        allowed_roles = ["superadmin", "admin", "owner"]
+        if role not in allowed_roles:
+            return None, grpc.StatusCode.PERMISSION_DENIED, "Insufficient permissions"
+
+        identity_company_id = str(identity.get("company_id") or "")
+        if role == "owner":
+            if not identity_company_id:
+                return None, grpc.StatusCode.PERMISSION_DENIED, "Missing company scope"
+            if request_company_id and request_company_id != identity_company_id:
+                return (
+                    None,
+                    grpc.StatusCode.PERMISSION_DENIED,
+                    "Cannot manage another company token",
+                )
+            return identity_company_id, None, None
+
+        target_company_id = request_company_id or identity_company_id
+        if not target_company_id:
+            return None, grpc.StatusCode.INVALID_ARGUMENT, "Missing company_id"
+        return target_company_id, None, None
+
     def _create_company_db_sync(self, name: str, owner_email: str):
         with self.session_factory() as db:
             # 1. Verify owner exists
@@ -208,6 +231,89 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         return company_pb2.OnboardCompanyResponse(
             company_id=company_id, owner_id=owner_id, deployment_token=token
         )
+
+    def _rotate_agent_token_db_sync(self, company_id: str):
+        with self.session_factory() as db:
+            company = db.query(Company).filter(Company.id == company_id).first()
+            if not company:
+                return None, "not_found"
+
+            try:
+                agent_token = generate_opaque_token("ag_")
+                company.deployment_token = hash_token(agent_token)
+                db.commit()
+                return agent_token, None
+            except Exception as exc:
+                db.rollback()
+                logger.exception("Failed to rotate agent token")
+                return None, str(exc)
+
+    def _revoke_agent_token_db_sync(self, company_id: str):
+        with self.session_factory() as db:
+            company = db.query(Company).filter(Company.id == company_id).first()
+            if not company:
+                return False, "not_found"
+
+            try:
+                company.deployment_token = None
+                db.commit()
+                return True, None
+            except Exception as exc:
+                db.rollback()
+                logger.exception("Failed to revoke agent token")
+                return False, str(exc)
+
+    @with_identity(verified_only=True)
+    async def RotateAgentToken(
+        self, request: company_pb2.RotateAgentTokenRequest, context, identity
+    ) -> company_pb2.RotateAgentTokenResponse:
+        company_id, status_code, details = self._resolve_agent_token_company_id(
+            request.company_id, identity
+        )
+        if status_code:
+            context.set_code(status_code)
+            context.set_details(details)
+            return company_pb2.RotateAgentTokenResponse()
+
+        token, error = await asyncio.to_thread(
+            self._rotate_agent_token_db_sync, company_id
+        )
+        if error:
+            context.set_code(
+                grpc.StatusCode.NOT_FOUND
+                if error == "not_found"
+                else grpc.StatusCode.INTERNAL
+            )
+            context.set_details("Company not found" if error == "not_found" else error)
+            return company_pb2.RotateAgentTokenResponse()
+
+        return company_pb2.RotateAgentTokenResponse(agent_token=token)
+
+    @with_identity(verified_only=True)
+    async def RevokeAgentToken(
+        self, request: company_pb2.RevokeAgentTokenRequest, context, identity
+    ) -> company_pb2.RevokeAgentTokenResponse:
+        company_id, status_code, details = self._resolve_agent_token_company_id(
+            request.company_id, identity
+        )
+        if status_code:
+            context.set_code(status_code)
+            context.set_details(details)
+            return company_pb2.RevokeAgentTokenResponse()
+
+        success, error = await asyncio.to_thread(
+            self._revoke_agent_token_db_sync, company_id
+        )
+        if error:
+            context.set_code(
+                grpc.StatusCode.NOT_FOUND
+                if error == "not_found"
+                else grpc.StatusCode.INTERNAL
+            )
+            context.set_details("Company not found" if error == "not_found" else error)
+            return company_pb2.RevokeAgentTokenResponse(success=False)
+
+        return company_pb2.RevokeAgentTokenResponse(success=success)
 
     def _list_entities_db_sync(
         self,

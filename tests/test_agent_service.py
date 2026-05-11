@@ -5,6 +5,8 @@ import grpc
 from grpc_services.agent import AgentService
 import aegis.v2.agent_pb2 as agent_pb2
 
+VALID_AGENT_TOKEN = "ag_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
+
 
 @pytest.fixture
 def agent_service():
@@ -17,7 +19,7 @@ def agent_service():
 
 @pytest.mark.asyncio
 async def test_register_agent_success(agent_service):
-    token = "ag_valid_token"
+    token = VALID_AGENT_TOKEN
     company_id = "comp_123"
     request = agent_pb2.RegisterAgentRequest(token=token, name="TestAgent")
     context = AsyncMock(spec=grpc.aio.ServicerContext)
@@ -90,7 +92,7 @@ async def test_get_upload_link_agent_not_found(agent_service):
 
 @pytest.mark.asyncio
 async def test_register_agent_db_error(agent_service):
-    request = agent_pb2.RegisterAgentRequest(token="ag_valid", name="TestAgent")
+    request = agent_pb2.RegisterAgentRequest(token=VALID_AGENT_TOKEN, name="TestAgent")
     context = AsyncMock(spec=grpc.aio.ServicerContext)
     context.abort.side_effect = grpc.aio.AbortError(
         grpc.StatusCode.INTERNAL, "DB error"

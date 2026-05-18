@@ -2,7 +2,9 @@ import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
 import uuid
 import grpc
+from datetime import datetime, timedelta, timezone
 from grpc_services.agent import AgentService
+from grpc_services.utils import verified_identity
 import aegis.v2.agent_pb2 as agent_pb2
 
 VALID_AGENT_TOKEN = "ag_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
@@ -170,3 +172,83 @@ async def test_verify_agent_secret_exception(agent_service):
     with patch("asyncio.to_thread", side_effect=Exception("error")):
         response = await agent_service.VerifyAgentSecret(request, context)
         assert response.valid is False
+
+
+@pytest.mark.asyncio
+async def test_list_agents_for_current_company(agent_service):
+    now = datetime.now(timezone.utc)
+    agent = MagicMock()
+    agent.id = uuid.uuid4()
+    agent.company_id = uuid.uuid4()
+    agent.name = "prod-agent"
+    agent.status = "IDLE"
+    agent.last_seen = now
+    agent.created_at = now - timedelta(minutes=1)
+    request = agent_pb2.ListAgentsRequest()
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    identity_token = verified_identity.set(
+        {"user_id": "user-1", "company_id": str(agent.company_id), "role": "owner"}
+    )
+
+    try:
+        with patch("asyncio.to_thread", return_value=[agent]):
+            response = await agent_service.ListAgents(request, context)
+    finally:
+        verified_identity.reset(identity_token)
+
+    assert len(response.agents) == 1
+    assert response.agents[0].id == str(agent.id)
+    assert response.agents[0].company_id == str(agent.company_id)
+    assert response.agents[0].name == "prod-agent"
+    assert response.agents[0].status == "IDLE"
+
+
+@pytest.mark.asyncio
+async def test_list_agents_blocks_cross_company_access(agent_service):
+    request = agent_pb2.ListAgentsRequest(company_id="other-company")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    context.abort.side_effect = grpc.aio.AbortError(
+        grpc.StatusCode.PERMISSION_DENIED, "forbidden"
+    )
+    identity_token = verified_identity.set(
+        {"user_id": "user-1", "company_id": "company-1", "role": "owner"}
+    )
+
+    try:
+        with pytest.raises(grpc.aio.AbortError):
+            await agent_service.ListAgents(request, context)
+    finally:
+        verified_identity.reset(identity_token)
+
+
+@pytest.mark.asyncio
+async def test_agent_status_summary_counts_active_and_inactive(agent_service):
+    now = datetime.now(timezone.utc)
+    active_agent = MagicMock()
+    active_agent.last_seen = now
+    active_agent.status = "IDLE"
+    inactive_agent = MagicMock()
+    inactive_agent.last_seen = now - timedelta(minutes=10)
+    inactive_agent.status = "IDLE"
+    offline_agent = MagicMock()
+    offline_agent.last_seen = now
+    offline_agent.status = "OFFLINE"
+    request = agent_pb2.GetAgentStatusSummaryRequest()
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+    identity_token = verified_identity.set(
+        {"user_id": "user-1", "company_id": "company-1", "role": "viewer"}
+    )
+
+    try:
+        with patch(
+            "asyncio.to_thread",
+            return_value=[active_agent, inactive_agent, offline_agent],
+        ):
+            response = await agent_service.GetAgentStatusSummary(request, context)
+    finally:
+        verified_identity.reset(identity_token)
+
+    assert response.total_agents == 3
+    assert response.active_agents == 1
+    assert response.inactive_agents == 2
+    assert response.HasField("last_seen")

@@ -13,6 +13,13 @@ Tous les modèles sont situés dans `src/models/` et héritent de `Base`.
   - Relations :
     - `owner` : Une relation un-à-un avec l'utilisateur (`User`) qui possède l'entreprise.
     - `members` : Une relation un-à-plusieurs avec toutes les entités `User` appartenant à l'entreprise.
+    - `agents` : Agents persistants déployés pour cette entreprise.
+
+### 📡 Agents & Statut Runtime
+- **`Agent`** : Représente un agent Aegis déployé et rattaché à une entreprise.
+  - Champs : `company_id`, `name`, `token_hash`, `status`, `last_seen`, `created_at`.
+  - `token_hash` stocke le hash du secret opérationnel de l'agent. Le secret en clair n'est retourné que pendant l'enregistrement de l'agent.
+  - `last_seen` est mis à jour par les appels de statut/heartbeat et sert à calculer les agents actifs ou inactifs pour le dashboard.
 
 ### 👤 Utilisateurs & Rôles
 - **`User`** : Entité logicielle de base pour l'authentification.

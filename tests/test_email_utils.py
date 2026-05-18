@@ -46,4 +46,6 @@ def test_send_onboarding_invitation_email_to_smtp():
     smtp.send_message.assert_called_once()
     message = smtp.send_message.call_args.args[0]
     assert message["To"] == "owner@test.com"
-    assert "http://localhost/setup-password?token=aegis_inv_token" in message.get_content()
+    assert (
+        "http://localhost/setup-password?token=aegis_inv_token" in message.get_content()
+    )

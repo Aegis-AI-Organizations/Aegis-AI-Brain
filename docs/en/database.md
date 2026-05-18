@@ -9,7 +9,7 @@ All models are located in `src/models/` and inherit from `Base`.
 ### 🏢 Companies & Multi-Tenancy
 - **`Company`**: Represents an organization within Aegis.
   - Fields: `name`, `logo_url`, `is_active`, `deployment_token`.
-  - **`deployment_token`**: SHA-256 hash of the raw `ag_` deployment token used by external agents. The raw token is returned only once during onboarding and is never persisted.
+  - **`deployment_token`**: SHA-256 hash of the raw `ag_` deployment token used by external agents. The raw token is returned only once during owner activation or manual rotation and is never persisted.
   - Relationships:
     - `owner`: A One-to-One relationship to the `User` who owns the company.
     - `members`: A One-to-Many relationship to all `User` entities belonging to the company.

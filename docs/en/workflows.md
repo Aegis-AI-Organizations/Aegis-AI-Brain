@@ -24,11 +24,11 @@ Onboarding is managed by Aegis administrators after payment. It creates the cust
 
 1.  **gRPC Request**: The API Gateway calls internal `OnboardCompany` rpc.
 2.  **Entity Creation**: `CompanyService` saves the new `Company` record to PostgreSQL.
-3.  **Token Generation**: A unique 32-char hex `deployment_token` (`ag_` prefix) is generated via `secrets.token_hex`.
-4.  **Owner Initialization**: The initial "Owner" user is created, linked to the company, marked inactive, and assigned the `pending_activation` status.
-5.  **Invitation Creation**: A one-time first-login invitation token (`aegis_inv_` prefix) is generated, hashed in PostgreSQL, and stored with an expiration date.
-6.  **Onboarding Response**: The system returns the deployment token and raw invitation token. It does not return owner credentials.
-7.  **Owner Activation**: The API Gateway calls `AuthService.SetupPassword` with the invitation token and the new password. The Brain validates that the invitation is unused and not expired, hashes the password, activates the owner, marks the invitation as used, and creates the initial session tokens.
+3.  **Owner Initialization**: The initial "Owner" user is created, linked to the company, marked inactive, and assigned the `pending_activation` status.
+4.  **Invitation Creation**: A one-time first-login invitation token (`aegis_inv_` prefix) is generated, hashed in PostgreSQL, stored with an expiration date, and sent by email.
+5.  **Onboarding Response**: The system returns company and owner identifiers. It does not return owner credentials or a clear deployment token.
+6.  **Owner Activation**: The API Gateway calls `AuthService.SetupPassword` with the invitation token and the new password. The Brain validates that the invitation is unused and not expired, hashes the password, activates the owner, marks the invitation as used, and creates the initial session tokens.
+7.  **Agent Token Delivery**: During activation, the Brain generates the initial `ag_` deployment token, stores only its hash, and returns the clear token once.
 
 ## Zero Trust Security Scope
 The Brain is securely locked away within `aegis-system`. By Cilium Network Policies, it is the solitary component explicitly permitted inward ingress traffic to the `aegis-postgres-mvp` namespace.

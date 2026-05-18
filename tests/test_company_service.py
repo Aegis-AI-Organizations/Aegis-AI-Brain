@@ -115,7 +115,10 @@ async def test_onboard_company_success(company_service, mock_db):
     ) as mock_user_cls, patch(
         "grpc_services.company.generate_opaque_token",
         return_value="aegis_inv_raw-token",
-    ):
+    ), patch(
+        "grpc_services.company.send_onboarding_invitation_email",
+        return_value=True,
+    ) as mock_send_invitation:
         mock_company = MagicMock()
         mock_company.id = uuid.uuid4()
         mock_company.name = "New Co"
@@ -165,6 +168,12 @@ async def test_onboard_company_success(company_service, mock_db):
         assert invitation.token_hash == hash_token("aegis_inv_raw-token")
         assert invitation.token_hash != "aegis_inv_raw-token"
         assert invitation.expires_at is not None
+        mock_send_invitation.assert_called_once_with(
+            owner_email="owner@test.com",
+            owner_name="Owner",
+            company_name="New Co",
+            invitation_token="aegis_inv_raw-token",
+        )
         assert mock_db.commit.call_count == 2
 
 

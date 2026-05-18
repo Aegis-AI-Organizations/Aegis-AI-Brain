@@ -15,6 +15,7 @@ from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
+from utils.email_utils import send_onboarding_invitation_email
 from utils.token_utils import generate_agent_token, generate_opaque_token, hash_token
 from models.audit_log import AuditLog
 import uuid
@@ -227,6 +228,20 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.commit()
         except Exception:
             logger.exception("Failed to log audit for onboarding")
+
+        try:
+            await asyncio.to_thread(
+                send_onboarding_invitation_email,
+                owner_email=request.owner_email,
+                owner_name=request.owner_name,
+                company_name=request.company_name,
+                invitation_token=invitation_token,
+            )
+        except Exception:
+            logger.exception(
+                "Failed to send onboarding invitation email to %s",
+                request.owner_email,
+            )
 
         return company_pb2.OnboardCompanyResponse(
             company_id=company_id, owner_id=owner_id, deployment_token=token

@@ -45,6 +45,18 @@ MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
 MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_INGEST_BUCKET = os.getenv("MINIO_INGEST_BUCKET", "aegis-ingest")
 
+# Onboarding email configuration
+ONBOARDING_EMAIL_ENABLED = (
+    os.getenv("ONBOARDING_EMAIL_ENABLED", "false").lower() == "true"
+)
+SMTP_HOST = os.getenv("SMTP_HOST", "localhost")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "1025"))
+SMTP_USERNAME = os.getenv("SMTP_USERNAME", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "false").lower() == "true"
+SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "onboarding@aegis-ai.local")
+FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost")
+
 # In production, we strictly require JWT_SECRET for security.
 if not JWT_SECRET:
     _ENV = os.getenv("ENV", "").lower()

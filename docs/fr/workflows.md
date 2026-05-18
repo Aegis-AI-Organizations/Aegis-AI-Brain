@@ -24,11 +24,11 @@ L'onboarding est géré par les administrateurs Aegis après paiement. Il crée 
 
 1.  **Requête gRPC** : L'API Gateway appelle `OnboardCompany`.
 2.  **Création de l'Entité** : Le `CompanyService` crée l'enregistrement `Company` en base de données.
-3.  **Génération du Token** : Un `deployment_token` unique (`ag_...`) est généré via `secrets.token_hex`.
-4.  **Initialisation du Propriétaire** : L'utilisateur "Owner" est créé, lié à l'entreprise, marqué inactif et placé en statut `pending_activation`.
-5.  **Création de l'Invitation** : Un token d'invitation première connexion à usage unique (`aegis_inv_...`) est généré, hashé en base PostgreSQL et stocké avec une date d'expiration.
-6.  **Réponse d'Onboarding** : Le système retourne le token de déploiement et le token d'invitation brut. Il ne retourne pas d'identifiants owner.
-7.  **Activation du Owner** : L'API Gateway appelle `AuthService.SetupPassword` avec le token d'invitation et le nouveau mot de passe. Le Brain vérifie que l'invitation est valide, non utilisée et non expirée, hash le mot de passe, active le owner, marque l'invitation comme utilisée et crée les tokens de session initiaux.
+3.  **Initialisation du Propriétaire** : L'utilisateur "Owner" est créé, lié à l'entreprise, marqué inactif et placé en statut `pending_activation`.
+4.  **Création de l'Invitation** : Un token d'invitation première connexion à usage unique (`aegis_inv_...`) est généré, hashé en base PostgreSQL, stocké avec une date d'expiration puis envoyé par email.
+5.  **Réponse d'Onboarding** : Le système retourne les identifiants de l'entreprise et du owner. Il ne retourne ni identifiants owner, ni token de déploiement clair.
+6.  **Activation du Owner** : L'API Gateway appelle `AuthService.SetupPassword` avec le token d'invitation et le nouveau mot de passe. Le Brain vérifie que l'invitation est valide, non utilisée et non expirée, hash le mot de passe, active le owner, marque l'invitation comme utilisée et crée les tokens de session initiaux.
+7.  **Remise du Token Agent** : Pendant l'activation, le Brain génère le token de déploiement initial `ag_`, stocke uniquement son hash et retourne le token clair une seule fois.
 
 ## Périmètre Zero Trust
 Le Brain tourne dans l'enclave aveugle `aegis-system`. Protégé par les contraintes réseaux de Cilium, il reste **le seul et unique composant** formellement apte à adresser la base de données `aegis-postgres-mvp`.

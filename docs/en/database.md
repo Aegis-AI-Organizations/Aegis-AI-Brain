@@ -13,6 +13,13 @@ All models are located in `src/models/` and inherit from `Base`.
   - Relationships:
     - `owner`: A One-to-One relationship to the `User` who owns the company.
     - `members`: A One-to-Many relationship to all `User` entities belonging to the company.
+    - `agents`: Persistent agents deployed for this company.
+
+### 📡 Agents & Runtime Status
+- **`Agent`**: Represents a deployed Aegis agent attached to a company.
+  - Fields: `company_id`, `name`, `token_hash`, `status`, `last_seen`, `created_at`.
+  - `token_hash` stores the agent operational secret hash. The clear secret is only returned during agent registration.
+  - `last_seen` is updated by status/heartbeat calls and is used to compute active vs inactive agents for the dashboard.
 
 ### 👤 Users & Roles
 - **`User`**: Core authentication entity.

@@ -9,6 +9,7 @@ from minio import Minio
 
 from config.db import get_session_factory
 from models.agent import Agent
+from grpc_services.utils import to_pb_timestamp, with_identity
 from config.config import (
     MINIO_ENDPOINT,
     MINIO_ACCESS_KEY,
@@ -21,6 +22,9 @@ import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
 from utils.token_utils import is_valid_agent_token_format
 
 logger = logging.getLogger("aegis_brain_agent")
+AGENT_ACTIVE_WINDOW = timedelta(minutes=5)
+INACTIVE_AGENT_STATUSES = {"OFFLINE", "ERROR"}
+INTERNAL_ROLES = {"superadmin", "admin", "technicien", "support"}
 
 
 class AgentService(agent_pb2_grpc.AgentServiceServicer):
@@ -33,6 +37,66 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             secret_key=MINIO_SECRET_KEY,
             secure=MINIO_SECURE,
         )
+
+    @staticmethod
+    def _normalize_status(status: str) -> str:
+        return (status or "UNKNOWN").upper()
+
+    @staticmethod
+    def _ensure_aware(dt):
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt
+
+    def _resolve_company_scope(self, request_company_id: str, identity):
+        role = (identity.get("role") or "").lower()
+        identity_company_id = str(identity.get("company_id") or "")
+
+        if role in INTERNAL_ROLES:
+            company_id = request_company_id or identity_company_id
+            if not company_id:
+                return None, grpc.StatusCode.INVALID_ARGUMENT, "Missing company_id"
+            return company_id, None, None
+
+        if not identity_company_id:
+            return None, grpc.StatusCode.PERMISSION_DENIED, "Missing company scope"
+
+        if request_company_id and request_company_id != identity_company_id:
+            return (
+                None,
+                grpc.StatusCode.PERMISSION_DENIED,
+                "Cannot access another company agents",
+            )
+
+        return identity_company_id, None, None
+
+    def _agent_to_proto(self, agent: Agent):
+        record = agent_pb2.AgentRecord(
+            id=str(agent.id),
+            company_id=str(agent.company_id),
+            name=agent.name or "",
+            status=self._normalize_status(agent.status),
+        )
+        last_seen = to_pb_timestamp(self._ensure_aware(agent.last_seen))
+        created_at = to_pb_timestamp(self._ensure_aware(agent.created_at))
+        if last_seen is not None:
+            record.last_seen.CopyFrom(last_seen)
+        if created_at is not None:
+            record.created_at.CopyFrom(created_at)
+        return record
+
+    def _is_agent_active(self, agent: Agent, now: datetime) -> bool:
+        status = self._normalize_status(agent.status)
+        if status in INACTIVE_AGENT_STATUSES:
+            return False
+
+        last_seen = self._ensure_aware(agent.last_seen)
+        if last_seen is None:
+            return False
+
+        return now - last_seen <= AGENT_ACTIVE_WINDOW
 
     async def RegisterAgent(self, request, context):
         """
@@ -178,3 +242,75 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         except Exception as e:
             logger.error(f"Error during agent secret verification: {e}")
             return agent_pb2.VerifyAgentSecretResponse(valid=False, tenant_id="")
+
+    @with_identity(verified_only=True)
+    async def ListAgents(self, request, context, identity):
+        company_id, code, message = self._resolve_company_scope(
+            request.company_id, identity
+        )
+        if code is not None:
+            await context.abort(code, message)
+
+        def _list_agents():
+            with self.session_factory() as db:
+                return (
+                    db.query(Agent)
+                    .filter(Agent.company_id == company_id)
+                    .order_by(Agent.last_seen.desc(), Agent.created_at.desc())
+                    .all()
+                )
+
+        try:
+            agents = await asyncio.to_thread(_list_agents)
+            return agent_pb2.ListAgentsResponse(
+                agents=[self._agent_to_proto(agent) for agent in agents]
+            )
+        except Exception as e:
+            logger.error(f"Failed to list agents for company {company_id}: {e}")
+            await context.abort(
+                grpc.StatusCode.INTERNAL, "Database error listing agents"
+            )
+
+    @with_identity(verified_only=True)
+    async def GetAgentStatusSummary(self, request, context, identity):
+        company_id, code, message = self._resolve_company_scope(
+            request.company_id, identity
+        )
+        if code is not None:
+            await context.abort(code, message)
+
+        def _list_agents():
+            with self.session_factory() as db:
+                return (
+                    db.query(Agent)
+                    .filter(Agent.company_id == company_id)
+                    .order_by(Agent.last_seen.desc(), Agent.created_at.desc())
+                    .all()
+                )
+
+        try:
+            agents = await asyncio.to_thread(_list_agents)
+            now = datetime.now(timezone.utc)
+            active_agents = sum(
+                1 for agent in agents if self._is_agent_active(agent, now)
+            )
+            last_seen = next(
+                (agent.last_seen for agent in agents if agent.last_seen), None
+            )
+
+            response = agent_pb2.GetAgentStatusSummaryResponse(
+                total_agents=len(agents),
+                active_agents=active_agents,
+                inactive_agents=len(agents) - active_agents,
+            )
+            last_seen_ts = to_pb_timestamp(self._ensure_aware(last_seen))
+            if last_seen_ts is not None:
+                response.last_seen.CopyFrom(last_seen_ts)
+            return response
+        except Exception as e:
+            logger.error(
+                f"Failed to build agent status summary for company {company_id}: {e}"
+            )
+            await context.abort(
+                grpc.StatusCode.INTERNAL, "Database error summarizing agents"
+            )

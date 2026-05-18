@@ -7,6 +7,7 @@ from models.scan import Scan, Vulnerability, Evidence
 from models.audit_log import AuditLog
 from models.onboarding_invitation import OnboardingInvitation
 from models.token_ledger import TokenLedger
+from models.agent import Agent
 
 __all__ = [
     "Base",
@@ -22,4 +23,5 @@ __all__ = [
     "AuditLog",
     "OnboardingInvitation",
     "TokenLedger",
+    "Agent",
 ]

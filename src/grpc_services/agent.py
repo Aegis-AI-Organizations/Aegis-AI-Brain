@@ -28,7 +28,7 @@ INTERNAL_ROLES = {"superadmin", "admin", "technicien", "support"}
 
 
 class AgentService(agent_pb2_grpc.AgentServiceServicer):
-    def __init__(self):
+    def __init__(self, temporal_client=None):
         self.session_factory = get_session_factory()
         # Initialize MinIO client
         self.minio_client = Minio(
@@ -37,6 +37,29 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             secret_key=MINIO_SECRET_KEY,
             secure=MINIO_SECURE,
         )
+        self.temporal_client = temporal_client
+        
+        # Initialize Redis client for tracking latest agent uploads
+        import redis
+        from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+        try:
+            if REDIS_PASSWORD:
+                self.redis_client = redis.Redis(
+                    host=REDIS_HOST,
+                    port=int(REDIS_PORT),
+                    password=REDIS_PASSWORD,
+                    decode_responses=True,
+                )
+            else:
+                self.redis_client = redis.Redis(
+                    host=REDIS_HOST,
+                    port=int(REDIS_PORT),
+                    decode_responses=True,
+                )
+            logger.info("✅ AgentService connected to Redis")
+        except Exception as e:
+            logger.error(f"❌ AgentService failed to connect to Redis: {e}")
+            self.redis_client = None
 
     @staticmethod
     def _normalize_status(status: str) -> str:
@@ -155,13 +178,16 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         """
         Updates the agent's state (IDLE, UPLOADING, etc.) and last_seen timestamp.
         """
+        status_to_save = request.status
+        if request.status == "UPLOAD_COMPLETE":
+            status_to_save = "IDLE"
 
         def _update_status():
             with self.session_factory() as db:
                 agent = db.query(Agent).filter(Agent.id == request.agent_id).first()
                 if not agent:
                     return False
-                agent.status = request.status
+                agent.status = status_to_save
                 agent.last_seen = datetime.now(timezone.utc)
                 db.commit()
                 return True
@@ -170,6 +196,34 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             success = await asyncio.to_thread(_update_status)
             if not success:
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Agent not found")
+
+            # If status is UPLOAD_COMPLETE, start the Temporal Ingest topology workflow!
+            if request.status == "UPLOAD_COMPLETE":
+                object_name = request.payload_key
+                if not object_name and self.redis_client:
+                    try:
+                        redis_key = f"agent:latest_upload:{request.agent_id}"
+                        object_name = self.redis_client.get(redis_key)
+                    except Exception as redis_err:
+                        logger.error(f"Failed to get latest upload key from Redis: {redis_err}")
+
+                if object_name:
+                    if self.temporal_client:
+                        try:
+                            workflow_id = f"ingest-{request.agent_id}-{int(datetime.now(timezone.utc).timestamp())}"
+                            logger.info(f"Starting IngestTopologyWorkflow for {object_name} with ID {workflow_id}")
+                            await self.temporal_client.start_workflow(
+                                "IngestTopologyWorkflow",
+                                args=[{"bucket": MINIO_INGEST_BUCKET, "key": object_name}],
+                                id=workflow_id,
+                                task_queue="INGEST_TASK_QUEUE",
+                            )
+                        except Exception as temporal_err:
+                            logger.error(f"Failed to start IngestTopologyWorkflow: {temporal_err}")
+                    else:
+                        logger.warning("No Temporal client available on AgentService to start workflow!")
+                else:
+                    logger.warning(f"No upload key found in request payload_key or Redis for agent {request.agent_id}")
 
             return agent_pb2.UpdateAgentStatusResponse(success=True)
         except Exception as e:
@@ -200,6 +254,15 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         object_name = f"agents/{agent_id}/{timestamp}_{filename}"
 
+        def _check_and_create_bucket():
+            try:
+                if not self.minio_client.bucket_exists(MINIO_INGEST_BUCKET):
+                    self.minio_client.make_bucket(MINIO_INGEST_BUCKET)
+            except Exception as bucket_err:
+                logger.warning(f"Failed to check/create bucket {MINIO_INGEST_BUCKET}: {bucket_err}")
+
+        await asyncio.to_thread(_check_and_create_bucket)
+
         try:
             # 3. Generate presigned URL for PUT (valid for 1 hour)
             url = await asyncio.to_thread(
@@ -208,8 +271,15 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                 object_name,
                 expires=timedelta(hours=1),
             )
+            # Store in Redis so we can link it back on UpdateAgentStatus("UPLOAD_COMPLETE")
+            if self.redis_client:
+                try:
+                    redis_key = f"agent:latest_upload:{agent_id}"
+                    self.redis_client.set(redis_key, object_name, ex=3600)  # expires in 1 hour
+                except Exception as redis_err:
+                    logger.error(f"Failed to save latest upload key to Redis: {redis_err}")
             logger.info(f"Generated upload link for agent {agent_id}: {object_name}")
-            return agent_pb2.GetUploadLinkResponse(url=url, method="PUT")
+            return agent_pb2.GetUploadLinkResponse(url=url, method="PUT", object_name=object_name)
         except Exception as e:
             logger.error(f"Failed to generate MinIO presigned URL: {e}")
             await context.abort(

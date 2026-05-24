@@ -38,10 +38,11 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             secure=MINIO_SECURE,
         )
         self.temporal_client = temporal_client
-        
+
         # Initialize Redis client for tracking latest agent uploads
         import redis
         from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+
         try:
             if REDIS_PASSWORD:
                 self.redis_client = redis.Redis(
@@ -205,25 +206,37 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                         redis_key = f"agent:latest_upload:{request.agent_id}"
                         object_name = self.redis_client.get(redis_key)
                     except Exception as redis_err:
-                        logger.error(f"Failed to get latest upload key from Redis: {redis_err}")
+                        logger.error(
+                            f"Failed to get latest upload key from Redis: {redis_err}"
+                        )
 
                 if object_name:
                     if self.temporal_client:
                         try:
                             workflow_id = f"ingest-{request.agent_id}-{int(datetime.now(timezone.utc).timestamp())}"
-                            logger.info(f"Starting IngestTopologyWorkflow for {object_name} with ID {workflow_id}")
+                            logger.info(
+                                f"Starting IngestTopologyWorkflow for {object_name} with ID {workflow_id}"
+                            )
                             await self.temporal_client.start_workflow(
                                 "IngestTopologyWorkflow",
-                                args=[{"bucket": MINIO_INGEST_BUCKET, "key": object_name}],
+                                args=[
+                                    {"bucket": MINIO_INGEST_BUCKET, "key": object_name}
+                                ],
                                 id=workflow_id,
                                 task_queue="INGEST_TASK_QUEUE",
                             )
                         except Exception as temporal_err:
-                            logger.error(f"Failed to start IngestTopologyWorkflow: {temporal_err}")
+                            logger.error(
+                                f"Failed to start IngestTopologyWorkflow: {temporal_err}"
+                            )
                     else:
-                        logger.warning("No Temporal client available on AgentService to start workflow!")
+                        logger.warning(
+                            "No Temporal client available on AgentService to start workflow!"
+                        )
                 else:
-                    logger.warning(f"No upload key found in request payload_key or Redis for agent {request.agent_id}")
+                    logger.warning(
+                        f"No upload key found in request payload_key or Redis for agent {request.agent_id}"
+                    )
 
             return agent_pb2.UpdateAgentStatusResponse(success=True)
         except Exception as e:
@@ -259,7 +272,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                 if not self.minio_client.bucket_exists(MINIO_INGEST_BUCKET):
                     self.minio_client.make_bucket(MINIO_INGEST_BUCKET)
             except Exception as bucket_err:
-                logger.warning(f"Failed to check/create bucket {MINIO_INGEST_BUCKET}: {bucket_err}")
+                logger.warning(
+                    f"Failed to check/create bucket {MINIO_INGEST_BUCKET}: {bucket_err}"
+                )
 
         await asyncio.to_thread(_check_and_create_bucket)
 
@@ -275,11 +290,17 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             if self.redis_client:
                 try:
                     redis_key = f"agent:latest_upload:{agent_id}"
-                    self.redis_client.set(redis_key, object_name, ex=3600)  # expires in 1 hour
+                    self.redis_client.set(
+                        redis_key, object_name, ex=3600
+                    )  # expires in 1 hour
                 except Exception as redis_err:
-                    logger.error(f"Failed to save latest upload key to Redis: {redis_err}")
+                    logger.error(
+                        f"Failed to save latest upload key to Redis: {redis_err}"
+                    )
             logger.info(f"Generated upload link for agent {agent_id}: {object_name}")
-            return agent_pb2.GetUploadLinkResponse(url=url, method="PUT", object_name=object_name)
+            return agent_pb2.GetUploadLinkResponse(
+                url=url, method="PUT", object_name=object_name
+            )
         except Exception as e:
             logger.error(f"Failed to generate MinIO presigned URL: {e}")
             await context.abort(

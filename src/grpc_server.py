@@ -58,7 +58,9 @@ async def serve(port: str, temporal_client=None):
     )
     company_pb2_grpc.add_CompanyServiceServicer_to_server(CompanyService(), server)
     billing_pb2_grpc.add_BillingServiceServicer_to_server(BillingService(), server)
-    agent_pb2_grpc.add_AgentServiceServicer_to_server(AgentService(temporal_client), server)
+    agent_pb2_grpc.add_AgentServiceServicer_to_server(
+        AgentService(temporal_client), server
+    )
     internal_auth_pb2_grpc.add_InternalAuthServiceServicer_to_server(
         InternalAuthService(), server
     )

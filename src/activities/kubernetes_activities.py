@@ -22,26 +22,32 @@ def _get_k8s_client() -> client.CoreV1Api:
     except config.config_exception.ConfigException:
         logger.info("In-cluster config not found, loading local kube-config.")
         config.load_kube_config()
-    
+
     # Fix for kubernetes python client library bug where BearerToken is not set from incluster config
     conf = client.Configuration.get_default_copy()
     if conf.api_key and "authorization" in conf.api_key:
         conf.api_key["BearerToken"] = conf.api_key["authorization"]
     original_hook = conf.refresh_api_key_hook
     if original_hook:
+
         def wrapped_hook(client_config):
             original_hook(client_config)
             if client_config.api_key and "authorization" in client_config.api_key:
-                client_config.api_key["BearerToken"] = client_config.api_key["authorization"]
+                client_config.api_key["BearerToken"] = client_config.api_key[
+                    "authorization"
+                ]
+
         conf.refresh_api_key_hook = wrapped_hook
     client.Configuration.set_default(conf)
-    
+
     api_instance = client.CoreV1Api()
     conf = api_instance.api_client.configuration
     token_preview = ""
     if conf.api_key.get("authorization"):
         token_preview = conf.api_key["authorization"][:15] + "..."
-    logger.info(f"Kubernetes client initialized. Host: {conf.host}, Auth key: {token_preview}")
+    logger.info(
+        f"Kubernetes client initialized. Host: {conf.host}, Auth key: {token_preview}"
+    )
     return api_instance
 
 

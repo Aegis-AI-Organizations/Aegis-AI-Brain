@@ -69,14 +69,12 @@ async def test_get_upload_link_success(agent_service):
     request = agent_pb2.GetUploadLinkRequest(agent_id=agent_id, filename="logs.tar.gz")
     context = AsyncMock(spec=grpc.aio.ServicerContext)
 
-    agent_mock = MagicMock()
-    agent_mock.company_id = "c1"
-
-    with patch("asyncio.to_thread", side_effect=[agent_mock, "http://minio/upload"]):
+    with patch("asyncio.to_thread", side_effect=[True, None, "http://minio/upload"]):
         # We mock asyncio.to_thread directly to avoid issues with mocked MinIO methods
         response = await agent_service.GetUploadLink(request, context)
         assert response.url == "http://minio/upload"
         assert response.method == "PUT"
+        assert response.object_name.endswith("_logs.tar.gz")
 
 
 @pytest.mark.asyncio
@@ -138,7 +136,7 @@ async def test_get_upload_link_error(agent_service):
     context = AsyncMock(spec=grpc.aio.ServicerContext)
     context.abort.side_effect = grpc.aio.AbortError(grpc.StatusCode.INTERNAL, "Error")
 
-    with patch("asyncio.to_thread", side_effect=[True, Exception("minio error")]):
+    with patch("asyncio.to_thread", side_effect=[True, None, Exception("minio error")]):
         with pytest.raises(grpc.aio.AbortError):
             await agent_service.GetUploadLink(request, context)
 

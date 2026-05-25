@@ -31,7 +31,9 @@ database_url = URL.create(
     port=int(db_port or "5432"),
     database=os.getenv("POSTGRES_DB", "aegis_db"),
 )
-config.set_main_option("sqlalchemy.url", database_url.render_as_string(hide_password=False))
+config.set_main_option(
+    "sqlalchemy.url", database_url.render_as_string(hide_password=False)
+)
 target_metadata = Base.metadata
 
 

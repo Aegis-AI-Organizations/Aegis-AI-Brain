@@ -282,9 +282,7 @@ def downgrade() -> None:
     op.drop_table("refresh_tokens")
     op.drop_table("onboarding_invitations")
     op.drop_table("agents")
-    op.drop_constraint(
-        "fk_companies_owner_id_users", "companies", type_="foreignkey"
-    )
+    op.drop_constraint("fk_companies_owner_id_users", "companies", type_="foreignkey")
     op.drop_table("users")
     op.drop_table("scans")
     op.drop_table("licenses")

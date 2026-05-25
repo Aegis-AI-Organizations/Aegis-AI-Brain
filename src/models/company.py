@@ -25,7 +25,13 @@ class Company(Base):
         String(255), unique=True, nullable=True
     )
     owner_id: Mapped[Optional[UUID]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        ForeignKey(
+            "users.id",
+            ondelete="SET NULL",
+            use_alter=True,
+            name="fk_companies_owner_id_users",
+        ),
+        nullable=True,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean, server_default=text("true"), default=True

@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Core orchestration logic for Aegis AI"
 authors = [{ name = "Aegis AI Team" }]
 dependencies = [
+    "alembic>=1.14.0",
     "temporalio>=1.4.0",
     "pydantic>=2.6.3",
     "psycopg[binary]>=3.2.10",

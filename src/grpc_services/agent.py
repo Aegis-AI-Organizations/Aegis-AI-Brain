@@ -16,6 +16,8 @@ from config.config import (
     MINIO_SECRET_KEY,
     MINIO_SECURE,
     MINIO_INGEST_BUCKET,
+    MINIO_EXTERNAL_ENDPOINT,
+    MINIO_EXTERNAL_SECURE,
 )
 import aegis.v2.agent_pb2 as agent_pb2
 import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
@@ -36,6 +38,12 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             access_key=MINIO_ACCESS_KEY,
             secret_key=MINIO_SECRET_KEY,
             secure=MINIO_SECURE,
+        )
+        self.presign_client = Minio(
+            MINIO_EXTERNAL_ENDPOINT,
+            access_key=MINIO_ACCESS_KEY,
+            secret_key=MINIO_SECRET_KEY,
+            secure=MINIO_EXTERNAL_SECURE,
         )
         self.temporal_client = temporal_client
 
@@ -281,7 +289,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         try:
             # 3. Generate presigned URL for PUT (valid for 1 hour)
             url = await asyncio.to_thread(
-                self.minio_client.presigned_put_object,
+                self.presign_client.presigned_put_object,
                 MINIO_INGEST_BUCKET,
                 object_name,
                 expires=timedelta(hours=1),

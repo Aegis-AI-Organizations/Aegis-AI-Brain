@@ -44,6 +44,8 @@ MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
 MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_INGEST_BUCKET = os.getenv("MINIO_INGEST_BUCKET", "aegis-ingest")
+MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT", "storage.aegis-ai.fr")
+MINIO_EXTERNAL_SECURE = os.getenv("MINIO_EXTERNAL_SECURE", "true").lower() == "true"
 
 # Onboarding email configuration
 ONBOARDING_EMAIL_ENABLED = (

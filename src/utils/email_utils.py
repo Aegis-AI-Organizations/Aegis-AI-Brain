@@ -62,9 +62,7 @@ def _build_email_parts(
     safe_body_sentence = escape(body_sentence)
     safe_security_note = escape(security_note)
     safe_closing_line = escape(closing_line)
-    preheader = (
-        f"Un accès sécurisé Aegis AI est prêt pour {recipient_name} chez {company_name}."
-    )
+    preheader = f"Un accès sécurisé Aegis AI est prêt pour {recipient_name} chez {company_name}."
 
     text_body = "\n".join(
         [

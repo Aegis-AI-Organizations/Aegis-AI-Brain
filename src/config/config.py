@@ -59,9 +59,7 @@ SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "false").lower() == "true"
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "onboarding@aegis-ai.local")
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost")
 AEGIS_EMAIL_API_KEY = os.getenv("AEGIS_EMAIL_API_KEY", "")
-AEGIS_EMAIL_API_URL = os.getenv(
-    "AEGIS_EMAIL_API_URL", "https://api.resend.com/emails"
-)
+AEGIS_EMAIL_API_URL = os.getenv("AEGIS_EMAIL_API_URL", "https://api.resend.com/emails")
 
 # In production, we strictly require JWT_SECRET for security.
 if not JWT_SECRET:

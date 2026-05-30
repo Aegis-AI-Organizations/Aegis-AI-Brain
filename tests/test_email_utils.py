@@ -32,6 +32,9 @@ def test_render_onboarding_invitation_email_contains_register_link():
     )
 
     assert subject == "Activez votre compte Aegis AI"
+    assert "https://app.aegis-ai.fr/logo.png" in html_body
+    assert "Secure access workflows" in html_body
+    assert "Aegis AI" in html_body
     assert "register?token=aegis_inv_token" in html_body
     assert "register?token=aegis_inv_token" in text_body
     assert "multipart" not in html_body.lower()
@@ -45,6 +48,8 @@ def test_render_access_renewal_email_contains_register_link():
     )
 
     assert subject == "Renouvelez votre accès Aegis AI"
+    assert "https://app.aegis-ai.fr/logo.png" in html_body
+    assert "Secure access workflows" in html_body
     assert "register?token=renewal_token" in html_body
     assert "register?token=renewal_token" in text_body
     assert "Renouveler mon accès" in html_body

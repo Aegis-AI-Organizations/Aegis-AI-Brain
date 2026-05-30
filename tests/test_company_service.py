@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch, AsyncMock, ANY
 import grpc
 import uuid
 import asyncio
@@ -17,7 +17,7 @@ VALID_AGENT_TOKEN = "ag_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg"
 
 @pytest.fixture
 def company_service():
-    service = CompanyService()
+    service = CompanyService(email_service=MagicMock())
     service._session_factory = MagicMock()
     return service
 
@@ -173,6 +173,7 @@ async def test_onboard_company_success(company_service, mock_db):
             owner_name="Owner",
             company_name="New Co",
             invitation_token="aegis_inv_raw-token",
+            email_service=ANY,
         )
         assert mock_db.commit.call_count == 2
 

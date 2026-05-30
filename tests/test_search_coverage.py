@@ -8,7 +8,7 @@ from aegis.v2 import company_pb2, auth_pb2
 
 @pytest.mark.asyncio
 async def test_company_search_with_query():
-    service = CompanyService()
+    service = CompanyService(email_service=MagicMock())
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
         mock_get_id.return_value = {"user_id": str(uuid.uuid4()), "role": "superadmin"}
@@ -105,7 +105,7 @@ async def test_auth_remove_avatar_success():
 
 @pytest.mark.asyncio
 async def test_company_list_owner_visibility():
-    service = CompanyService()
+    service = CompanyService(email_service=MagicMock())
     company_id = str(uuid.uuid4())
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:

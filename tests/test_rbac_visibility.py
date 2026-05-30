@@ -12,7 +12,7 @@ from models.user import User
 
 @pytest.fixture
 def company_service():
-    service = CompanyService()
+    service = CompanyService(email_service=MagicMock())
     service._session_factory = MagicMock()
     return service
 

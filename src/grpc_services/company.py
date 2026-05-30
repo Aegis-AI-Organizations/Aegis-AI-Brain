@@ -16,6 +16,7 @@ from grpc_services.utils import with_identity
 from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
 from utils.email_utils import send_onboarding_invitation_email
+from services.email_service import EmailService, create_email_service
 from utils.token_utils import generate_agent_token, generate_opaque_token, hash_token
 from models.audit_log import AuditLog
 import uuid
@@ -35,8 +36,9 @@ class CompanyCreateError(enum.Enum):
 class CompanyService(company_pb2_grpc.CompanyServiceServicer):
     """CompanyService handles company creation and administrative listing."""
 
-    def __init__(self):
+    def __init__(self, email_service: EmailService | None = None):
         self._session_factory = None
+        self.email_service = email_service or create_email_service()
 
     @property
     def session_factory(self):
@@ -236,6 +238,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 owner_name=request.owner_name,
                 company_name=request.company_name,
                 invitation_token=invitation_token,
+                email_service=self.email_service,
             )
         except Exception:
             logger.exception(

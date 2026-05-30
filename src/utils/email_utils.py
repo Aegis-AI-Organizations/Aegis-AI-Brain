@@ -95,30 +95,43 @@ def _build_email_parts(
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{SURFACE_DARKER};padding:32px 16px;font-family:Inter,Arial,sans-serif;color:{TEXT_MAIN};">
       <tr>
         <td align="center">
-          <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:640px;background:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.16);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,0.45);">
+          <table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:680px;background:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.16);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,0.45);">
             <tr>
-              <td style="padding:28px 28px 22px 28px;background:linear-gradient(180deg,rgba(11,13,19,0.98) 0%,rgba(5,8,16,1) 100%);border-bottom:1px solid rgba(96,165,250,0.14);">
+              <td style="padding:0;">
+                <div style="height:8px;background:linear-gradient(90deg,{BRAND_PRIMARY} 0%,{BRAND_ACCENT} 100%);"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 28px 24px 28px;background:linear-gradient(180deg,rgba(5,8,16,1) 0%,rgba(11,13,19,1) 100%);">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
-                    <td valign="middle" style="padding-right:14px;width:64px;">
-                      <img src="{BRAND_LOGO_URL}" width="52" height="52" alt="{BRAND_LOGO_ALT}" style="display:block;border:0;outline:none;text-decoration:none;border-radius:14px;box-shadow:0 0 0 1px rgba(96,165,250,0.22),0 14px 26px rgba(34,211,238,0.12);" />
+                    <td valign="middle" style="padding-right:16px;width:78px;">
+                      <img src="{BRAND_LOGO_URL}" width="66" height="66" alt="{BRAND_LOGO_ALT}" style="display:block;border:0;outline:none;text-decoration:none;border-radius:18px;background:rgba(34,211,238,0.08);box-shadow:0 0 0 1px rgba(96,165,250,0.22),0 14px 26px rgba(34,211,238,0.12);" />
                     </td>
                     <td valign="middle">
-                      <div style="font-size:12px;line-height:1.2;letter-spacing:0.22em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};">{BRAND_NAME}</div>
-                      <div style="margin-top:4px;font-size:13px;line-height:1.4;color:{TEXT_MUTED};">{BRAND_TAGLINE}</div>
+                      <div style="font-size:13px;line-height:1.2;letter-spacing:0.26em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};">{BRAND_NAME}</div>
+                      <div style="margin-top:6px;font-size:13px;line-height:1.5;color:{TEXT_MUTED};">{BRAND_TAGLINE}</div>
+                    </td>
+                    <td valign="middle" align="right" style="font-size:11px;line-height:1.2;letter-spacing:0.16em;text-transform:uppercase;color:{TEXT_MUTED};font-weight:700;">
+                      {safe_eyebrow}
                     </td>
                   </tr>
                 </table>
 
-                <div style="display:inline-block;margin-top:22px;padding:7px 12px;border-radius:999px;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.22);color:{BRAND_PRIMARY};font-size:11px;line-height:1;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">
-                  {safe_eyebrow}
-                </div>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:22px;">
+                  <tr>
+                    <td style="padding:18px 20px;border-radius:20px;background:linear-gradient(180deg,rgba(34,211,238,0.08) 0%,rgba(148,163,184,0.05) 100%);border:1px solid rgba(96,165,250,0.12);">
+                      <div style="font-size:11px;line-height:1.4;letter-spacing:0.14em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:8px;">
+                        Secure access workflows
+                      </div>
+                      <h1 style="margin:0;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-0.03em;color:{TEXT_MAIN};">
+                        {safe_headline}
+                      </h1>
+                    </td>
+                  </tr>
+                </table>
 
-                <h1 style="margin:18px 0 12px 0;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-0.03em;color:{TEXT_MAIN};">
-                  {safe_headline}
-                </h1>
-
-                <p style="margin:0 0 10px 0;font-size:18px;line-height:1.6;font-weight:700;color:#f8fbff;">
+                <p style="margin:22px 0 10px 0;font-size:18px;line-height:1.6;font-weight:700;color:#f8fbff;">
                   Bonjour {safe_recipient_name},
                 </p>
                 <p style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:{TEXT_MAIN};">
@@ -131,17 +144,17 @@ def _build_email_parts(
                   {safe_body_sentence}
                 </p>
 
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px 0;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
                   <tr>
                     <td style="border-radius:999px;background:linear-gradient(135deg,{BRAND_PRIMARY} 0%,{BRAND_ACCENT} 100%);box-shadow:0 14px 30px rgba(34,211,238,0.16);">
-                      <a href="{safe_action_url}" style="display:inline-block;padding:15px 24px;color:#08111f;text-decoration:none;font-size:15px;line-height:1;font-weight:800;border-radius:999px;">
+                      <a href="{safe_action_url}" style="display:inline-block;padding:16px 26px;color:#08111f;text-decoration:none;font-size:15px;line-height:1;font-weight:800;border-radius:999px;">
                         {safe_action_label}
                       </a>
                     </td>
                   </tr>
                 </table>
 
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:separate;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
                     <td style="padding:16px 18px;border-radius:18px;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.16);">
                       <div style="font-size:11px;line-height:1.4;letter-spacing:0.12em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:6px;">
@@ -156,15 +169,13 @@ def _build_email_parts(
               </td>
             </tr>
             <tr>
-              <td style="padding:20px 28px 24px 28px;background:#070a11;border-top:1px solid rgba(96,165,250,0.12);">
+              <td style="padding:18px 28px 24px 28px;background:#070a11;border-top:1px solid rgba(96,165,250,0.12);">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
                     <td style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};font-weight:700;">
                       {safe_closing_line}
                     </td>
-                  </tr>
-                  <tr>
-                    <td style="padding-top:6px;font-size:13px;line-height:1.6;color:{TEXT_MUTED};">
+                    <td align="right" style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};text-align:right;">
                       {safe_company_name}
                     </td>
                   </tr>

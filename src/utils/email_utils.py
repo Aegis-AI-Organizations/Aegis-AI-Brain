@@ -88,11 +88,30 @@ def _build_email_parts(
 
     html_body = f"""
 <html bgcolor="{SURFACE_DARKER}">
-  <body bgcolor="{SURFACE_DARKER}" style="margin:0;padding:0;background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};">
+  <head>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <style>
+      body.email-body {{ margin: 0 !important; padding: 0 !important; background: {SURFACE_DARKER} !important; background-color: {SURFACE_DARKER} !important; }}
+      table.email-shell, td.email-shell {{ background: {SURFACE_DARKER} !important; background-color: {SURFACE_DARKER} !important; }}
+      table.email-card, td.email-card {{ background: {SURFACE_DARK} !important; background-color: {SURFACE_DARK} !important; }}
+      table.email-footer, td.email-footer {{ background: #070a11 !important; background-color: #070a11 !important; }}
+      .email-text-main {{ color: {TEXT_MAIN} !important; }}
+      .email-text-muted {{ color: {TEXT_MUTED} !important; }}
+      [data-ogsc] body.email-body {{ background: {SURFACE_DARKER} !important; background-color: {SURFACE_DARKER} !important; }}
+      [data-ogsc] table.email-shell, [data-ogsc] td.email-shell {{ background: {SURFACE_DARKER} !important; background-color: {SURFACE_DARKER} !important; }}
+      [data-ogsc] table.email-card, [data-ogsc] td.email-card {{ background: {SURFACE_DARK} !important; background-color: {SURFACE_DARK} !important; }}
+      [data-ogsc] table.email-footer, [data-ogsc] td.email-footer {{ background: #070a11 !important; background-color: #070a11 !important; }}
+      [data-ogsc] .email-text-main {{ color: {TEXT_MAIN} !important; }}
+      [data-ogsc] .email-text-muted {{ color: {TEXT_MUTED} !important; }}
+    </style>
+  </head>
+  <body class="email-body" bgcolor="{SURFACE_DARKER}" style="margin:0;padding:0;background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;font-size:1px;line-height:1px;">
       {escape(preheader)}
     </div>
     <table
+      class="email-shell"
       role="presentation"
       width="100%"
       cellpadding="0"
@@ -102,8 +121,9 @@ def _build_email_parts(
       style="background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};padding:32px 16px;font-family:Inter,Arial,sans-serif;color:{TEXT_MAIN};mso-table-lspace:0pt;mso-table-rspace:0pt;"
     >
       <tr>
-        <td align="center" bgcolor="{SURFACE_DARKER}" style="background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};">
+        <td class="email-shell" align="center" bgcolor="{SURFACE_DARKER}" style="background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};">
           <table
+            class="email-card"
             role="presentation"
             width="680"
             cellpadding="0"
@@ -113,20 +133,20 @@ def _build_email_parts(
             style="width:100%;max-width:680px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.16);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,0.45);mso-table-lspace:0pt;mso-table-rspace:0pt;"
           >
             <tr>
-              <td bgcolor="{SURFACE_DARK}" style="padding:0;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
+              <td class="email-card" bgcolor="{SURFACE_DARK}" style="padding:0;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
                 <div style="height:8px;background:{BRAND_PRIMARY};background-image:linear-gradient(90deg,{BRAND_PRIMARY} 0%,{BRAND_ACCENT} 100%);"></div>
               </td>
             </tr>
             <tr>
-              <td bgcolor="{SURFACE_DARK}" style="padding:28px 28px 24px 28px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
+              <td class="email-card" bgcolor="{SURFACE_DARK}" style="padding:28px 28px 24px 28px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
                     <td valign="middle" style="padding-right:16px;width:78px;">
                       <img src="{BRAND_LOGO_URL}" width="66" height="66" alt="{BRAND_LOGO_ALT}" style="display:block;border:0;outline:none;text-decoration:none;border-radius:18px;background:rgba(34,211,238,0.08);box-shadow:0 0 0 1px rgba(96,165,250,0.22),0 14px 26px rgba(34,211,238,0.12);" />
                     </td>
                     <td valign="middle">
-                      <div style="font-size:13px;line-height:1.2;letter-spacing:0.26em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};">{BRAND_NAME}</div>
-                      <div style="margin-top:6px;font-size:13px;line-height:1.5;color:{TEXT_MUTED};">{BRAND_TAGLINE}</div>
+                      <div class="email-text-main" style="font-size:13px;line-height:1.2;letter-spacing:0.26em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};">{BRAND_NAME}</div>
+                      <div class="email-text-muted" style="margin-top:6px;font-size:13px;line-height:1.5;color:{TEXT_MUTED};">{BRAND_TAGLINE}</div>
                     </td>
                     <td valign="middle" align="right" style="font-size:11px;line-height:1.2;letter-spacing:0.16em;text-transform:uppercase;color:{TEXT_MUTED};font-weight:700;">
                       {safe_eyebrow}
@@ -137,26 +157,26 @@ def _build_email_parts(
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:22px;">
                   <tr>
                     <td style="padding:18px 20px;border-radius:20px;background:linear-gradient(180deg,rgba(34,211,238,0.08) 0%,rgba(148,163,184,0.05) 100%);border:1px solid rgba(96,165,250,0.12);">
-                      <div style="font-size:11px;line-height:1.4;letter-spacing:0.14em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:8px;">
+                      <div class="email-text-main" style="font-size:11px;line-height:1.4;letter-spacing:0.14em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:8px;">
                         Secure access workflows
                       </div>
-                      <h1 style="margin:0;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-0.03em;color:{TEXT_MAIN};">
+                      <h1 class="email-text-main" style="margin:0;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-0.03em;color:{TEXT_MAIN};">
                         {safe_headline}
                       </h1>
                     </td>
                   </tr>
                 </table>
 
-                <p style="margin:22px 0 10px 0;font-size:18px;line-height:1.6;font-weight:700;color:#f8fbff;">
+                <p class="email-text-main" style="margin:22px 0 10px 0;font-size:18px;line-height:1.6;font-weight:700;color:#f8fbff;">
                   Bonjour {safe_recipient_name},
                 </p>
-                <p style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:{TEXT_MAIN};">
+                <p class="email-text-main" style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:{TEXT_MAIN};">
                   {safe_subheadline}
                 </p>
-                <p style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:{TEXT_MUTED};">
+                <p class="email-text-muted" style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:{TEXT_MUTED};">
                   {safe_intro_sentence}
                 </p>
-                <p style="margin:0 0 22px 0;font-size:16px;line-height:1.7;color:{TEXT_MUTED};">
+                <p class="email-text-muted" style="margin:0 0 22px 0;font-size:16px;line-height:1.7;color:{TEXT_MUTED};">
                   {safe_body_sentence}
                 </p>
 
@@ -173,10 +193,10 @@ def _build_email_parts(
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
                     <td style="padding:16px 18px;border-radius:18px;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.16);">
-                      <div style="font-size:11px;line-height:1.4;letter-spacing:0.12em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:6px;">
+                      <div class="email-text-main" style="font-size:11px;line-height:1.4;letter-spacing:0.12em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:6px;">
                         Sécurité
                       </div>
-                      <div style="font-size:14px;line-height:1.7;color:{TEXT_MAIN};">
+                      <div class="email-text-main" style="font-size:14px;line-height:1.7;color:{TEXT_MAIN};">
                         {safe_security_note}
                       </div>
                     </td>
@@ -185,13 +205,13 @@ def _build_email_parts(
               </td>
             </tr>
             <tr>
-              <td bgcolor="#070a11" style="padding:18px 28px 24px 28px;background:#070a11;background-color:#070a11;border-top:1px solid rgba(96,165,250,0.12);">
+              <td class="email-footer" bgcolor="#070a11" style="padding:18px 28px 24px 28px;background:#070a11;background-color:#070a11;border-top:1px solid rgba(96,165,250,0.12);">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
-                    <td style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};font-weight:700;">
+                    <td class="email-text-muted" style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};font-weight:700;">
                       {safe_closing_line}
                     </td>
-                    <td align="right" style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};text-align:right;">
+                    <td class="email-text-muted" align="right" style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};text-align:right;">
                       {safe_company_name}
                     </td>
                   </tr>

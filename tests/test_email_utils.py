@@ -144,9 +144,7 @@ def test_mailpit_email_service_sends_plain_smtp_message():
     assert message["To"] == "owner@test.com"
     assert message["Subject"] == "Hello"
     assert message.get_content_type() == "multipart/alternative"
-    assert (
-        message.get_body(preferencelist=("plain",)).get_content().strip() == "Hello"
-    )
+    assert message.get_body(preferencelist=("plain",)).get_content().strip() == "Hello"
     assert (
         message.get_body(preferencelist=("html",)).get_content().strip()
         == "<p>Hello</p>"

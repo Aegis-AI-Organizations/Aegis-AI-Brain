@@ -29,9 +29,7 @@ DEFAULT_TIMEOUT_SECONDS = 10
 
 class EmailService(ABC):
     @abstractmethod
-    def send_email(
-        self, to: str, subject: str, html_body: str, text_body: str
-    ) -> bool:
+    def send_email(self, to: str, subject: str, html_body: str, text_body: str) -> bool:
         raise NotImplementedError
 
 
@@ -50,9 +48,7 @@ class MailpitEmailService(EmailService):
     use_tls: bool = False
     timeout: int = DEFAULT_TIMEOUT_SECONDS
 
-    def send_email(
-        self, to: str, subject: str, html_body: str, text_body: str
-    ) -> bool:
+    def send_email(self, to: str, subject: str, html_body: str, text_body: str) -> bool:
         message = EmailMessage()
         message["Subject"] = subject
         message["From"] = _format_from_header(self.from_name, self.from_email)
@@ -83,9 +79,7 @@ class ProductionEmailService(EmailService):
     from_email: str = DEFAULT_FROM_EMAIL
     timeout: int = DEFAULT_TIMEOUT_SECONDS
 
-    def send_email(
-        self, to: str, subject: str, html_body: str, text_body: str
-    ) -> bool:
+    def send_email(self, to: str, subject: str, html_body: str, text_body: str) -> bool:
         if not self.api_key:
             raise RuntimeError("AEGIS_EMAIL_API_KEY must be configured in production")
 

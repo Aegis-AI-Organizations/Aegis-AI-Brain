@@ -87,22 +87,38 @@ def _build_email_parts(
     )
 
     html_body = f"""
-<html>
-  <body style="margin:0;padding:0;background:{SURFACE_DARKER};">
+<html bgcolor="{SURFACE_DARKER}">
+  <body bgcolor="{SURFACE_DARKER}" style="margin:0;padding:0;background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;font-size:1px;line-height:1px;">
       {escape(preheader)}
     </div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{SURFACE_DARKER};padding:32px 16px;font-family:Inter,Arial,sans-serif;color:{TEXT_MAIN};">
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      bgcolor="{SURFACE_DARKER}"
+      style="background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};padding:32px 16px;font-family:Inter,Arial,sans-serif;color:{TEXT_MAIN};mso-table-lspace:0pt;mso-table-rspace:0pt;"
+    >
       <tr>
-        <td align="center">
-          <table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:680px;background:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.16);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,0.45);">
+        <td align="center" bgcolor="{SURFACE_DARKER}" style="background:{SURFACE_DARKER};background-color:{SURFACE_DARKER};">
+          <table
+            role="presentation"
+            width="680"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            bgcolor="{SURFACE_DARK}"
+            style="width:100%;max-width:680px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.16);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,0.45);mso-table-lspace:0pt;mso-table-rspace:0pt;"
+          >
             <tr>
-              <td style="padding:0;">
-                <div style="height:8px;background:linear-gradient(90deg,{BRAND_PRIMARY} 0%,{BRAND_ACCENT} 100%);"></div>
+              <td bgcolor="{SURFACE_DARK}" style="padding:0;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
+                <div style="height:8px;background:{BRAND_PRIMARY};background-image:linear-gradient(90deg,{BRAND_PRIMARY} 0%,{BRAND_ACCENT} 100%);"></div>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px 28px 24px 28px;background:linear-gradient(180deg,rgba(5,8,16,1) 0%,rgba(11,13,19,1) 100%);">
+              <td bgcolor="{SURFACE_DARK}" style="padding:28px 28px 24px 28px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
                     <td valign="middle" style="padding-right:16px;width:78px;">
@@ -169,7 +185,7 @@ def _build_email_parts(
               </td>
             </tr>
             <tr>
-              <td style="padding:18px 28px 24px 28px;background:#070a11;border-top:1px solid rgba(96,165,250,0.12);">
+              <td bgcolor="#070a11" style="padding:18px 28px 24px 28px;background:#070a11;background-color:#070a11;border-top:1px solid rgba(96,165,250,0.12);">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                   <tr>
                     <td style="font-size:13px;line-height:1.6;color:{TEXT_MUTED};font-weight:700;">

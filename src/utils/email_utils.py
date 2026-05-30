@@ -130,7 +130,7 @@ def _build_email_parts(
             cellspacing="0"
             border="0"
             bgcolor="{SURFACE_DARK}"
-            style="width:100%;max-width:680px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.16);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(2,6,23,0.45);mso-table-lspace:0pt;mso-table-rspace:0pt;"
+            style="width:100%;max-width:680px;background:{SURFACE_DARK};background-color:{SURFACE_DARK};border:1px solid rgba(96,165,250,0.14);border-radius:28px;overflow:hidden;box-shadow:0 28px 72px rgba(2,6,23,0.38);mso-table-lspace:0pt;mso-table-rspace:0pt;"
           >
             <tr>
               <td class="email-card" bgcolor="{SURFACE_DARK}" style="padding:0;background:{SURFACE_DARK};background-color:{SURFACE_DARK};">
@@ -154,20 +154,16 @@ def _build_email_parts(
                   </tr>
                 </table>
 
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-top:22px;">
-                  <tr>
-                    <td style="padding:18px 20px;border-radius:20px;background:linear-gradient(180deg,rgba(34,211,238,0.08) 0%,rgba(148,163,184,0.05) 100%);border:1px solid rgba(96,165,250,0.12);">
-                      <div class="email-text-main" style="font-size:11px;line-height:1.4;letter-spacing:0.14em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:8px;">
-                        Secure access workflows
-                      </div>
-                      <h1 class="email-text-main" style="margin:0;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-0.03em;color:{TEXT_MAIN};">
-                        {safe_headline}
-                      </h1>
-                    </td>
-                  </tr>
-                </table>
+                <div style="height:1px;background:rgba(96,165,250,0.12);margin:22px 0 22px 0;"></div>
 
-                <p class="email-text-main" style="margin:22px 0 10px 0;font-size:18px;line-height:1.6;font-weight:700;color:#f8fbff;">
+                <div style="font-size:11px;line-height:1.4;letter-spacing:0.14em;text-transform:uppercase;font-weight:800;color:{BRAND_PRIMARY};margin-bottom:10px;">
+                  Secure access workflows
+                </div>
+                <h1 class="email-text-main" style="margin:0;font-size:32px;line-height:1.1;font-weight:800;letter-spacing:-0.04em;color:{TEXT_MAIN};">
+                  {safe_headline}
+                </h1>
+
+                <p class="email-text-main" style="margin:20px 0 10px 0;font-size:18px;line-height:1.6;font-weight:700;color:#f8fbff;">
                   Bonjour {safe_recipient_name},
                 </p>
                 <p class="email-text-main" style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:{TEXT_MAIN};">

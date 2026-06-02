@@ -153,7 +153,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                 grpc.StatusCode.UNAUTHENTICATED, "Invalid or inactive deployment token"
             )
 
-        agent_id = str(uuid.uuid4())
+        agent_name = request.name if request.name else f"Agent-{str(uuid.uuid4())[:8]}"
         # Generate a 256-bit secure secret (32 bytes -> hex string)
         agent_secret = secrets.token_hex(32)
         # Hash the secret using bcrypt
@@ -161,19 +161,33 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
 
         def _save_agent():
             with self.session_factory() as db:
-                agent = Agent(
-                    id=agent_id,
-                    company_id=company_id,
-                    name=request.name if request.name else f"Agent-{agent_id[:8]}",
-                    status="IDLE",
-                    token_hash=token_hash,
+                existing = (
+                    db.query(Agent)
+                    .filter(Agent.company_id == company_id, Agent.name == agent_name)
+                    .first()
                 )
-                db.add(agent)
+
+                if existing:
+                    existing.token_hash = token_hash
+                    existing.status = "IDLE"
+                    existing.last_seen = datetime.now(timezone.utc)
+                    agent = existing
+                else:
+                    agent = Agent(
+                        id=str(uuid.uuid4()),
+                        company_id=company_id,
+                        name=agent_name,
+                        status="IDLE",
+                        token_hash=token_hash,
+                    )
+                    db.add(agent)
+
                 db.commit()
+                return str(agent.id)
 
         try:
-            await asyncio.to_thread(_save_agent)
-            logger.info(f"New agent onboarded: {agent_id} for company {company_id}")
+            agent_id = await asyncio.to_thread(_save_agent)
+            logger.info(f"Agent registered/updated: {agent_id} for company {company_id}")
             return agent_pb2.RegisterAgentResponse(
                 agent_id=agent_id, agent_secret=agent_secret
             )

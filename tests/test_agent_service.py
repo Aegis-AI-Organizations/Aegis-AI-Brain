@@ -36,6 +36,46 @@ async def test_register_agent_success(agent_service):
 
 
 @pytest.mark.asyncio
+async def test_register_agent_reuses_existing_agent(agent_service):
+    token = VALID_AGENT_TOKEN
+    company_id = "comp_123"
+    request = agent_pb2.RegisterAgentRequest(token=token, name="TestAgent")
+    context = AsyncMock(spec=grpc.aio.ServicerContext)
+
+    existing_agent = MagicMock()
+    existing_agent.id = uuid.uuid4()
+    existing_agent.company_id = company_id
+    existing_agent.name = "TestAgent"
+    existing_agent.status = "OLD"
+    existing_agent.last_seen = None
+    existing_agent.token_hash = None
+
+    query = MagicMock()
+    query.filter.return_value.first.return_value = existing_agent
+    fake_db = MagicMock()
+    fake_db.query.return_value = query
+    fake_session = MagicMock()
+    fake_session.__enter__.return_value = fake_db
+    fake_session.__exit__.return_value = False
+
+    agent_service.session_factory = MagicMock(return_value=fake_session)
+
+    async def passthrough_to_thread(func, *args, **kwargs):
+        return func(*args, **kwargs)
+
+    with patch(
+        "grpc_services.internal_auth.InternalAuthService._verify_token_db_sync",
+        return_value=company_id,
+    ), patch("asyncio.to_thread", new=passthrough_to_thread):
+        response = await agent_service.RegisterAgent(request, context)
+
+    assert response.agent_id == str(existing_agent.id)
+    assert response.agent_secret
+    assert existing_agent.status == "IDLE"
+    assert existing_agent.token_hash is not None
+
+
+@pytest.mark.asyncio
 async def test_register_agent_invalid_token(agent_service):
     request = agent_pb2.RegisterAgentRequest(token="invalid", name="TestAgent")
     context = AsyncMock(spec=grpc.aio.ServicerContext)

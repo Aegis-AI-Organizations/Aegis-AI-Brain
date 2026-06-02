@@ -187,7 +187,9 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
 
         try:
             agent_id = await asyncio.to_thread(_save_agent)
-            logger.info(f"Agent registered/updated: {agent_id} for company {company_id}")
+            logger.info(
+                f"Agent registered/updated: {agent_id} for company {company_id}"
+            )
             return agent_pb2.RegisterAgentResponse(
                 agent_id=agent_id, agent_secret=agent_secret
             )

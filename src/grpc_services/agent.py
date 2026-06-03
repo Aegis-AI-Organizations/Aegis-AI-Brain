@@ -211,15 +211,16 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             with self.session_factory() as db:
                 agent = db.query(Agent).filter(Agent.id == request.agent_id).first()
                 if not agent:
-                    return False
+                    return None
                 agent.status = status_to_save
                 agent.last_seen = datetime.now(timezone.utc)
+                company_id = str(agent.company_id)
                 db.commit()
-                return True
+                return company_id
 
         try:
-            success = await asyncio.to_thread(_update_status)
-            if not success:
+            company_id = await asyncio.to_thread(_update_status)
+            if not company_id:
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Agent not found")
 
             # If status is UPLOAD_COMPLETE, start the Temporal Ingest topology workflow!
@@ -244,7 +245,12 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                             await self.temporal_client.start_workflow(
                                 "IngestTopologyWorkflow",
                                 args=[
-                                    {"bucket": MINIO_INGEST_BUCKET, "key": object_name}
+                                    {
+                                        "bucket": MINIO_INGEST_BUCKET,
+                                        "key": object_name,
+                                        "agent_id": request.agent_id,
+                                        "company_id": company_id,
+                                    }
                                 ],
                                 id=workflow_id,
                                 task_queue="INGEST_TASK_QUEUE",

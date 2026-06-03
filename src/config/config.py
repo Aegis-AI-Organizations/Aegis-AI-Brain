@@ -5,6 +5,7 @@ TEMPORAL_HOST = os.getenv("TEMPORAL_HOST", "localhost:7233")
 TEMPORAL_NAMESPACE = os.getenv("TEMPORAL_NAMESPACE", "default")
 GRPC_PORT = os.getenv("GRPC_PORT", "50051")
 BRAIN_TASK_QUEUE = os.getenv("BRAIN_TASK_QUEUE", "BRAIN_TASK_QUEUE")
+DEPLOYER_TASK_QUEUE = os.getenv("DEPLOYER_TASK_QUEUE", "DEPLOYER_TASK_QUEUE")
 
 # gRPC TLS Configuration
 TLS_ENABLE = os.getenv("BRAIN_TLS_ENABLE", "false").lower() == "true"

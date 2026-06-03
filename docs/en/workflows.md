@@ -13,9 +13,9 @@ In version 2 of the framework, the Brain assumes the exclusive role of system or
 ### 1. `PentestWorkflow`
 The most critical workflow in Aegis AI. When triggered through the gRPC `StartScan`, the Brain begins stepping through activities:
 
-- **`deploy_sandbox_target` (Kubernetes Activity):** Dynamically spins up a sterile target namespace (`aegis-war-room-{scan_id}`) where the vulnerable image is exposed under strict network isolation.
+- **`CreateSandbox` (Deployer Worker):** Asynchronously asks the dedicated Go Deployer worker to create the sterile target namespace (`aegis-war-room-{scan_id}`) and expose the vulnerable image under strict network isolation.
 - **`run_pentest` (Pentest Worker):** In parallel, commands the remote pentest-worker node to blast payloads into the target within the sandbox. The worker generates `Evidences` and `Vulnerabilities` streams sent back to the temporal history.
-- **`cleanup_sandbox` (Kubernetes Activity):** Dismantles the target namespace to restore cluster equilibrium once the scan is successfully concluded.
+- **`DestroySandbox` (Deployer Worker):** Asynchronously asks the dedicated Go Deployer worker to dismantle the target namespace once the scan is complete.
 
 ## Service Logic Flows
 

@@ -8,7 +8,6 @@ from activities.db_activities import (
     save_vulnerabilities,
     generate_and_store_pdf_report,
 )
-from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sandbox
 from config.config import BRAIN_TASK_QUEUE
 
 logger = logging.getLogger("aegis_brain_worker")
@@ -23,8 +22,6 @@ async def start_worker(client):
             update_scan_status,
             save_vulnerabilities,
             generate_and_store_pdf_report,
-            deploy_sandbox_target,
-            cleanup_sandbox,
         ],
         activity_executor=ThreadPoolExecutor(max_workers=10),
     )

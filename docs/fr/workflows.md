@@ -13,9 +13,9 @@ Dans la version 2 du framework, le Brain assume **le rôle exclusif** de command
 ### 1. `PentestWorkflow`
 Le workflow le plus critique d'Aegis. Une fois éveillé par `StartScan`, le Brain décline ses étapes tactiques :
 
-- **`deploy_sandbox_target` (Activité K8s)** : Forge dynamiquement un "bac à sable" stérile dans le cluster (`aegis-war-room-{scan_id}`). L'image cible y est injectée et isolée hermétiquement des autres applications internes de la plateforme.
+- **`CreateSandbox` (Worker Deployer)** : Demande de façon asynchrone au worker Go dédié de créer le namespace de bac à sable (`aegis-war-room-{scan_id}`) et d'y exposer l'image cible.
 - **`run_pentest` (Pentest Worker)** : Simultanément, la commande de déploiement pousse le worker défensif à arroser de payloads la cible. Le worker expédie les objets `Evidences` au fil de l'eau dans l'historique Temporal.
-- **`cleanup_sandbox` (Activité K8s)** : Démolition intégrale du "war-room" ciblé pour restaurer l'intégrité et la mémoire vive sur le cluster après la réussite de l'attaque.
+- **`DestroySandbox` (Worker Deployer)** : Demande de façon asynchrone au worker Go dédié de supprimer le namespace de bac à sable après l'attaque.
 
 ## Flux Métier (Workflows de Service)
 

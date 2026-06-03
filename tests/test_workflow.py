@@ -12,13 +12,17 @@ async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
     return f"Successfully updated scan {scan_id} to status {new_status}"
 
 
-@activity.defn(name="deploy_sandbox_target")
-async def mock_deploy_sandbox_target(scan_id: str, target_image: str) -> str:
-    return f"http://svc-{scan_id}.sandbox-{scan_id}.svc.cluster.local:80"
+@activity.defn(name="CreateSandbox")
+async def mock_create_sandbox(request: dict) -> dict:
+    scan_id = request["scan_id"]
+    return {
+        "namespace": f"aegis-war-room-{scan_id}",
+        "endpoint": f"http://svc-{scan_id}.aegis-war-room-{scan_id}.svc.cluster.local:80",
+    }
 
 
-@activity.defn(name="cleanup_sandbox")
-async def mock_cleanup_sandbox(scan_id: str) -> str:
+@activity.defn(name="DestroySandbox")
+async def mock_destroy_sandbox(scan_id: str) -> str:
     return "CLEANED"
 
 
@@ -50,8 +54,6 @@ async def test_pentest_workflow_success():
             workflows=[PentestWorkflow],
             activities=[
                 mock_update_scan_status,
-                mock_deploy_sandbox_target,
-                mock_cleanup_sandbox,
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
                 mock_run_pentest,
@@ -59,20 +61,25 @@ async def test_pentest_workflow_success():
         ):
             async with Worker(
                 env.client,
-                task_queue="PENTEST_TASK_QUEUE",
-                activities=[mock_run_pentest],
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[mock_create_sandbox, mock_destroy_sandbox],
             ):
-                scan_id = str(uuid.uuid4())
-                result = await env.client.execute_workflow(
-                    PentestWorkflow.run,
-                    args=[scan_id, "nginx:latest"],
-                    id=f"test-pentest-{scan_id}",
-                    task_queue="TEST_QUEUE",
-                )
-                assert (
-                    f"Scan {scan_id} on target nginx:latest successfully completed"
-                    in result
-                )
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    result = await env.client.execute_workflow(
+                        PentestWorkflow.run,
+                        args=[scan_id, "nginx:latest"],
+                        id=f"test-pentest-{scan_id}",
+                        task_queue="TEST_QUEUE",
+                    )
+                    assert (
+                        f"Scan {scan_id} on target nginx:latest successfully completed"
+                        in result
+                    )
 
 
 # Create a failing mock activity
@@ -93,8 +100,6 @@ async def test_pentest_workflow_failure():
             workflows=[PentestWorkflow],
             activities=[
                 failing_update_scan_status,
-                mock_deploy_sandbox_target,
-                mock_cleanup_sandbox,
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
                 mock_run_pentest,
@@ -102,14 +107,19 @@ async def test_pentest_workflow_failure():
         ):
             async with Worker(
                 env.client,
-                task_queue="PENTEST_TASK_QUEUE",
-                activities=[mock_run_pentest],
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[mock_create_sandbox, mock_destroy_sandbox],
             ):
-                scan_id = str(uuid.uuid4())
-                with pytest.raises(Exception):
-                    await env.client.execute_workflow(
-                        PentestWorkflow.run,
-                        args=[scan_id, "target"],
-                        id=f"test-pentest-fail-{scan_id}",
-                        task_queue="TEST_QUEUE_FAIL",
-                    )
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    with pytest.raises(Exception):
+                        await env.client.execute_workflow(
+                            PentestWorkflow.run,
+                            args=[scan_id, "target"],
+                            id=f"test-pentest-fail-{scan_id}",
+                            task_queue="TEST_QUEUE_FAIL",
+                        )

@@ -50,9 +50,7 @@ async def update_scan_status(scan_id: str, new_status: str) -> str:
 def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list):
     """Internal helper to insert vulnerabilities and their evidences."""
 
-    logger.info(
-        f"Saving {len(vulnerabilities)} vulnerabilities for scan {scan_id}..."
-    )
+    logger.info(f"Saving {len(vulnerabilities)} vulnerabilities for scan {scan_id}...")
     conn = get_db_connection()
     if not conn:
         raise Exception("Database connection failed")

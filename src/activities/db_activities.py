@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 def _execute_status_update(scan_id: str, new_status: str):
     """Internal helper to execute the SQL update."""
+    logger.info(f"Updating scan {scan_id} status to {new_status}...")
     conn = get_db_connection()
     if not conn:
         raise Exception("Database connection failed")
@@ -41,6 +42,7 @@ async def update_scan_status(scan_id: str, new_status: str) -> str:
     """
     Updates the status of a specific scan in the PostgreSQL database.
     """
+    logger.info(f"Activity update_scan_status started for scan {scan_id}")
     _execute_status_update(scan_id, new_status)
     return f"Successfully updated scan {scan_id} to status {new_status}"
 
@@ -48,6 +50,9 @@ async def update_scan_status(scan_id: str, new_status: str) -> str:
 def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list):
     """Internal helper to insert vulnerabilities and their evidences."""
 
+    logger.info(
+        f"Saving {len(vulnerabilities)} vulnerabilities for scan {scan_id}..."
+    )
     conn = get_db_connection()
     if not conn:
         raise Exception("Database connection failed")
@@ -103,8 +108,10 @@ async def save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
     Saves a list of vulnerabilities and their evidences to the PostgreSQL database.
     """
     if not vulnerabilities:
+        logger.info(f"No vulnerabilities to save for scan {scan_id}")
         return f"No vulnerabilities to save for scan {scan_id}"
 
+    logger.info(f"Activity save_vulnerabilities started for scan {scan_id}")
     _execute_save_vulnerabilities(scan_id, vulnerabilities)
     return (
         f"Successfully saved {len(vulnerabilities)} vulnerabilities for scan {scan_id}"
@@ -113,6 +120,9 @@ async def save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
 
 def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
     """Generates PDF bytes in memory and stores them in scans.report_pdf."""
+    logger.info(
+        f"Generating PDF report for scan {scan_id} with {len(vulnerabilities)} vulnerabilities..."
+    )
     conn = get_db_connection()
     if not conn:
         raise Exception("Database connection failed")
@@ -144,5 +154,6 @@ async def generate_and_store_pdf_report(scan_id: str, vulnerabilities: list) -> 
     """
     Generates a structured PDF report in memory and stores it in scans.report_pdf.
     """
+    logger.info(f"Activity generate_and_store_pdf_report started for scan {scan_id}")
     _execute_generate_and_store_pdf_report(scan_id, vulnerabilities)
     return f"Successfully generated and stored PDF report for scan {scan_id}"

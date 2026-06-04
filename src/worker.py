@@ -14,6 +14,9 @@ logger = logging.getLogger("aegis_brain_worker")
 
 
 async def start_worker(client):
+    logger.info(
+        f"Registering Brain worker on queue {BRAIN_TASK_QUEUE} with PentestWorkflow and DB activities"
+    )
     worker = Worker(
         client,
         task_queue=BRAIN_TASK_QUEUE,

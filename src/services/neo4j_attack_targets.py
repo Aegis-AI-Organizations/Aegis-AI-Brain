@@ -74,7 +74,9 @@ class Neo4jAttackTargetService:
         raw = f"{self.user}:{self.password}".encode("utf-8")
         return "Basic " + base64.b64encode(raw).decode("ascii")
 
-    def _execute_query(self, cypher: str, parameters: dict[str, Any]) -> list[dict[str, Any]]:
+    def _execute_query(
+        self, cypher: str, parameters: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         payload = {
             "statements": [
                 {
@@ -99,7 +101,9 @@ class Neo4jAttackTargetService:
                 body = json.loads(response.read().decode("utf-8"))
         except error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"Neo4j query failed with HTTP {exc.code}: {detail}") from exc
+            raise RuntimeError(
+                f"Neo4j query failed with HTTP {exc.code}: {detail}"
+            ) from exc
         except Exception as exc:
             raise RuntimeError(f"Neo4j query failed: {exc}") from exc
 

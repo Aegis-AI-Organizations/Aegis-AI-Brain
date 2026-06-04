@@ -57,6 +57,11 @@ async def test_scan_service_start(mock_get_db):
     assert response.status == "PENDING"
     assert response.scan_id != ""
     assert response.started_at is not None
+    temporal_client.start_workflow.assert_awaited_once()
+    args, kwargs = temporal_client.start_workflow.call_args
+    assert args[0] == "GraphDrivenPentestWorkflow"
+    assert kwargs["args"][1] == "nginx:latest"
+    assert kwargs["args"][2] == "test-company"
 
 
 @pytest.mark.asyncio

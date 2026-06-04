@@ -5,6 +5,7 @@ from temporalio import activity
 import uuid
 
 from workflows.pentest_workflow import PentestWorkflow
+from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 
 
 @activity.defn(name="update_scan_status")
@@ -41,6 +42,43 @@ async def mock_generate_and_store_pdf_report(
 @activity.defn(name="run_pentest")
 async def mock_run_pentest(target_ip: str, port: int) -> dict:
     return {"status": "COMPLETED", "vulnerabilities": []}
+
+
+@activity.defn(name="identify_attack_targets")
+async def mock_identify_attack_targets(company_id: str, agent_id: str | None = None):
+    return [
+        {
+            "path": "/login",
+            "label": "auth-service",
+            "path_length": 2,
+            "criticality": 100,
+            "score": 998,
+        },
+        {
+            "path": "/admin",
+            "label": "admin-panel",
+            "path_length": 3,
+            "criticality": 90,
+            "score": 897,
+        },
+    ]
+
+
+@activity.defn(name="run_targeted_pentest")
+async def mock_run_targeted_pentest(
+    target_host: str, port: int, targets: list[dict]
+) -> dict:
+    return {
+        "status": "COMPLETED",
+        "vulnerabilities": [
+            {
+                "vuln_type": "SQLi",
+                "target_endpoint": f"http://{target_host}:{port}{targets[0]['path']}",
+            }
+        ],
+        "targets": targets,
+        "target_count": len(targets),
+    }
 
 
 @pytest.mark.asyncio
@@ -123,3 +161,40 @@ async def test_pentest_workflow_failure():
                             id=f"test-pentest-fail-{scan_id}",
                             task_queue="TEST_QUEUE_FAIL",
                         )
+
+
+@pytest.mark.asyncio
+async def test_graph_driven_pentest_workflow_success():
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_GRAPH",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_identify_attack_targets,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[mock_create_sandbox, mock_destroy_sandbox],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_targeted_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    result = await env.client.execute_workflow(
+                        GraphDrivenPentestWorkflow.run,
+                        args=[scan_id, "nginx:latest", "company-1"],
+                        id=f"test-graph-pentest-{scan_id}",
+                        task_queue="TEST_QUEUE_GRAPH",
+                    )
+                    assert (
+                        f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
+                        in result
+                    )

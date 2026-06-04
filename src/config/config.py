@@ -6,6 +6,7 @@ TEMPORAL_NAMESPACE = os.getenv("TEMPORAL_NAMESPACE", "default")
 GRPC_PORT = os.getenv("GRPC_PORT", "50051")
 BRAIN_TASK_QUEUE = os.getenv("BRAIN_TASK_QUEUE", "BRAIN_TASK_QUEUE")
 DEPLOYER_TASK_QUEUE = os.getenv("DEPLOYER_TASK_QUEUE", "DEPLOYER_TASK_QUEUE")
+GRAPH_PENTEST_TASK_QUEUE = os.getenv("GRAPH_PENTEST_TASK_QUEUE", "PENTEST_TASK_QUEUE")
 
 # gRPC TLS Configuration
 TLS_ENABLE = os.getenv("BRAIN_TLS_ENABLE", "false").lower() == "true"
@@ -47,6 +48,14 @@ MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_INGEST_BUCKET = os.getenv("MINIO_INGEST_BUCKET", "aegis-ingest")
 MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT", "storage.aegis-ai.fr")
 MINIO_EXTERNAL_SECURE = os.getenv("MINIO_EXTERNAL_SECURE", "true").lower() == "true"
+
+# Neo4j Configuration
+NEO4J_URL = os.getenv(
+    "NEO4J_URL", "http://aegis-neo4j-mvp.aegis-system.svc.cluster.local:7474"
+)
+NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
+NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "neo4j_password")
+NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
 
 # Onboarding email configuration
 ONBOARDING_EMAIL_ENABLED = (

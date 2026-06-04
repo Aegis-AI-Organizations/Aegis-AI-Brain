@@ -56,7 +56,7 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             )
 
         scan_id = str(uuid.uuid4())
-        workflow_id = f"pentest-workflow-{scan_id}"
+        workflow_id = f"graph-pentest-workflow-{scan_id}"
 
         started_at = await asyncio.to_thread(
             self._start_scan_db, scan_id, workflow_id, request.target_image, company_id
@@ -81,8 +81,8 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
 
         try:
             await self.temporal_client.start_workflow(
-                "PentestWorkflow",
-                args=[scan_id, request.target_image],
+                "GraphDrivenPentestWorkflow",
+                args=[scan_id, request.target_image, company_id],
                 id=workflow_id,
                 task_queue=BRAIN_TASK_QUEUE,
             )

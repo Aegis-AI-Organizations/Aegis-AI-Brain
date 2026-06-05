@@ -185,11 +185,10 @@ class Neo4jAttackTargetService:
 
         query_params: dict[str, Any] = {
             "company_id": company_id,
+            "agent_id": agent_id.strip() if agent_id else None,
             "critical_keywords": CRITICAL_KEYWORDS,
             "limit": max(1, int(limit)),
         }
-        if agent_id:
-            query_params["agent_id"] = agent_id.strip()
 
         logger.info(
             "Querying Neo4j for attack targets company_id=%s agent_id=%s limit=%s",

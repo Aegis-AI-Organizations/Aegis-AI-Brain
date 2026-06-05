@@ -69,3 +69,22 @@ def test_identify_attack_targets_uses_valid_shortest_path_relationship_syntax():
     assert "[:ROUTE_FROM|:ROUTE_TO*..8]" not in captured["cypher"]
     assert captured["parameters"]["company_id"] == "company-1"
     assert captured["parameters"]["agent_id"] == "agent-1"
+
+
+def test_identify_attack_targets_sends_null_agent_id_when_missing():
+    captured = {}
+
+    def fake_execute_query(cypher, parameters):
+        captured["parameters"] = parameters
+        return []
+
+    with patch.object(
+        Neo4jAttackTargetService, "_execute_query", side_effect=fake_execute_query
+    ):
+        service = Neo4jAttackTargetService(
+            url="http://neo4j.local:7474", user="neo4j", password="secret"
+        )
+        service.identify_attack_targets("company-1")
+
+    assert "agent_id" in captured["parameters"]
+    assert captured["parameters"]["agent_id"] is None

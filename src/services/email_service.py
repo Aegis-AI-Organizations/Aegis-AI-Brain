@@ -131,10 +131,10 @@ class ProductionEmailService(EmailService):
 
 def create_email_service(env: str | None = None) -> EmailService:
     normalized_env = (env or os.getenv("ENV", "")).lower()
-    if normalized_env == "production":
-        if not AEGIS_EMAIL_API_KEY:
-            raise RuntimeError("AEGIS_EMAIL_API_KEY must be configured in production")
+    if AEGIS_EMAIL_API_KEY:
         return ProductionEmailService(api_key=AEGIS_EMAIL_API_KEY)
+    if normalized_env == "production":
+        raise RuntimeError("AEGIS_EMAIL_API_KEY must be configured in production")
 
     return MailpitEmailService(
         host=SMTP_HOST,

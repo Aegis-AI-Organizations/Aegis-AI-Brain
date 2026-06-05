@@ -154,6 +154,14 @@ def test_create_email_service_uses_mailpit_outside_production():
     assert service.port == 1025
 
 
+def test_create_email_service_prefers_production_when_api_key_is_set():
+    with patch("services.email_service.AEGIS_EMAIL_API_KEY", "secret-key"):
+        service = create_email_service(env="dev")
+
+    assert isinstance(service, ProductionEmailService)
+    assert service.api_key == "secret-key"
+
+
 def test_create_email_service_uses_production_in_production():
     with patch("services.email_service.AEGIS_EMAIL_API_KEY", "secret-key"):
         service = create_email_service(env="production")

@@ -152,7 +152,7 @@ class Neo4jAttackTargetService:
               OR toLower(coalesce(target.host, "")) CONTAINS keyword
             )
           )
-        MATCH p = shortestPath((entry)-[:ROUTE_FROM|:ROUTE_TO*..8]-(target))
+        MATCH p = shortestPath((entry)-[:ROUTE_FROM|ROUTE_TO*..8]-(target))
         WHERE p IS NOT NULL
         RETURN
           entry.id AS entry_id,

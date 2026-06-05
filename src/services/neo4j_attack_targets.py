@@ -128,10 +128,23 @@ class Neo4jAttackTargetService:
         if not company_id:
             return []
 
+        agent_entry_filter = ""
+        agent_target_filter = ""
+        query_params: dict[str, Any] = {
+            "company_id": company_id,
+            "critical_keywords": CRITICAL_KEYWORDS,
+            "limit": max(1, int(limit)),
+        }
+        normalized_agent_id = agent_id.strip() if agent_id else ""
+        if normalized_agent_id:
+            agent_entry_filter = "AND entry.agentId = $agent_id"
+            agent_target_filter = "AND target.agentId = $agent_id"
+            query_params["agent_id"] = normalized_agent_id
+
         cypher = """
         MATCH (entry:Route)
         WHERE entry.companyId = $company_id
-          AND ($agent_id IS NULL OR entry.agentId = $agent_id)
+          {agent_entry_filter}
           AND (
             coalesce(entry.publishedPort, 0) IN [80, 443]
             OR coalesce(entry.sourcePort, 0) IN [80, 443]
@@ -139,7 +152,7 @@ class Neo4jAttackTargetService:
           )
         MATCH (target:Route)
         WHERE target.companyId = $company_id
-          AND ($agent_id IS NULL OR target.agentId = $agent_id)
+          {agent_target_filter}
           AND entry.id <> target.id
           AND (
             coalesce(target.publishedPort, 0) IN [80, 443, 8080, 8443]
@@ -181,14 +194,10 @@ class Neo4jAttackTargetService:
           END AS criticality
         ORDER BY path_length ASC, criticality DESC, entry_path ASC
         LIMIT $limit
-        """
-
-        query_params: dict[str, Any] = {
-            "company_id": company_id,
-            "agent_id": agent_id.strip() if agent_id else None,
-            "critical_keywords": CRITICAL_KEYWORDS,
-            "limit": max(1, int(limit)),
-        }
+        """.format(
+            agent_entry_filter=agent_entry_filter,
+            agent_target_filter=agent_target_filter,
+        )
 
         logger.info(
             "Querying Neo4j for attack targets company_id=%s agent_id=%s limit=%s",

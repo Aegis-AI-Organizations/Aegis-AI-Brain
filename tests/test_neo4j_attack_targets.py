@@ -71,10 +71,11 @@ def test_identify_attack_targets_uses_valid_shortest_path_relationship_syntax():
     assert captured["parameters"]["agent_id"] == "agent-1"
 
 
-def test_identify_attack_targets_sends_null_agent_id_when_missing():
+def test_identify_attack_targets_omits_agent_id_when_missing():
     captured = {}
 
     def fake_execute_query(cypher, parameters):
+        captured["cypher"] = cypher
         captured["parameters"] = parameters
         return []
 
@@ -86,5 +87,5 @@ def test_identify_attack_targets_sends_null_agent_id_when_missing():
         )
         service.identify_attack_targets("company-1")
 
-    assert "agent_id" in captured["parameters"]
-    assert captured["parameters"]["agent_id"] is None
+    assert "agent_id" not in captured["parameters"]
+    assert "$agent_id" not in captured["cypher"]

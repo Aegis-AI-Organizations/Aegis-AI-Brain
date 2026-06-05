@@ -309,12 +309,18 @@ def send_onboarding_invitation_email(
     )
 
     service = email_service or create_email_service()
-    service.send_email(
-        to=owner_email,
-        subject=subject,
-        html_body=html_body,
-        text_body=text_body,
-    )
+    try:
+        service.send_email(
+            to=owner_email,
+            subject=subject,
+            html_body=html_body,
+            text_body=text_body,
+        )
+    except Exception:
+        logger.exception(
+            "Failed to send onboarding invitation email to %s", owner_email
+        )
+        return False
 
     logger.info("Onboarding invitation email sent to %s", owner_email)
     return True
@@ -339,12 +345,16 @@ def send_access_renewal_email(
     )
 
     service = email_service or create_email_service()
-    service.send_email(
-        to=owner_email,
-        subject=subject,
-        html_body=html_body,
-        text_body=text_body,
-    )
+    try:
+        service.send_email(
+            to=owner_email,
+            subject=subject,
+            html_body=html_body,
+            text_body=text_body,
+        )
+    except Exception:
+        logger.exception("Failed to send access renewal email to %s", owner_email)
+        return False
 
     logger.info("Access renewal email sent to %s", owner_email)
     return True

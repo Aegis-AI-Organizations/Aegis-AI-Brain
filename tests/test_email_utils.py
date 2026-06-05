@@ -92,6 +92,23 @@ def test_send_onboarding_invitation_email_uses_injected_service():
     assert "register?token=aegis_inv_token" in call["html_body"]
 
 
+def test_send_onboarding_invitation_email_swallows_delivery_errors():
+    fake_service = MagicMock()
+    fake_service.send_email.side_effect = OSError("SMTP unavailable")
+
+    with patch("utils.email_utils.ONBOARDING_EMAIL_ENABLED", True):
+        sent = send_onboarding_invitation_email(
+            owner_email="owner@test.com",
+            owner_name="Owner",
+            company_name="Acme",
+            invitation_token="aegis_inv_token",
+            email_service=fake_service,
+        )
+
+    assert sent is False
+    fake_service.send_email.assert_called_once()
+
+
 def test_send_access_renewal_email_uses_injected_service():
     fake_service = MagicMock()
 
@@ -111,6 +128,23 @@ def test_send_access_renewal_email_uses_injected_service():
     assert call["subject"] == "Renouvelez votre accès Aegis AI"
     assert "register?token=renewal-token" in call["text_body"]
     assert "register?token=renewal-token" in call["html_body"]
+
+
+def test_send_access_renewal_email_swallows_delivery_errors():
+    fake_service = MagicMock()
+    fake_service.send_email.side_effect = OSError("SMTP unavailable")
+
+    with patch("utils.email_utils.ONBOARDING_EMAIL_ENABLED", True):
+        sent = send_access_renewal_email(
+            owner_email="owner@test.com",
+            owner_name="Owner",
+            company_name="Acme",
+            renewal_token="renewal-token",
+            email_service=fake_service,
+        )
+
+    assert sent is False
+    fake_service.send_email.assert_called_once()
 
 
 def test_create_email_service_uses_mailpit_outside_production():

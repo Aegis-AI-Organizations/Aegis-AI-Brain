@@ -122,7 +122,9 @@ class Neo4jSandboxTopologyService:
                 f"{item.get('code', 'unknown')}: {item.get('message', 'unknown error')}"
                 for item in body["errors"]
             ]
-            raise RuntimeError(f"Neo4j topology execution errors: {'; '.join(messages)}")
+            raise RuntimeError(
+                f"Neo4j topology execution errors: {'; '.join(messages)}"
+            )
 
         results = body.get("results", [])
         if not results:

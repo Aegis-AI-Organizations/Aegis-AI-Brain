@@ -48,6 +48,11 @@ async def mock_run_pentest(target_ip: str, port: int) -> dict:
 async def mock_identify_attack_targets(company_id: str, agent_id: str | None = None):
     return [
         {
+            "entry_id": "entry-auth",
+            "target_id": "target-auth",
+            "target_name": "auth-service",
+            "target_kind": "service",
+            "target_namespace": "aegis-system",
             "path": "/login",
             "label": "auth-service",
             "path_length": 2,
@@ -55,6 +60,11 @@ async def mock_identify_attack_targets(company_id: str, agent_id: str | None = N
             "score": 998,
         },
         {
+            "entry_id": "entry-admin",
+            "target_id": "target-admin",
+            "target_name": "admin-panel",
+            "target_kind": "service",
+            "target_namespace": "aegis-system",
             "path": "/admin",
             "label": "admin-panel",
             "path_length": 3,
@@ -62,6 +72,21 @@ async def mock_identify_attack_targets(company_id: str, agent_id: str | None = N
             "score": 897,
         },
     ]
+
+
+@activity.defn(name="build_sandbox_topology")
+async def mock_build_sandbox_topology(
+    company_id: str, target_ids: list[str] | None = None
+):
+    return {
+        "containers": [
+            {
+                "name": "auth-service",
+                "image": "nginx:latest",
+                "ports": [{"number": 80, "protocol": "tcp"}],
+            }
+        ]
+    }
 
 
 @activity.defn(name="run_targeted_pentest")
@@ -175,6 +200,7 @@ async def test_graph_driven_pentest_workflow_success():
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
                 mock_identify_attack_targets,
+                mock_build_sandbox_topology,
             ],
         ):
             async with Worker(
@@ -198,3 +224,31 @@ async def test_graph_driven_pentest_workflow_success():
                         f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
                         in result
                     )
+
+
+def test_graph_driven_workflow_filters_selected_topology_targets():
+    workflow = GraphDrivenPentestWorkflow()
+    targets = workflow._normalize_targets(
+        [
+            {
+                "entry_id": "entry-auth",
+                "target_id": "target-auth",
+                "target_name": "auth-service",
+                "target_path": "/login",
+                "score": 100,
+            },
+            {
+                "entry_id": "entry-admin",
+                "target_id": "target-admin",
+                "target_name": "admin-service",
+                "target_path": "/admin",
+                "score": 90,
+            },
+        ]
+    )
+
+    selected_ids = workflow._parse_topology_target_ids("topology:target-admin")
+    filtered = workflow._filter_targets(targets, selected_ids)
+
+    assert len(filtered) == 1
+    assert filtered[0]["target_id"] == "target-admin"

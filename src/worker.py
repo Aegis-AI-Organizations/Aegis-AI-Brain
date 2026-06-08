@@ -10,6 +10,7 @@ from activities.db_activities import (
     generate_and_store_pdf_report,
 )
 from activities.attack_targets import identify_attack_targets
+from activities.sandbox_topology import build_sandbox_topology
 from config.config import BRAIN_TASK_QUEUE
 
 logger = logging.getLogger("aegis_brain_worker")
@@ -28,6 +29,7 @@ async def start_worker(client):
             save_vulnerabilities,
             generate_and_store_pdf_report,
             identify_attack_targets,
+            build_sandbox_topology,
         ],
         activity_executor=ThreadPoolExecutor(max_workers=10),
     )

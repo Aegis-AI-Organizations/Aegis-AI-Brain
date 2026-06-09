@@ -15,7 +15,11 @@ from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from .broadcaster import broadcaster
 from utils.auth_utils import hash_password
-from utils.email_utils import send_onboarding_invitation_email
+from utils.email_utils import (
+    send_onboarding_invitation_email,
+    send_user_invitation_email,
+)
+from services.email_service import EmailService, create_email_service
 from utils.token_utils import generate_agent_token, generate_opaque_token, hash_token
 from models.audit_log import AuditLog
 import uuid
@@ -35,8 +39,9 @@ class CompanyCreateError(enum.Enum):
 class CompanyService(company_pb2_grpc.CompanyServiceServicer):
     """CompanyService handles company creation and administrative listing."""
 
-    def __init__(self):
+    def __init__(self, email_service: EmailService | None = None):
         self._session_factory = None
+        self.email_service = email_service or create_email_service()
 
     @property
     def session_factory(self):
@@ -236,6 +241,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 owner_name=request.owner_name,
                 company_name=request.company_name,
                 invitation_token=invitation_token,
+                email_service=self.email_service,
             )
         except Exception:
             logger.exception(
@@ -442,32 +448,53 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             return company_pb2.ListCompaniesResponse()
 
-    def _create_user_db_sync(self, name, email, password, role, company_id):
+    def _create_user_db_sync(self, name, email, role, company_id):
         with self.session_factory() as db:
             # Check if email exists
             existing = db.query(User).filter(User.email == email).first()
             if existing:
-                return None, "Email already in use"
+                return None, None, None, "Email already in use"
+
+            company = db.query(Company).filter(Company.id == company_id).first()
+            if not company:
+                return None, None, None, "Company not found"
 
             try:
+                user_role = UserRole(role)
+            except ValueError:
+                return None, None, None, "Invalid role"
+
+            try:
+                placeholder_password = uuid.uuid4().hex
                 new_user = User(
                     name=name,
                     email=email,
-                    password_hash=hash_password(password),
-                    role=role,
+                    password_hash=hash_password(placeholder_password),
+                    role=user_role,
                     company_id=company_id,
-                    is_active=True,
+                    is_active=False,
+                    activation_status=UserActivationStatus.pending_activation,
                 )
                 db.add(new_user)
+                db.flush()
+
+                invitation_token = generate_opaque_token("aegis_inv_")
+                invitation = OnboardingInvitation(
+                    user_id=new_user.id,
+                    token_hash=hash_token(invitation_token),
+                    expires_at=datetime.now(timezone.utc)
+                    + timedelta(hours=ONBOARDING_INVITATION_TTL_HOURS),
+                )
+                db.add(invitation)
                 db.commit()
                 # Broadcast user creation
                 broadcaster.broadcast(
                     "team", ("USER_CREATED", str(company_id), str(new_user.id), name)
                 )
-                return str(new_user.id), None
+                return str(new_user.id), invitation_token, company.name, None
             except Exception as e:
                 db.rollback()
-                return None, str(e)
+                return None, None, None, str(e)
 
     @with_identity(verified_only=True)
     async def CreateCompany(
@@ -484,7 +511,6 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 return company_pb2.CreateCompanyResponse()
 
             user_role = metadata.get("x-user-role", "viewer")
-            user_password = metadata.get("x-user-password", "")
             company_id = metadata.get("x-company-id", "")
 
             # If owner, force company_id and prevent creating high-level roles
@@ -495,11 +521,10 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                     context.set_details("Owners cannot create administrative roles")
                     return company_pb2.CreateCompanyResponse()
 
-            user_id, error = await asyncio.to_thread(
+            user_id, invitation_token, company_name, error = await asyncio.to_thread(
                 self._create_user_db_sync,
                 request.name,
                 request.owner_email,  # using owner_email field as user email
-                user_password,
                 user_role,
                 company_id,
             )
@@ -524,12 +549,28 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                             "email": request.owner_email,
                             "role": user_role,
                             "company_id": company_id,
+                            "invitation_generated": bool(invitation_token),
                         },
                     )
                     db.add(audit)
                     db.commit()
             except Exception:
                 logger.exception("Failed to log audit for user creation")
+
+            try:
+                await asyncio.to_thread(
+                    send_user_invitation_email,
+                    user_email=request.owner_email,
+                    user_name=request.name,
+                    company_name=company_name or "",
+                    invitation_token=invitation_token,
+                    email_service=self.email_service,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to send user invitation email to %s",
+                    request.owner_email,
+                )
 
             return company_pb2.CreateCompanyResponse(id=user_id, name=request.name)
 

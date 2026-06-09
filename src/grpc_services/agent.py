@@ -16,6 +16,8 @@ from config.config import (
     MINIO_SECRET_KEY,
     MINIO_SECURE,
     MINIO_INGEST_BUCKET,
+    MINIO_EXTERNAL_ENDPOINT,
+    MINIO_EXTERNAL_SECURE,
 )
 import aegis.v2.agent_pb2 as agent_pb2
 import aegis.v2.agent_pb2_grpc as agent_pb2_grpc
@@ -28,7 +30,7 @@ INTERNAL_ROLES = {"superadmin", "admin", "technicien", "support"}
 
 
 class AgentService(agent_pb2_grpc.AgentServiceServicer):
-    def __init__(self):
+    def __init__(self, temporal_client=None):
         self.session_factory = get_session_factory()
         # Initialize MinIO client
         self.minio_client = Minio(
@@ -37,6 +39,36 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
             secret_key=MINIO_SECRET_KEY,
             secure=MINIO_SECURE,
         )
+        self.presign_client = Minio(
+            MINIO_EXTERNAL_ENDPOINT,
+            access_key=MINIO_ACCESS_KEY,
+            secret_key=MINIO_SECRET_KEY,
+            secure=MINIO_EXTERNAL_SECURE,
+        )
+        self.temporal_client = temporal_client
+
+        # Initialize Redis client for tracking latest agent uploads
+        import redis
+        from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+
+        try:
+            if REDIS_PASSWORD:
+                self.redis_client = redis.Redis(
+                    host=REDIS_HOST,
+                    port=int(REDIS_PORT),
+                    password=REDIS_PASSWORD,
+                    decode_responses=True,
+                )
+            else:
+                self.redis_client = redis.Redis(
+                    host=REDIS_HOST,
+                    port=int(REDIS_PORT),
+                    decode_responses=True,
+                )
+            logger.info("✅ AgentService connected to Redis")
+        except Exception as e:
+            logger.error(f"❌ AgentService failed to connect to Redis: {e}")
+            self.redis_client = None
 
     @staticmethod
     def _normalize_status(status: str) -> str:
@@ -121,7 +153,7 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
                 grpc.StatusCode.UNAUTHENTICATED, "Invalid or inactive deployment token"
             )
 
-        agent_id = str(uuid.uuid4())
+        agent_name = request.name if request.name else f"Agent-{str(uuid.uuid4())[:8]}"
         # Generate a 256-bit secure secret (32 bytes -> hex string)
         agent_secret = secrets.token_hex(32)
         # Hash the secret using bcrypt
@@ -129,19 +161,35 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
 
         def _save_agent():
             with self.session_factory() as db:
-                agent = Agent(
-                    id=agent_id,
-                    company_id=company_id,
-                    name=request.name if request.name else f"Agent-{agent_id[:8]}",
-                    status="IDLE",
-                    token_hash=token_hash,
+                existing = (
+                    db.query(Agent)
+                    .filter(Agent.company_id == company_id, Agent.name == agent_name)
+                    .first()
                 )
-                db.add(agent)
+
+                if existing:
+                    existing.token_hash = token_hash
+                    existing.status = "IDLE"
+                    existing.last_seen = datetime.now(timezone.utc)
+                    agent = existing
+                else:
+                    agent = Agent(
+                        id=str(uuid.uuid4()),
+                        company_id=company_id,
+                        name=agent_name,
+                        status="IDLE",
+                        token_hash=token_hash,
+                    )
+                    db.add(agent)
+
                 db.commit()
+                return str(agent.id)
 
         try:
-            await asyncio.to_thread(_save_agent)
-            logger.info(f"New agent onboarded: {agent_id} for company {company_id}")
+            agent_id = await asyncio.to_thread(_save_agent)
+            logger.info(
+                f"Agent registered/updated: {agent_id} for company {company_id}"
+            )
             return agent_pb2.RegisterAgentResponse(
                 agent_id=agent_id, agent_secret=agent_secret
             )
@@ -155,21 +203,70 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         """
         Updates the agent's state (IDLE, UPLOADING, etc.) and last_seen timestamp.
         """
+        status_to_save = request.status
+        if request.status == "UPLOAD_COMPLETE":
+            status_to_save = "IDLE"
 
         def _update_status():
             with self.session_factory() as db:
                 agent = db.query(Agent).filter(Agent.id == request.agent_id).first()
                 if not agent:
-                    return False
-                agent.status = request.status
+                    return None
+                agent.status = status_to_save
                 agent.last_seen = datetime.now(timezone.utc)
+                company_id = str(agent.company_id)
                 db.commit()
-                return True
+                return company_id
 
         try:
-            success = await asyncio.to_thread(_update_status)
-            if not success:
+            company_id = await asyncio.to_thread(_update_status)
+            if not company_id:
                 await context.abort(grpc.StatusCode.NOT_FOUND, "Agent not found")
+
+            # If status is UPLOAD_COMPLETE, start the Temporal Ingest topology workflow!
+            if request.status == "UPLOAD_COMPLETE":
+                object_name = request.payload_key
+                if not object_name and self.redis_client:
+                    try:
+                        redis_key = f"agent:latest_upload:{request.agent_id}"
+                        object_name = self.redis_client.get(redis_key)
+                    except Exception as redis_err:
+                        logger.error(
+                            f"Failed to get latest upload key from Redis: {redis_err}"
+                        )
+
+                if object_name:
+                    if self.temporal_client:
+                        try:
+                            workflow_id = f"ingest-{request.agent_id}-{int(datetime.now(timezone.utc).timestamp())}"
+                            logger.info(
+                                f"Starting IngestTopologyWorkflow for {object_name} with ID {workflow_id}"
+                            )
+                            await self.temporal_client.start_workflow(
+                                "IngestTopologyWorkflow",
+                                args=[
+                                    {
+                                        "bucket": MINIO_INGEST_BUCKET,
+                                        "key": object_name,
+                                        "agent_id": request.agent_id,
+                                        "company_id": company_id,
+                                    }
+                                ],
+                                id=workflow_id,
+                                task_queue="INGEST_TASK_QUEUE",
+                            )
+                        except Exception as temporal_err:
+                            logger.error(
+                                f"Failed to start IngestTopologyWorkflow: {temporal_err}"
+                            )
+                    else:
+                        logger.warning(
+                            "No Temporal client available on AgentService to start workflow!"
+                        )
+                else:
+                    logger.warning(
+                        f"No upload key found in request payload_key or Redis for agent {request.agent_id}"
+                    )
 
             return agent_pb2.UpdateAgentStatusResponse(success=True)
         except Exception as e:
@@ -200,16 +297,40 @@ class AgentService(agent_pb2_grpc.AgentServiceServicer):
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         object_name = f"agents/{agent_id}/{timestamp}_{filename}"
 
+        def _check_and_create_bucket():
+            try:
+                if not self.minio_client.bucket_exists(MINIO_INGEST_BUCKET):
+                    self.minio_client.make_bucket(MINIO_INGEST_BUCKET)
+            except Exception as bucket_err:
+                logger.warning(
+                    f"Failed to check/create bucket {MINIO_INGEST_BUCKET}: {bucket_err}"
+                )
+
+        await asyncio.to_thread(_check_and_create_bucket)
+
         try:
             # 3. Generate presigned URL for PUT (valid for 1 hour)
             url = await asyncio.to_thread(
-                self.minio_client.presigned_put_object,
+                self.presign_client.presigned_put_object,
                 MINIO_INGEST_BUCKET,
                 object_name,
                 expires=timedelta(hours=1),
             )
+            # Store in Redis so we can link it back on UpdateAgentStatus("UPLOAD_COMPLETE")
+            if self.redis_client:
+                try:
+                    redis_key = f"agent:latest_upload:{agent_id}"
+                    self.redis_client.set(
+                        redis_key, object_name, ex=3600
+                    )  # expires in 1 hour
+                except Exception as redis_err:
+                    logger.error(
+                        f"Failed to save latest upload key to Redis: {redis_err}"
+                    )
             logger.info(f"Generated upload link for agent {agent_id}: {object_name}")
-            return agent_pb2.GetUploadLinkResponse(url=url, method="PUT")
+            return agent_pb2.GetUploadLinkResponse(
+                url=url, method="PUT", object_name=object_name
+            )
         except Exception as e:
             logger.error(f"Failed to generate MinIO presigned URL: {e}")
             await context.abort(

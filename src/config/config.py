@@ -5,6 +5,8 @@ TEMPORAL_HOST = os.getenv("TEMPORAL_HOST", "localhost:7233")
 TEMPORAL_NAMESPACE = os.getenv("TEMPORAL_NAMESPACE", "default")
 GRPC_PORT = os.getenv("GRPC_PORT", "50051")
 BRAIN_TASK_QUEUE = os.getenv("BRAIN_TASK_QUEUE", "BRAIN_TASK_QUEUE")
+DEPLOYER_TASK_QUEUE = os.getenv("DEPLOYER_TASK_QUEUE", "DEPLOYER_TASK_QUEUE")
+GRAPH_PENTEST_TASK_QUEUE = os.getenv("GRAPH_PENTEST_TASK_QUEUE", "PENTEST_TASK_QUEUE")
 
 # gRPC TLS Configuration
 TLS_ENABLE = os.getenv("BRAIN_TLS_ENABLE", "false").lower() == "true"
@@ -39,11 +41,21 @@ SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
 JWT_SECRET = os.getenv("JWT_SECRET")
 
 # MinIO Configuration
-MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "minio:9000")
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
 MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_INGEST_BUCKET = os.getenv("MINIO_INGEST_BUCKET", "aegis-ingest")
+MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT", "storage.aegis-ai.fr")
+MINIO_EXTERNAL_SECURE = os.getenv("MINIO_EXTERNAL_SECURE", "true").lower() == "true"
+
+# Neo4j Configuration
+NEO4J_URL = os.getenv(
+    "NEO4J_URL", "http://aegis-neo4j-mvp.aegis-system.svc.cluster.local:7474"
+)
+NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
+NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "neo4j_password")
+NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
 
 # Onboarding email configuration
 ONBOARDING_EMAIL_ENABLED = (
@@ -56,6 +68,8 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "false").lower() == "true"
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "onboarding@aegis-ai.local")
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost")
+AEGIS_EMAIL_API_KEY = os.getenv("AEGIS_EMAIL_API_KEY", "")
+AEGIS_EMAIL_API_URL = os.getenv("AEGIS_EMAIL_API_URL", "https://api.resend.com/emails")
 
 # In production, we strictly require JWT_SECRET for security.
 if not JWT_SECRET:

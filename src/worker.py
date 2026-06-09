@@ -3,30 +3,37 @@ from concurrent.futures import ThreadPoolExecutor
 from temporalio.worker import Worker
 
 from workflows.pentest_workflow import PentestWorkflow
+from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 from activities.db_activities import (
     update_scan_status,
     save_vulnerabilities,
     generate_and_store_pdf_report,
 )
-from activities.kubernetes_activities import deploy_sandbox_target, cleanup_sandbox
+from activities.attack_targets import identify_attack_targets
+from activities.sandbox_topology import build_sandbox_topology
 from config.config import BRAIN_TASK_QUEUE
 
 logger = logging.getLogger("aegis_brain_worker")
 
 
 async def start_worker(client):
+    logger.info(
+        f"Registering Brain worker on queue {BRAIN_TASK_QUEUE} with PentestWorkflow and DB activities"
+    )
     worker = Worker(
         client,
         task_queue=BRAIN_TASK_QUEUE,
-        workflows=[PentestWorkflow],
+        workflows=[PentestWorkflow, GraphDrivenPentestWorkflow],
         activities=[
             update_scan_status,
             save_vulnerabilities,
             generate_and_store_pdf_report,
-            deploy_sandbox_target,
-            cleanup_sandbox,
+            identify_attack_targets,
+            build_sandbox_topology,
         ],
         activity_executor=ThreadPoolExecutor(max_workers=10),
     )
-    logger.info(f"🚀 Worker ready to process tasks on queue {BRAIN_TASK_QUEUE}...")
+    logger.info(
+        f"🚀 Worker ready to process tasks on queue {BRAIN_TASK_QUEUE} with graph-driven orchestration enabled..."
+    )
     await worker.run()

@@ -27,6 +27,7 @@ from grpc_services.billing import BillingService
 from grpc_services.agent import AgentService
 from grpc_services.internal_auth import InternalAuthService
 from grpc_services.interceptors import AuthInterceptor
+from services.email_service import create_email_service
 
 logger = logging.getLogger("aegis_brain_grpc")
 
@@ -34,6 +35,8 @@ logger = logging.getLogger("aegis_brain_grpc")
 async def serve(port: str, temporal_client=None):
     if temporal_client is None:
         logger.warning("Starting gRPC server without Temporal Client!")
+
+    email_service = create_email_service()
 
     server = grpc.aio.server(
         interceptors=[AuthInterceptor()],
@@ -56,9 +59,13 @@ async def serve(port: str, temporal_client=None):
     vulnerability_pb2_grpc.add_VulnerabilityServiceServicer_to_server(
         VulnerabilityService(), server
     )
-    company_pb2_grpc.add_CompanyServiceServicer_to_server(CompanyService(), server)
+    company_pb2_grpc.add_CompanyServiceServicer_to_server(
+        CompanyService(email_service=email_service), server
+    )
     billing_pb2_grpc.add_BillingServiceServicer_to_server(BillingService(), server)
-    agent_pb2_grpc.add_AgentServiceServicer_to_server(AgentService(), server)
+    agent_pb2_grpc.add_AgentServiceServicer_to_server(
+        AgentService(temporal_client), server
+    )
     internal_auth_pb2_grpc.add_InternalAuthServiceServicer_to_server(
         InternalAuthService(), server
     )

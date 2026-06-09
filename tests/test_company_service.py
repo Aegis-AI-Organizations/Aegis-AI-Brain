@@ -313,21 +313,34 @@ async def test_create_user_success(company_service, mock_db):
         mock_user = MagicMock()
         mock_user.id = uuid.uuid4()
         mock_user_cls.return_value = mock_user
+        company_id = uuid.uuid4()
+        company = Company(id=company_id, name="Acme Corp")
 
         # Mock metadata for hijacking
         mock_context = MagicMock()
         mock_context.abort = AsyncMock()
         mock_context.invocation_metadata.return_value = [
             ("x-action", "create-user"),
-            ("x-user-password", "pass123"),
             ("x-user-role", "admin"),
-            ("x-company-id", str(uuid.uuid4())),
+            ("x-company-id", str(company_id)),
         ]
 
-        # Ensure user doesn't exist check returns None
-        mock_db.query.return_value.filter.return_value.first.return_value = None
+        # Ensure user doesn't exist, then resolve target company.
+        mock_db.query.return_value.filter.return_value.first.side_effect = [
+            None,
+            company,
+        ]
 
-        with patch("grpc_services.utils.get_identity") as mock_get_id:
+        with (
+            patch("grpc_services.utils.get_identity") as mock_get_id,
+            patch(
+                "grpc_services.company.generate_opaque_token",
+                return_value="aegis_inv_user-token",
+            ),
+            patch(
+                "grpc_services.company.send_user_invitation_email"
+            ) as mock_send_invite,
+        ):
             mock_get_id.return_value = {
                 "user_id": str(uuid.uuid4()),
                 "role": "superadmin",
@@ -341,3 +354,15 @@ async def test_create_user_success(company_service, mock_db):
 
             assert response.id == str(mock_user.id)
             assert mock_db.commit.call_count == 2
+            assert mock_user_cls.call_args.kwargs["is_active"] is False
+            assert (
+                mock_user_cls.call_args.kwargs["activation_status"]
+                == UserActivationStatus.pending_activation
+            )
+            mock_send_invite.assert_called_once_with(
+                user_email="user@test.com",
+                user_name="New User",
+                company_name="Acme Corp",
+                invitation_token="aegis_inv_user-token",
+                email_service=company_service.email_service,
+            )

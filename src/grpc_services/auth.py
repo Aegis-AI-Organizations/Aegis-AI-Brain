@@ -15,7 +15,7 @@ from config.db import get_session_factory
 from sqlalchemy.orm import joinedload
 from models.onboarding_invitation import OnboardingInvitation
 from models.refresh_token import RefreshToken
-from models.user import User, UserActivationStatus
+from models.user import User, UserActivationStatus, UserRole
 from utils.auth_utils import verify_password, hash_password
 from utils.token_utils import generate_agent_token, hash_token
 from grpc_services.utils import with_identity
@@ -120,11 +120,13 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 return None, AuthErrorCode.INVALID_TOKEN
 
             try:
-                agent_token = generate_agent_token()
+                agent_token = ""
                 user.password_hash = hash_password(new_password)
                 user.is_active = True
                 user.activation_status = UserActivationStatus.active
-                user.company.deployment_token = hash_token(agent_token)
+                if user.role == UserRole.owner:
+                    agent_token = generate_agent_token()
+                    user.company.deployment_token = hash_token(agent_token)
                 invitation.used_at = datetime.now(timezone.utc)
                 access_token, refresh_token = self._create_session_tokens(db, user)
                 db.commit()

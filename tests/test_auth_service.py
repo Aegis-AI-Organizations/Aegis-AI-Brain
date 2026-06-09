@@ -240,6 +240,47 @@ async def test_setup_password_success(auth_service, mock_db):
 
 
 @pytest.mark.asyncio
+async def test_setup_password_collaborator_does_not_return_agent_token(
+    auth_service, mock_db
+):
+    company = Company(id=uuid.uuid4(), name="Acme Corp")
+    user = User(
+        id=uuid.uuid4(),
+        company=company,
+        company_id=company.id,
+        email="viewer@example.com",
+        password_hash=hash_password("placeholder"),
+        role=UserRole.viewer,
+        is_active=False,
+        activation_status=UserActivationStatus.pending_activation,
+    )
+    invitation = OnboardingInvitation(
+        user=user,
+        token_hash=hash_token("aegis_inv_viewer"),
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+    )
+    mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = invitation
+
+    request = auth_pb2.SetupPasswordRequest(
+        invitation_token="aegis_inv_viewer",
+        new_password="NewStrongPassword123!",
+    )
+    context = MagicMock()
+
+    response = await auth_service.SetupPassword(request, context)
+
+    assert response.access_token != ""
+    assert response.refresh_token != ""
+    assert response.agent_token == ""
+    assert company.deployment_token is None
+    assert user.is_active is True
+    assert user.activation_status == UserActivationStatus.active
+    assert verify_password("NewStrongPassword123!", user.password_hash)
+    assert invitation.used_at is not None
+    mock_db.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
 async def test_setup_password_invalid_token(auth_service, mock_db):
     mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = None
 

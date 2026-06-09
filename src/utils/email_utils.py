@@ -262,6 +262,38 @@ def render_onboarding_invitation_email(
     return "Activez votre compte Aegis AI", html_body, text_body
 
 
+def render_user_invitation_email(
+    *,
+    user_name: str,
+    company_name: str,
+    invitation_token: str,
+) -> tuple[str, str, str]:
+    action_url = build_register_url(invitation_token)
+    intro_sentence = (
+        f"Vous avez ete invite a rejoindre l'espace Aegis AI de {company_name}."
+    )
+    body_sentence = (
+        "Cliquez sur le bouton ci-dessous pour creer votre mot de passe "
+        "et finaliser votre premiere connexion."
+    )
+    security_note = (
+        "Ce lien est temporaire, a usage unique, et ne doit pas etre partage."
+    )
+    text_body, html_body = _build_email_parts(
+        recipient_name=user_name,
+        company_name=company_name,
+        action_url=action_url,
+        action_label="Activer mon acces",
+        eyebrow="Invitation collaborateur",
+        headline="Rejoignez votre espace Aegis AI",
+        subheadline="Un administrateur vous a ajoute a son organisation.",
+        intro_sentence=intro_sentence,
+        body_sentence=body_sentence,
+        security_note=security_note,
+    )
+    return "Activez votre acces Aegis AI", html_body, text_body
+
+
 def render_access_renewal_email(
     *,
     owner_name: str,
@@ -323,6 +355,40 @@ def send_onboarding_invitation_email(
         return False
 
     logger.info("Onboarding invitation email sent to %s", owner_email)
+    return True
+
+
+def send_user_invitation_email(
+    *,
+    user_email: str,
+    user_name: str,
+    company_name: str,
+    invitation_token: str,
+    email_service: EmailService | None = None,
+) -> bool:
+    if not ONBOARDING_EMAIL_ENABLED:
+        logger.info("Onboarding email disabled; skipping user invitation email")
+        return False
+
+    subject, html_body, text_body = render_user_invitation_email(
+        user_name=user_name,
+        company_name=company_name,
+        invitation_token=invitation_token,
+    )
+
+    service = email_service or create_email_service()
+    try:
+        service.send_email(
+            to=user_email,
+            subject=subject,
+            html_body=html_body,
+            text_body=text_body,
+        )
+    except Exception:
+        logger.exception("Failed to send user invitation email to %s", user_email)
+        return False
+
+    logger.info("User invitation email sent to %s", user_email)
     return True
 
 

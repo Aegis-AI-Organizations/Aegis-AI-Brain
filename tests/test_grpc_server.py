@@ -66,6 +66,31 @@ async def test_scan_service_start(mock_get_db):
 
 @pytest.mark.asyncio
 @patch("grpc_services.scans.get_db_connection")
+async def test_scan_service_start_persists_short_topology_target(mock_get_db):
+    mock_conn = mock_get_db.return_value
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = (datetime.now(),)
+
+    target_ids = [f"container-{index:03d}" for index in range(40)]
+    target_image = "topology:" + ",".join(target_ids)
+
+    temporal_client = AsyncMock()
+    servicer = ScanService(temporal_client)
+    request = scan_pb2.StartScanRequest(target_image=target_image)
+
+    response = await servicer.StartScan(request, MockContext())
+
+    assert response.status == "PENDING"
+    insert_params = mock_cursor.execute.call_args_list[0].args[1]
+    assert insert_params[3] == "topology:selection:40"
+    assert len(insert_params[3]) <= 255
+
+    _, kwargs = temporal_client.start_workflow.call_args
+    assert kwargs["args"][1] == target_image
+
+
+@pytest.mark.asyncio
+@patch("grpc_services.scans.get_db_connection")
 async def test_scan_service_status(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value

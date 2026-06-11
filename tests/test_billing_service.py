@@ -3,7 +3,11 @@ from unittest.mock import MagicMock, patch
 import grpc
 import uuid
 
-from grpc_services.billing import BillingService, can_adjust_tokens
+from grpc_services.billing import (
+    BillingService,
+    can_adjust_tokens,
+    normalize_ledger_reason,
+)
 import aegis.v2.billing_pb2 as billing_pb2
 
 
@@ -124,3 +128,9 @@ def test_can_adjust_tokens_allows_billing_roles():
     identity = {"user_id": "u1", "company_id": "company-1", "role": "superadmin"}
 
     assert can_adjust_tokens(identity, "company-2", 35)
+
+
+def test_normalize_ledger_reason_limits_database_length():
+    reason = "x" * 300
+
+    assert len(normalize_ledger_reason(reason)) == 255

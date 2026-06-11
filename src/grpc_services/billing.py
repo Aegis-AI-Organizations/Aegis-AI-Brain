@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 PRICING_MATRIX = {"IP": 1, "API": 3, "WEBAPP": 5}
 TOKEN_ADJUSTMENT_ROLES = {"superadmin", "billing_aegis"}
 TOKEN_CONSUMPTION_ROLES = {"superadmin", "admin", "owner", "operateur", "billing_aegis"}
+MAX_LEDGER_REASON_LENGTH = 255
 
 
 class BillingService(billing_pb2_grpc.BillingServiceServicer):
@@ -121,7 +122,9 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
                 company.token_balance += amount
 
                 ledger_entry = TokenLedger(
-                    company_id=company.id, amount=amount, reason=reason
+                    company_id=company.id,
+                    amount=amount,
+                    reason=normalize_ledger_reason(reason),
                 )
                 db.add(ledger_entry)
 
@@ -253,3 +256,7 @@ def can_adjust_tokens(identity, company_id: str, amount: int) -> bool:
         return False
 
     return str(identity.get("company_id") or "") == company_id
+
+
+def normalize_ledger_reason(reason: str) -> str:
+    return (reason or "")[:MAX_LEDGER_REASON_LENGTH]

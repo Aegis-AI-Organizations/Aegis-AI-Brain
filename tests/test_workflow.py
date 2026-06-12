@@ -16,9 +16,11 @@ async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
 @activity.defn(name="CreateSandbox")
 async def mock_create_sandbox(request: dict) -> dict:
     scan_id = request["scan_id"]
+    endpoint_workload = request.get("preferred_endpoint_workload", "")
     return {
         "namespace": f"aegis-war-room-{scan_id}",
         "endpoint": f"http://svc-{scan_id}.aegis-war-room-{scan_id}.svc.cluster.local:80",
+        "endpoint_workload": endpoint_workload,
     }
 
 
@@ -252,3 +254,25 @@ def test_graph_driven_workflow_filters_selected_topology_targets():
 
     assert len(filtered) == 1
     assert filtered[0]["target_id"] == "target-admin"
+
+
+def test_graph_driven_workflow_selects_preferred_endpoint_workload():
+    workflow = GraphDrivenPentestWorkflow()
+    topology = {
+        "containers": [
+            {"name": "web-frontend", "image": "nginx:1.27"},
+            {"name": "api", "image": "ghcr.io/aegis/api:anon"},
+        ]
+    }
+    attack_targets = [
+        {
+            "target_name": "api",
+            "entry_name": "api",
+            "label": "api",
+            "target_id": "target-api",
+        }
+    ]
+
+    assert (
+        workflow._select_preferred_endpoint_workload(topology, attack_targets) == "api"
+    )

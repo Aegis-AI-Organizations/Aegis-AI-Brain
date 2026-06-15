@@ -89,3 +89,66 @@ def test_identify_attack_targets_omits_agent_id_when_missing():
 
     assert "agent_id" not in captured["parameters"]
     assert "$agent_id" not in captured["cypher"]
+
+
+def test_identify_attack_targets_passes_selected_target_filter():
+    captured = {}
+
+    def fake_execute_query(cypher, parameters):
+        captured["cypher"] = cypher
+        captured["parameters"] = parameters
+        return []
+
+    with patch.object(
+        Neo4jAttackTargetService, "_execute_query", side_effect=fake_execute_query
+    ):
+        service = Neo4jAttackTargetService(
+            url="http://neo4j.local:7474", user="neo4j", password="secret"
+        )
+        service.identify_attack_targets(
+            "company-1",
+            target_ids=["container-b", "container-a", "container-a"],
+        )
+
+    assert captured["parameters"]["target_ids"] == ["container-a", "container-b"]
+    assert "target.id IN $target_ids" in captured["cypher"]
+    assert "MATCH (c:Container)" in captured["cypher"]
+
+
+def test_identify_attack_targets_falls_back_to_direct_selected_routes():
+    calls = []
+
+    def fake_execute_query(cypher, parameters):
+        calls.append((cypher, parameters))
+        if len(calls) == 1:
+            return []
+        return [
+            [
+                "route-1",
+                "api",
+                "/",
+                "route-1",
+                "api",
+                "default",
+                "container",
+                "login",
+                0,
+                60,
+            ]
+        ]
+
+    with patch.object(
+        Neo4jAttackTargetService, "_execute_query", side_effect=fake_execute_query
+    ):
+        service = Neo4jAttackTargetService(
+            url="http://neo4j.local:7474", user="neo4j", password="secret"
+        )
+        targets = service.identify_attack_targets(
+            "company-1",
+            target_ids=["container-api"],
+        )
+
+    assert len(calls) == 2
+    assert "MATCH (target:Route)" in calls[1][0]
+    assert targets[0]["target_name"] == "api"
+    assert targets[0]["target_path"] == "/login"

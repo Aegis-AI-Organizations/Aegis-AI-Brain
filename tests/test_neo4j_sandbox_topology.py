@@ -31,6 +31,7 @@ def test_build_sandbox_topology_maps_containers_to_deployer_payload():
     assert topology == {
         "containers": [
             {
+                "id": "company:agent:container-1",
                 "name": "api-v1",
                 "image": "ghcr.io/acme/api:latest",
                 "env": {"PUBLIC_URL": "https://app.example.test"},

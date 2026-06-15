@@ -122,14 +122,22 @@ class Neo4jAttackTargetService:
         return [row.get("row", []) for row in rows]
 
     def identify_attack_targets(
-        self, company_id: str, agent_id: str | None = None, limit: int = 10
+        self,
+        company_id: str,
+        agent_id: str | None = None,
+        target_ids: list[str] | None = None,
+        limit: int = 10,
     ) -> list[dict[str, Any]]:
         company_id = company_id.strip()
         if not company_id:
             return []
 
+        normalized_target_ids = sorted(
+            {target_id.strip() for target_id in target_ids or [] if target_id.strip()}
+        )
         agent_entry_filter = ""
         agent_target_filter = ""
+        selected_target_filter = ""
         query_params: dict[str, Any] = {
             "company_id": company_id,
             "critical_keywords": CRITICAL_KEYWORDS,
@@ -140,6 +148,27 @@ class Neo4jAttackTargetService:
             agent_entry_filter = "AND entry.agentId = $agent_id"
             agent_target_filter = "AND target.agentId = $agent_id"
             query_params["agent_id"] = normalized_agent_id
+        if normalized_target_ids:
+            query_params["target_ids"] = normalized_target_ids
+            selected_target_filter = """
+          AND (
+            target.id IN $target_ids
+            OR target.rawId IN $target_ids
+            OR target.targetName IN $target_ids
+            OR target.sourceName IN $target_ids
+            OR EXISTS {
+              MATCH (c:Container)
+              WHERE c.companyId = $company_id
+                AND (c.id IN $target_ids OR c.rawId IN $target_ids OR c.name IN $target_ids)
+                AND (
+                  target.targetName = c.name
+                  OR target.sourceName = c.name
+                  OR target.targetName = c.rawId
+                  OR target.sourceName = c.rawId
+                )
+            }
+          )
+            """
 
         cypher = """
         MATCH (entry:Route)
@@ -153,6 +182,7 @@ class Neo4jAttackTargetService:
         MATCH (target:Route)
         WHERE target.companyId = $company_id
           {agent_target_filter}
+          {selected_target_filter}
           AND entry.id <> target.id
           AND (
             coalesce(target.publishedPort, 0) IN [80, 443, 8080, 8443]
@@ -197,15 +227,25 @@ class Neo4jAttackTargetService:
         """.format(
             agent_entry_filter=agent_entry_filter,
             agent_target_filter=agent_target_filter,
+            selected_target_filter=selected_target_filter,
         )
 
         logger.info(
-            "Querying Neo4j for attack targets company_id=%s agent_id=%s limit=%s",
+            "Querying Neo4j for attack targets company_id=%s agent_id=%s selected_targets=%d limit=%s",
             company_id,
             agent_id,
+            len(normalized_target_ids),
             limit,
         )
         rows = self._execute_query(cypher, query_params)
+        if not rows and normalized_target_ids:
+            logger.info(
+                "Neo4j path target selection returned no rows; trying direct selected route lookup"
+            )
+            rows = self._execute_query(
+                self._direct_selected_targets_query(agent_target_filter),
+                query_params,
+            )
 
         targets: list[AttackTarget] = []
         seen: set[tuple[str, str, str]] = set()
@@ -258,6 +298,58 @@ class Neo4jAttackTargetService:
         return [target.as_dict() for target in targets[: max(1, int(limit))]]
 
     @staticmethod
+    def _direct_selected_targets_query(agent_target_filter: str) -> str:
+        return """
+        MATCH (target:Route)
+        WHERE target.companyId = $company_id
+          __AGENT_TARGET_FILTER__
+          AND (
+            target.id IN $target_ids
+            OR target.rawId IN $target_ids
+            OR target.targetName IN $target_ids
+            OR target.sourceName IN $target_ids
+            OR EXISTS {
+              MATCH (c:Container)
+              WHERE c.companyId = $company_id
+                AND (c.id IN $target_ids OR c.rawId IN $target_ids OR c.name IN $target_ids)
+                AND (
+                  target.targetName = c.name
+                  OR target.sourceName = c.name
+                  OR target.targetName = c.rawId
+                  OR target.sourceName = c.rawId
+                )
+            }
+          )
+        RETURN
+          target.id AS entry_id,
+          coalesce(target.sourceName, target.targetName, "") AS entry_name,
+          coalesce(target.path, "/") AS entry_path,
+          target.id AS target_id,
+          coalesce(target.targetName, target.sourceName, "") AS target_name,
+          coalesce(target.targetNamespace, target.sourceNamespace, "") AS target_namespace,
+          coalesce(target.targetKind, target.sourceKind, "") AS target_kind,
+          coalesce(target.path, "/") AS target_path,
+          0 AS path_length,
+          CASE
+            WHEN toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "postgres"
+              OR toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "mysql"
+              OR toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "mariadb"
+              OR toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "mongo"
+              THEN 100
+            WHEN toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "redis"
+              OR toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "elastic"
+              OR toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "kibana"
+              THEN 90
+            WHEN toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "admin"
+              OR toLower(coalesce(target.path, "")) CONTAINS "admin"
+              THEN 80
+            ELSE 60
+          END AS criticality
+        ORDER BY criticality DESC, target_path ASC
+        LIMIT $limit
+        """.replace("__AGENT_TARGET_FILTER__", agent_target_filter)
+
+    @staticmethod
     def _normalize_path(value: Any) -> str:
         path = str(value or "/").strip()
         if not path:
@@ -268,8 +360,14 @@ class Neo4jAttackTargetService:
 
 
 def identify_attack_targets(
-    company_id: str, agent_id: str | None = None, limit: int = 10
+    company_id: str,
+    agent_id: str | None = None,
+    target_ids: list[str] | None = None,
+    limit: int = 10,
 ) -> list[dict[str, Any]]:
     return Neo4jAttackTargetService().identify_attack_targets(
-        company_id=company_id, agent_id=agent_id, limit=limit
+        company_id=company_id,
+        agent_id=agent_id,
+        target_ids=target_ids,
+        limit=limit,
     )

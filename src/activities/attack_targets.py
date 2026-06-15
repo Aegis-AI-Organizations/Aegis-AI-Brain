@@ -7,6 +7,12 @@ from services.neo4j_attack_targets import (
 
 @activity.defn
 async def identify_attack_targets(
-    company_id: str, agent_id: str | None = None
+    company_id: str,
+    agent_id: str | None = None,
+    target_ids: list[str] | None = None,
 ) -> list[dict]:
-    return query_attack_targets(company_id=company_id, agent_id=agent_id)
+    return query_attack_targets(
+        company_id=company_id,
+        agent_id=agent_id,
+        target_ids=target_ids,
+    )

@@ -134,12 +134,13 @@ class Neo4jSandboxTopologyService:
         return [row.get("row", []) for row in results[0].get("data", [])]
 
     def _row_to_container(self, row: list[Any]) -> dict[str, Any]:
-        _, name, image, env, labels, networks, ports, exposed_ports = row[:8]
+        container_id, name, image, env, labels, networks, ports, exposed_ports = row[:8]
         parsed_ports = self._parse_ports(exposed_ports) or self._parse_ports(ports)
         if not parsed_ports:
             parsed_ports = [{"number": 80, "protocol": "tcp"}]
 
         return {
+            "id": str(container_id or ""),
             "name": self._sanitize_name(str(name or "container")),
             "image": str(image or ""),
             "env": self._parse_env(env),

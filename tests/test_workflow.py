@@ -47,7 +47,11 @@ async def mock_run_pentest(target_ip: str, port: int) -> dict:
 
 
 @activity.defn(name="identify_attack_targets")
-async def mock_identify_attack_targets(company_id: str, agent_id: str | None = None):
+async def mock_identify_attack_targets(
+    company_id: str,
+    agent_id: str | None = None,
+    target_ids: list[str] | None = None,
+):
     return [
         {
             "entry_id": "entry-auth",
@@ -261,7 +265,7 @@ def test_graph_driven_workflow_selects_preferred_endpoint_workload():
     topology = {
         "containers": [
             {"name": "web-frontend", "image": "nginx:1.27"},
-            {"name": "api", "image": "ghcr.io/aegis/api:anon"},
+            {"id": "container-api", "name": "api", "image": "ghcr.io/aegis/api:anon"},
         ]
     }
     attack_targets = [
@@ -275,4 +279,12 @@ def test_graph_driven_workflow_selects_preferred_endpoint_workload():
 
     assert (
         workflow._select_preferred_endpoint_workload(topology, attack_targets) == "api"
+    )
+    assert (
+        workflow._select_preferred_endpoint_workload(
+            topology,
+            [],
+            {"container-api"},
+        )
+        == "api"
     )

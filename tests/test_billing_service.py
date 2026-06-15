@@ -3,7 +3,11 @@ from unittest.mock import MagicMock, patch
 import grpc
 import uuid
 
-from grpc_services.billing import BillingService
+from grpc_services.billing import (
+    BillingService,
+    can_adjust_tokens,
+    normalize_ledger_reason,
+)
 import aegis.v2.billing_pb2 as billing_pb2
 
 
@@ -100,3 +104,33 @@ async def test_get_ledger_success(billing_service, mock_db):
         assert len(response.entries) == 1
         assert response.entries[0].amount == -50
         assert response.entries[0].reason == "Scan cost"
+
+
+def test_can_adjust_tokens_allows_own_scan_consumption():
+    identity = {"user_id": "u1", "company_id": "company-1", "role": "owner"}
+
+    assert can_adjust_tokens(identity, "company-1", -35)
+
+
+def test_can_adjust_tokens_rejects_cross_tenant_consumption():
+    identity = {"user_id": "u1", "company_id": "company-1", "role": "owner"}
+
+    assert not can_adjust_tokens(identity, "company-2", -35)
+
+
+def test_can_adjust_tokens_rejects_client_credit_adjustment():
+    identity = {"user_id": "u1", "company_id": "company-1", "role": "owner"}
+
+    assert not can_adjust_tokens(identity, "company-1", 35)
+
+
+def test_can_adjust_tokens_allows_billing_roles():
+    identity = {"user_id": "u1", "company_id": "company-1", "role": "superadmin"}
+
+    assert can_adjust_tokens(identity, "company-2", 35)
+
+
+def test_normalize_ledger_reason_limits_database_length():
+    reason = "x" * 300
+
+    assert len(normalize_ledger_reason(reason)) == 255

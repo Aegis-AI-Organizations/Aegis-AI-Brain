@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 # Pricing Matrix as per Step 3 requirements
 PRICING_MATRIX = {"IP": 1, "API": 3, "WEBAPP": 5}
+TOKEN_ADJUSTMENT_ROLES = {"superadmin", "billing_aegis"}
+TOKEN_CONSUMPTION_ROLES = {"superadmin", "admin", "owner", "operateur", "billing_aegis"}
+MAX_LEDGER_REASON_LENGTH = 255
 
 
 class BillingService(billing_pb2_grpc.BillingServiceServicer):
@@ -119,7 +122,9 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
                 company.token_balance += amount
 
                 ledger_entry = TokenLedger(
-                    company_id=company.id, amount=amount, reason=reason
+                    company_id=company.id,
+                    amount=amount,
+                    reason=normalize_ledger_reason(reason),
                 )
                 db.add(ledger_entry)
 
@@ -134,8 +139,7 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
     async def AdjustTokens(
         self, request: billing_pb2.AdjustTokensRequest, context, identity
     ) -> billing_pb2.AdjustTokensResponse:
-        # RBAC: Only SuperAdmin or Aegis Billing system can adjust tokens manually
-        if identity["role"] not in ["superadmin", "billing_aegis"]:
+        if not can_adjust_tokens(identity, request.company_id, request.amount):
             context.set_code(grpc.StatusCode.PERMISSION_DENIED)
             return billing_pb2.AdjustTokensResponse()
 
@@ -241,3 +245,18 @@ class BillingService(billing_pb2_grpc.BillingServiceServicer):
         return billing_pb2.GetUsageStatsResponse(
             days=usage_days, total_period=total_period
         )
+
+
+def can_adjust_tokens(identity, company_id: str, amount: int) -> bool:
+    role = identity.get("role")
+    if role in TOKEN_ADJUSTMENT_ROLES:
+        return True
+
+    if amount >= 0 or role not in TOKEN_CONSUMPTION_ROLES:
+        return False
+
+    return str(identity.get("company_id") or "") == company_id
+
+
+def normalize_ledger_reason(reason: str) -> str:
+    return (reason or "")[:MAX_LEDGER_REASON_LENGTH]

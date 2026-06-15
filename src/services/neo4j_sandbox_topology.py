@@ -66,6 +66,8 @@ class Neo4jSandboxTopologyService:
           coalesce(c.name, c.rawId, c.id) AS name,
           c.image AS image,
           coalesce(c.env, []) AS env,
+          coalesce(c.labels, []) AS labels,
+          coalesce(c.networks, []) AS networks,
           coalesce(c.ports, []) AS ports,
           coalesce(c.exposedPorts, []) AS exposed_ports
         ORDER BY name ASC
@@ -78,7 +80,7 @@ class Neo4jSandboxTopologyService:
             len(normalized_ids),
         )
         rows = self._execute_query(cypher, parameters)
-        containers = [self._row_to_container(row) for row in rows if len(row) >= 6]
+        containers = [self._row_to_container(row) for row in rows if len(row) >= 8]
         containers = [container for container in containers if container.get("image")]
 
         logger.info(
@@ -132,7 +134,7 @@ class Neo4jSandboxTopologyService:
         return [row.get("row", []) for row in results[0].get("data", [])]
 
     def _row_to_container(self, row: list[Any]) -> dict[str, Any]:
-        _, name, image, env, ports, exposed_ports = row[:6]
+        _, name, image, env, labels, networks, ports, exposed_ports = row[:8]
         parsed_ports = self._parse_ports(exposed_ports) or self._parse_ports(ports)
         if not parsed_ports:
             parsed_ports = [{"number": 80, "protocol": "tcp"}]
@@ -141,6 +143,8 @@ class Neo4jSandboxTopologyService:
             "name": self._sanitize_name(str(name or "container")),
             "image": str(image or ""),
             "env": self._parse_env(env),
+            "labels": self._parse_env(labels),
+            "networks": self._parse_networks(networks),
             "ports": parsed_ports,
         }
 
@@ -203,6 +207,13 @@ class Neo4jSandboxTopologyService:
             seen.add(port_number)
             ports.append({"number": port_number, "protocol": protocol})
         return ports
+
+    @staticmethod
+    def _parse_networks(value: Any) -> list[str]:
+        if not isinstance(value, list):
+            return []
+        networks = sorted({str(item).strip() for item in value if str(item).strip()})
+        return networks
 
 
 def build_sandbox_topology(

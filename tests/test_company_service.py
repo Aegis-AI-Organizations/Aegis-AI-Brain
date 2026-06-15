@@ -93,7 +93,7 @@ async def test_list_companies_superadmin_only(company_service, mock_db):
 @pytest.mark.asyncio
 async def test_list_companies_success(company_service, mock_db):
     owner = User(id=uuid.uuid4(), email="owner@test.com")
-    c1 = Company(id=uuid.uuid4(), name="C1", owner=owner, members=[])
+    c1 = Company(id=uuid.uuid4(), name="C1", owner_id=owner.id, owner=owner, members=[])
     mock_db.query.return_value.options.return_value.all.return_value = [c1]
 
     with patch("grpc_services.utils.get_identity") as mock_get_id:
@@ -106,6 +106,7 @@ async def test_list_companies_success(company_service, mock_db):
 
         assert len(response.companies) == 1
         assert response.companies[0].name == "C1"
+        assert response.companies[0].member_count == 1
 
 
 @pytest.mark.asyncio
@@ -366,3 +367,389 @@ async def test_create_user_success(company_service, mock_db):
                 invitation_token="aegis_inv_user-token",
                 email_service=company_service.email_service,
             )
+
+
+def test_list_users_includes_all_company_owners(company_service, mock_db):
+    company_id = uuid.uuid4()
+    owner_one = User(
+        id=uuid.uuid4(),
+        company_id=company_id,
+        name="Owner One",
+        email="owner-one@test.com",
+        password_hash="hash",
+        role=UserRole.owner,
+        is_active=True,
+    )
+    owner_two = User(
+        id=uuid.uuid4(),
+        company_id=company_id,
+        name="Owner Two",
+        email="owner-two@test.com",
+        password_hash="hash",
+        role=UserRole.owner,
+        is_active=True,
+    )
+    mock_db.query.return_value.filter.return_value.order_by.return_value.all.return_value = [
+        owner_one,
+        owner_two,
+    ]
+
+    users = company_service._list_entities_db_sync(
+        action="list-users",
+        company_id=str(company_id),
+    )
+
+    assert [user.name for user in users] == ["Owner One", "Owner Two"]
+    assert [user.deployment_token for user in users] == ["owner", "owner"]
+    assert [user.org_type for user in users] == [
+        company_pb2.ORGANIZATION_TYPE_OTHER,
+        company_pb2.ORGANIZATION_TYPE_OTHER,
+    ]
+
+
+def test_list_users_marks_inactive_collaborators(company_service, mock_db):
+    company_id = uuid.uuid4()
+    inactive_user = User(
+        id=uuid.uuid4(),
+        company_id=company_id,
+        name="Inactive User",
+        email="inactive@test.com",
+        password_hash="hash",
+        role=UserRole.viewer,
+        is_active=False,
+    )
+    mock_db.query.return_value.filter.return_value.order_by.return_value.all.return_value = [
+        inactive_user,
+    ]
+
+    users = company_service._list_entities_db_sync(
+        action="list-users",
+        company_id=str(company_id),
+    )
+
+    assert users[0].org_type == company_pb2.ORGANIZATION_TYPE_UNSPECIFIED
+
+
+@pytest.mark.parametrize(
+    ("request_company_id", "identity", "expected_code", "expected_message"),
+    [
+        (
+            "",
+            {"role": "viewer", "company_id": "company-1"},
+            grpc.StatusCode.PERMISSION_DENIED,
+            "Insufficient permissions",
+        ),
+        (
+            "",
+            {"role": "owner", "company_id": ""},
+            grpc.StatusCode.PERMISSION_DENIED,
+            "Missing company scope",
+        ),
+        (
+            "company-2",
+            {"role": "owner", "company_id": "company-1"},
+            grpc.StatusCode.PERMISSION_DENIED,
+            "Cannot manage another company's collaborators",
+        ),
+        (
+            "",
+            {"role": "superadmin", "company_id": ""},
+            grpc.StatusCode.INVALID_ARGUMENT,
+            "Missing company_id",
+        ),
+    ],
+)
+def test_resolve_user_management_company_id_rejects_invalid_scope(
+    company_service,
+    request_company_id,
+    identity,
+    expected_code,
+    expected_message,
+):
+    company_id, code, message = company_service._resolve_user_management_company_id(
+        request_company_id, identity
+    )
+
+    assert company_id is None
+    assert code == expected_code
+    assert message == expected_message
+
+
+def test_validate_managed_user_role_rejects_unknown_role(company_service):
+    role, error = company_service._validate_managed_user_role(
+        "unknown-role", {"role": "superadmin"}
+    )
+
+    assert role is None
+    assert error == "Invalid role"
+
+
+@pytest.mark.asyncio
+async def test_owner_updates_tenant_user_role(company_service, mock_db):
+    company_id = uuid.uuid4()
+    target_user_id = uuid.uuid4()
+    target_user = User(
+        id=target_user_id,
+        company_id=company_id,
+        name="Viewer",
+        email="viewer@test.com",
+        password_hash="hash",
+        role=UserRole.viewer,
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = target_user
+
+    context = MagicMock()
+    context.peer.return_value = "127.0.0.1"
+    context.invocation_metadata.return_value = [
+        ("x-action", "update-user-role"),
+        ("x-user-role", "operateur"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": str(company_id),
+        }
+
+        response = await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(target_user_id)), context
+        )
+
+    assert response.id == str(target_user_id)
+    assert target_user.role == UserRole.operateur
+    assert mock_db.commit.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_owner_cannot_assign_internal_role(company_service):
+    company_id = uuid.uuid4()
+    context = MagicMock()
+    context.invocation_metadata.return_value = [
+        ("x-action", "update-user-role"),
+        ("x-user-role", "admin"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": str(company_id),
+        }
+
+        await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(uuid.uuid4())), context
+        )
+
+    context.set_code.assert_called_with(grpc.StatusCode.PERMISSION_DENIED)
+    context.set_details.assert_called_with("Owners cannot assign internal roles")
+
+
+@pytest.mark.asyncio
+async def test_billing_client_role_is_no_longer_assignable(company_service):
+    company_id = uuid.uuid4()
+    context = MagicMock()
+    context.invocation_metadata.return_value = [
+        ("x-action", "update-user-role"),
+        ("x-user-role", "billing_client"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "superadmin",
+            "company_id": str(company_id),
+        }
+
+        await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(uuid.uuid4())), context
+        )
+
+    context.set_code.assert_called_with(grpc.StatusCode.INVALID_ARGUMENT)
+    context.set_details.assert_called_with(
+        "Billing client role is no longer assignable"
+    )
+
+
+@pytest.mark.asyncio
+async def test_owner_cannot_update_own_role(company_service):
+    company_id = uuid.uuid4()
+    owner_id = uuid.uuid4()
+    context = MagicMock()
+    context.invocation_metadata.return_value = [
+        ("x-action", "update-user-role"),
+        ("x-user-role", "viewer"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(owner_id),
+            "role": "owner",
+            "company_id": str(company_id),
+        }
+
+        await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(owner_id)), context
+        )
+
+    context.set_code.assert_called_with(grpc.StatusCode.PERMISSION_DENIED)
+    context.set_details.assert_called_with("Cannot update your own role")
+
+
+@pytest.mark.asyncio
+async def test_owner_deactivates_tenant_user(company_service, mock_db):
+    company_id = uuid.uuid4()
+    target_user_id = uuid.uuid4()
+    target_user = User(
+        id=target_user_id,
+        company_id=company_id,
+        name="Viewer",
+        email="viewer@test.com",
+        password_hash="hash",
+        role=UserRole.viewer,
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = target_user
+
+    context = MagicMock()
+    context.peer.return_value = "127.0.0.1"
+    context.invocation_metadata.return_value = [
+        ("x-action", "deactivate-user"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": str(company_id),
+        }
+
+        response = await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(target_user_id)), context
+        )
+
+    assert response.id == str(target_user_id)
+    assert target_user.is_active is False
+    assert mock_db.commit.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_owner_deactivates_another_owner(company_service, mock_db):
+    company_id = uuid.uuid4()
+    requester_id = uuid.uuid4()
+    target_owner_id = uuid.uuid4()
+    target_owner = User(
+        id=target_owner_id,
+        company_id=company_id,
+        name="Other Owner",
+        email="other-owner@test.com",
+        password_hash="hash",
+        role=UserRole.owner,
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = target_owner
+
+    context = MagicMock()
+    context.peer.return_value = "127.0.0.1"
+    context.invocation_metadata.return_value = [
+        ("x-action", "deactivate-user"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(requester_id),
+            "role": "owner",
+            "company_id": str(company_id),
+        }
+
+        response = await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(target_owner_id)), context
+        )
+
+    assert response.id == str(target_owner_id)
+    assert target_owner.is_active is False
+    assert mock_db.commit.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_superadmin_deactivates_company_owner_linked_by_owner_id(
+    company_service, mock_db
+):
+    company_id = uuid.uuid4()
+    target_owner_id = uuid.uuid4()
+    target_owner = User(
+        id=target_owner_id,
+        company_id=None,
+        name="Company Owner",
+        email="owner@test.com",
+        password_hash="hash",
+        role=UserRole.owner,
+        is_active=True,
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = target_owner
+
+    context = MagicMock()
+    context.peer.return_value = "127.0.0.1"
+    context.invocation_metadata.return_value = [
+        ("x-action", "set-user-active"),
+        ("x-user-active", "false"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "superadmin",
+            "company_id": "",
+        }
+
+        response = await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(target_owner_id)), context
+        )
+
+    assert response.id == str(target_owner_id)
+    assert target_owner.is_active is False
+    assert mock_db.commit.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_owner_reactivates_tenant_user(company_service, mock_db):
+    company_id = uuid.uuid4()
+    target_user_id = uuid.uuid4()
+    target_user = User(
+        id=target_user_id,
+        company_id=company_id,
+        name="Viewer",
+        email="viewer@test.com",
+        password_hash="hash",
+        role=UserRole.viewer,
+        is_active=False,
+    )
+    mock_db.query.return_value.filter.return_value.first.return_value = target_user
+
+    context = MagicMock()
+    context.peer.return_value = "127.0.0.1"
+    context.invocation_metadata.return_value = [
+        ("x-action", "set-user-active"),
+        ("x-user-active", "true"),
+        ("x-company-id", str(company_id)),
+    ]
+
+    with patch("grpc_services.utils.get_identity") as mock_get_id:
+        mock_get_id.return_value = {
+            "user_id": str(uuid.uuid4()),
+            "role": "owner",
+            "company_id": str(company_id),
+        }
+
+        response = await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(name=str(target_user_id)), context
+        )
+
+    assert response.id == str(target_user_id)
+    assert target_user.is_active is True
+    assert mock_db.commit.call_count == 2

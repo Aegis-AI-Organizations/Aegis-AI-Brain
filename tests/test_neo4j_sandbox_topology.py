@@ -10,6 +10,8 @@ def test_build_sandbox_topology_maps_containers_to_deployer_payload():
             "api.v1",
             "ghcr.io/acme/api:latest",
             ["PUBLIC_URL=https://app.example.test"],
+            ["com.docker.compose.service=api"],
+            ["backend"],
             ["8080:tcp:::8080:docker"],
             [],
         ]
@@ -32,6 +34,8 @@ def test_build_sandbox_topology_maps_containers_to_deployer_payload():
                 "name": "api-v1",
                 "image": "ghcr.io/acme/api:latest",
                 "env": {"PUBLIC_URL": "https://app.example.test"},
+                "labels": {"com.docker.compose.service": "api"},
+                "networks": ["backend"],
                 "ports": [{"number": 8080, "protocol": "tcp"}],
             }
         ]
@@ -42,7 +46,7 @@ def test_build_sandbox_topology_uses_default_http_port_when_missing():
     with patch.object(
         Neo4jSandboxTopologyService,
         "_execute_query",
-        return_value=[["id", "worker", "worker:latest", [], [], []]],
+        return_value=[["id", "worker", "worker:latest", [], [], [], [], []]],
     ):
         service = Neo4jSandboxTopologyService(
             url="http://neo4j.local:7474", user="neo4j", password="secret"

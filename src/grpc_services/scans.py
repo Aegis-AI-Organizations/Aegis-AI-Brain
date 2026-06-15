@@ -13,6 +13,23 @@ from config.db import get_session_factory
 
 logger = logging.getLogger("aegis_brain_grpc")
 
+MAX_SCAN_TARGET_IMAGE_LENGTH = 255
+
+
+def normalize_persisted_target_image(target_image: str) -> str:
+    value = (target_image or "").strip()
+    if len(value) <= MAX_SCAN_TARGET_IMAGE_LENGTH:
+        return value
+
+    if value.lower().startswith("topology:"):
+        _, raw_targets = value.split(":", 1)
+        target_ids = [item.strip() for item in raw_targets.split(",") if item.strip()]
+        if not target_ids or raw_targets.strip().lower() == "all":
+            return "topology:all"
+        return f"topology:selection:{len(target_ids)}"
+
+    return value[: MAX_SCAN_TARGET_IMAGE_LENGTH - 3] + "..."
+
 
 class ScanService(scan_pb2_grpc.ScanServiceServicer):
     def __init__(self, temporal_client):
@@ -58,8 +75,13 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         scan_id = str(uuid.uuid4())
         workflow_id = f"graph-pentest-workflow-{scan_id}"
 
+        persisted_target_image = normalize_persisted_target_image(request.target_image)
         started_at = await asyncio.to_thread(
-            self._start_scan_db, scan_id, workflow_id, request.target_image, company_id
+            self._start_scan_db,
+            scan_id,
+            workflow_id,
+            persisted_target_image,
+            company_id,
         )
 
         # Log to Audit Trail

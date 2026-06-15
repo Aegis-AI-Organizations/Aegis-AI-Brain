@@ -10,7 +10,7 @@ from config.db import get_session_factory
 from models.company import Company
 from models.onboarding_invitation import OnboardingInvitation
 from models.user import User, UserRole, UserActivationStatus
-from sqlalchemy import String
+from sqlalchemy import String, or_, select
 from sqlalchemy.orm import joinedload
 from grpc_services.utils import with_identity
 from .broadcaster import broadcaster
@@ -71,6 +71,49 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         if not target_company_id:
             return None, grpc.StatusCode.INVALID_ARGUMENT, "Missing company_id"
         return target_company_id, None, None
+
+    def _resolve_user_management_company_id(self, request_company_id: str, identity):
+        role = identity["role"]
+        allowed_roles = ["superadmin", "admin", "owner"]
+        if role not in allowed_roles:
+            return None, grpc.StatusCode.PERMISSION_DENIED, "Insufficient permissions"
+
+        identity_company_id = str(identity.get("company_id") or "")
+        if role == "owner":
+            if not identity_company_id:
+                return None, grpc.StatusCode.PERMISSION_DENIED, "Missing company scope"
+            if request_company_id and request_company_id != identity_company_id:
+                return (
+                    None,
+                    grpc.StatusCode.PERMISSION_DENIED,
+                    "Cannot manage another company's collaborators",
+                )
+            return identity_company_id, None, None
+
+        target_company_id = request_company_id or identity_company_id
+        if not target_company_id:
+            return None, grpc.StatusCode.INVALID_ARGUMENT, "Missing company_id"
+        return target_company_id, None, None
+
+    def _validate_managed_user_role(self, role: str, identity):
+        try:
+            user_role = UserRole(role)
+        except ValueError:
+            return None, "Invalid role"
+
+        if user_role == UserRole.billing_client:
+            return None, "Billing client role is no longer assignable"
+
+        if identity["role"] == "owner":
+            allowed_tenant_roles = {
+                UserRole.owner,
+                UserRole.operateur,
+                UserRole.viewer,
+            }
+            if user_role not in allowed_tenant_roles:
+                return None, "Owners cannot assign internal roles"
+
+        return user_role, None
 
     def _create_company_db_sync(self, name: str, owner_email: str):
         with self.session_factory() as db:
@@ -347,7 +390,15 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 # User search logic
                 query = db.query(User)
                 if company_id:
-                    query = query.filter(User.company_id == company_id)
+                    owner_id_subquery = select(Company.owner_id).where(
+                        Company.id == company_id
+                    )
+                    query = query.filter(
+                        or_(
+                            User.company_id == company_id,
+                            User.id == owner_id_subquery.scalar_subquery(),
+                        )
+                    )
                 if search_query:
                     query = query.filter(
                         (User.name.ilike(f"%{search_query}%"))
@@ -366,6 +417,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                         if isinstance(u.role, str)
                         else u.role.value,
                         "member_count": 0,
+                        "org_type": 8 if u.is_active else 0,
                     }
                     # Defensive check for proto field existence
                     if hasattr(company_pb2.CompanySummary, "avatar_url"):
@@ -396,12 +448,16 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 for c in companies:
                     owner_email = c.owner.email if c.owner else ""
                     owner_id = str(c.owner_id) if c.owner_id else ""
+                    members = list(c.members or [])
+                    member_count = len(members)
+                    if owner_id and all(str(m.id) != owner_id for m in members):
+                        member_count += 1
                     summary_kwargs = {
                         "id": str(c.id),
                         "name": c.name,
                         "owner_id": owner_id,
                         "owner_email": owner_email,
-                        "member_count": len(c.members),
+                        "member_count": member_count,
                         "deployment_token": "",
                     }
                     if hasattr(company_pb2.CompanySummary, "avatar_url"):
@@ -496,6 +552,71 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 db.rollback()
                 return None, None, None, str(e)
 
+    def _update_user_role_db_sync(self, user_id, role, company_id, identity):
+        requester_id = str(identity.get("user_id") or "")
+        if requester_id and requester_id == str(user_id):
+            return None, "Cannot update your own role"
+
+        with self.session_factory() as db:
+            user_role, role_error = self._validate_managed_user_role(role, identity)
+            if role_error:
+                return None, role_error
+
+            owner_id_subquery = select(Company.owner_id).where(Company.id == company_id)
+            user = (
+                db.query(User)
+                .filter(
+                    User.id == user_id,
+                    or_(
+                        User.company_id == company_id,
+                        User.id == owner_id_subquery.scalar_subquery(),
+                    ),
+                )
+                .first()
+            )
+            if not user:
+                return None, "User not found"
+
+            user.role = user_role
+            db.commit()
+            broadcaster.broadcast(
+                "team", ("USER_UPDATED", str(company_id), str(user.id), user.name or "")
+            )
+            return str(user.id), None
+
+    def _set_user_active_db_sync(self, user_id, company_id, identity, is_active):
+        requester_id = str(identity.get("user_id") or "")
+        if requester_id and requester_id == str(user_id):
+            return None, "Cannot change your own account status"
+
+        with self.session_factory() as db:
+            owner_id_subquery = select(Company.owner_id).where(Company.id == company_id)
+            user = (
+                db.query(User)
+                .filter(
+                    User.id == user_id,
+                    or_(
+                        User.company_id == company_id,
+                        User.id == owner_id_subquery.scalar_subquery(),
+                    ),
+                )
+                .first()
+            )
+            if not user:
+                return None, "User not found"
+
+            user.is_active = is_active
+            db.commit()
+            event_type = "USER_REACTIVATED" if is_active else "USER_DEACTIVATED"
+            broadcaster.broadcast(
+                "team",
+                (event_type, str(company_id), str(user.id), user.name or ""),
+            )
+            return str(user.id), None
+
+    def _deactivate_user_db_sync(self, user_id, company_id, identity):
+        return self._set_user_active_db_sync(user_id, company_id, identity, False)
+
     @with_identity(verified_only=True)
     async def CreateCompany(
         self, request: company_pb2.CreateCompanyRequest, context, identity
@@ -503,23 +624,103 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
         metadata = dict(context.invocation_metadata())
         action = metadata.get("x-action", "create-company")
 
+        if action in {"update-user-role", "deactivate-user", "set-user-active"}:
+            company_id, status_code, details = self._resolve_user_management_company_id(
+                metadata.get("x-company-id", ""), identity
+            )
+            if status_code:
+                context.set_code(status_code)
+                context.set_details(details)
+                return company_pb2.CreateCompanyResponse()
+
+            user_id = request.name
+            if not user_id:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details("Missing user_id")
+                return company_pb2.CreateCompanyResponse()
+
+            if action == "update-user-role":
+                updated_id, error = await asyncio.to_thread(
+                    self._update_user_role_db_sync,
+                    user_id,
+                    metadata.get("x-user-role", ""),
+                    company_id,
+                    identity,
+                )
+                audit_action = "UPDATE_USER_ROLE"
+            elif action == "set-user-active":
+                requested_status = metadata.get("x-user-active", "").lower()
+                if requested_status not in {"true", "false"}:
+                    context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                    context.set_details("Missing or invalid x-user-active")
+                    return company_pb2.CreateCompanyResponse()
+
+                updated_id, error = await asyncio.to_thread(
+                    self._set_user_active_db_sync,
+                    user_id,
+                    company_id,
+                    identity,
+                    requested_status == "true",
+                )
+                audit_action = (
+                    "REACTIVATE_USER"
+                    if requested_status == "true"
+                    else "DEACTIVATE_USER"
+                )
+            else:
+                updated_id, error = await asyncio.to_thread(
+                    self._deactivate_user_db_sync, user_id, company_id, identity
+                )
+                audit_action = "DEACTIVATE_USER"
+
+            if error:
+                context.set_code(
+                    grpc.StatusCode.NOT_FOUND
+                    if error == "User not found"
+                    else grpc.StatusCode.PERMISSION_DENIED
+                    if error.startswith("Cannot") or error.startswith("Owners cannot")
+                    else grpc.StatusCode.INVALID_ARGUMENT
+                )
+                context.set_details(error)
+                return company_pb2.CreateCompanyResponse()
+
+            try:
+                with self.session_factory() as db:
+                    audit = AuditLog(
+                        user_id=identity["user_id"],
+                        company_id=company_id,
+                        action=audit_action,
+                        target_type="USER",
+                        target_id=updated_id,
+                        ip_address=context.peer(),
+                        details={
+                            "company_id": company_id,
+                            "role": metadata.get("x-user-role", ""),
+                        },
+                    )
+                    db.add(audit)
+                    db.commit()
+            except Exception:
+                logger.exception("Failed to log audit for %s", audit_action)
+
+            return company_pb2.CreateCompanyResponse(id=updated_id, name=request.name)
+
         if action == "create-user":
             # Hijack for user creation
-            allowed_roles = ["superadmin", "admin", "owner"]
-            if identity["role"] not in allowed_roles:
-                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            company_id, status_code, details = self._resolve_user_management_company_id(
+                metadata.get("x-company-id", ""), identity
+            )
+            if status_code:
+                context.set_code(status_code)
+                context.set_details(details)
                 return company_pb2.CreateCompanyResponse()
 
             user_role = metadata.get("x-user-role", "viewer")
-            company_id = metadata.get("x-company-id", "")
-
-            # If owner, force company_id and prevent creating high-level roles
-            if identity["role"] == "owner":
-                company_id = str(identity.get("company_id"))
-                if user_role in ["superadmin", "admin", "commercial"]:
-                    context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-                    context.set_details("Owners cannot create administrative roles")
-                    return company_pb2.CreateCompanyResponse()
+            _, role_error = self._validate_managed_user_role(user_role, identity)
+            if role_error:
+                context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                context.set_details(role_error)
+                return company_pb2.CreateCompanyResponse()
 
             user_id, invitation_token, company_name, error = await asyncio.to_thread(
                 self._create_user_db_sync,

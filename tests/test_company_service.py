@@ -378,6 +378,7 @@ def test_list_users_includes_all_company_owners(company_service, mock_db):
         email="owner-one@test.com",
         password_hash="hash",
         role=UserRole.owner,
+        is_active=True,
     )
     owner_two = User(
         id=uuid.uuid4(),
@@ -386,6 +387,7 @@ def test_list_users_includes_all_company_owners(company_service, mock_db):
         email="owner-two@test.com",
         password_hash="hash",
         role=UserRole.owner,
+        is_active=True,
     )
     mock_db.query.return_value.filter.return_value.order_by.return_value.all.return_value = [
         owner_one,
@@ -426,6 +428,60 @@ def test_list_users_marks_inactive_collaborators(company_service, mock_db):
     )
 
     assert users[0].org_type == company_pb2.ORGANIZATION_TYPE_UNSPECIFIED
+
+
+@pytest.mark.parametrize(
+    ("request_company_id", "identity", "expected_code", "expected_message"),
+    [
+        (
+            "",
+            {"role": "viewer", "company_id": "company-1"},
+            grpc.StatusCode.PERMISSION_DENIED,
+            "Insufficient permissions",
+        ),
+        (
+            "",
+            {"role": "owner", "company_id": ""},
+            grpc.StatusCode.PERMISSION_DENIED,
+            "Missing company scope",
+        ),
+        (
+            "company-2",
+            {"role": "owner", "company_id": "company-1"},
+            grpc.StatusCode.PERMISSION_DENIED,
+            "Cannot manage another company's collaborators",
+        ),
+        (
+            "",
+            {"role": "superadmin", "company_id": ""},
+            grpc.StatusCode.INVALID_ARGUMENT,
+            "Missing company_id",
+        ),
+    ],
+)
+def test_resolve_user_management_company_id_rejects_invalid_scope(
+    company_service,
+    request_company_id,
+    identity,
+    expected_code,
+    expected_message,
+):
+    company_id, code, message = company_service._resolve_user_management_company_id(
+        request_company_id, identity
+    )
+
+    assert company_id is None
+    assert code == expected_code
+    assert message == expected_message
+
+
+def test_validate_managed_user_role_rejects_unknown_role(company_service):
+    role, error = company_service._validate_managed_user_role(
+        "unknown-role", {"role": "superadmin"}
+    )
+
+    assert role is None
+    assert error == "Invalid role"
 
 
 @pytest.mark.asyncio

@@ -18,15 +18,15 @@ MAX_SCAN_TARGET_IMAGE_LENGTH = 255
 
 def normalize_persisted_target_image(target_image: str) -> str:
     value = (target_image or "").strip()
-    if len(value) <= MAX_SCAN_TARGET_IMAGE_LENGTH:
-        return value
-
     if value.lower().startswith("topology:"):
         _, raw_targets = value.split(":", 1)
         target_ids = [item.strip() for item in raw_targets.split(",") if item.strip()]
         if not target_ids or raw_targets.strip().lower() == "all":
             return "topology:all"
         return f"topology:selection:{len(target_ids)}"
+
+    if len(value) <= MAX_SCAN_TARGET_IMAGE_LENGTH:
+        return value
 
     return value[: MAX_SCAN_TARGET_IMAGE_LENGTH - 3] + "..."
 

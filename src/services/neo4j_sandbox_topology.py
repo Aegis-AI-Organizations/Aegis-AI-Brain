@@ -45,7 +45,12 @@ class Neo4jSandboxTopologyService:
                 OR EXISTS {
                   MATCH (r:Route)
                   WHERE r.companyId = $company_id
-                    AND r.id IN $target_ids
+                    AND (
+                      r.id IN $target_ids
+                      OR r.rawId IN $target_ids
+                      OR r.targetName IN $target_ids
+                      OR r.sourceName IN $target_ids
+                    )
                     AND (
                       r.targetName = c.name
                       OR r.sourceName = c.name

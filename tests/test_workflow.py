@@ -288,3 +288,62 @@ def test_graph_driven_workflow_selects_preferred_endpoint_workload():
         )
         == "api"
     )
+
+
+def test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict():
+    workflow = GraphDrivenPentestWorkflow()
+    targets = workflow._normalize_targets(
+        [
+            {
+                "entry_id": "route-cadvisor",
+                "target_id": "route-cadvisor",
+                "target_name": "cadvisor-vm-epitech",
+                "target_path": "/metrics",
+                "criticality": 60,
+                "path_length": 0,
+                "score": 6000,
+            }
+        ]
+    )
+
+    filtered = workflow._filter_targets(targets, {"container-cadvisor"})
+
+    assert filtered == []
+    assert targets[0]["score"] == 6000
+    assert targets[0]["criticality"] == 60
+
+
+def test_graph_driven_workflow_deprioritizes_observability_endpoint():
+    workflow = GraphDrivenPentestWorkflow()
+    topology = {
+        "containers": [
+            {
+                "name": "backrest-vm-epitech",
+                "image": "garethgeorge/backrest:latest",
+                "ports": [{"number": 9898}],
+            },
+            {
+                "name": "cadvisor-vm-epitech",
+                "image": "gcr.io/cadvisor/cadvisor:latest",
+                "ports": [{"number": 8080}],
+            },
+            {
+                "name": "prometheus-vm-epitech",
+                "image": "prom/prometheus:latest",
+                "ports": [{"number": 9090}],
+            },
+        ]
+    }
+    attack_targets = [
+        {
+            "target_name": "cadvisor-vm-epitech",
+            "entry_name": "cadvisor-vm-epitech",
+            "label": "cadvisor-vm-epitech",
+            "target_id": "target-cadvisor",
+        }
+    ]
+
+    assert (
+        workflow._select_preferred_endpoint_workload(topology, attack_targets)
+        == "backrest-vm-epitech"
+    )

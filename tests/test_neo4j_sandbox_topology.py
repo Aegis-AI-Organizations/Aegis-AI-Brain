@@ -28,6 +28,10 @@ def test_build_sandbox_topology_maps_containers_to_deployer_payload():
         )
 
     assert mock_query.called
+    cypher = mock_query.call_args.args[0]
+    assert "r.rawId IN $target_ids" in cypher
+    assert "r.targetName IN $target_ids" in cypher
+    assert "r.sourceName IN $target_ids" in cypher
     assert topology == {
         "containers": [
             {

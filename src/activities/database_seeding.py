@@ -77,7 +77,9 @@ def _env_from_container(container: dict[str, Any]) -> dict[str, str]:
 
 def _pod_matches_selector(pod: dict[str, Any], selector: dict[str, str]) -> bool:
     labels = pod.get("metadata", {}).get("labels") or {}
-    return bool(selector) and all(labels.get(key) == value for key, value in selector.items())
+    return bool(selector) and all(
+        labels.get(key) == value for key, value in selector.items()
+    )
 
 
 def _is_postgres_candidate(service: dict[str, Any], pods: list[dict[str, Any]]) -> bool:

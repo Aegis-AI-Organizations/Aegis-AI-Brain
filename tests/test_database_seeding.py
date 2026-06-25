@@ -75,7 +75,9 @@ def test_seed_postgres_target_executes_standard_seed_ddl():
         password="postgres",
     )
 
-    with patch("activities.database_seeding.psycopg.connect", return_value=conn) as connect:
+    with patch(
+        "activities.database_seeding.psycopg.connect", return_value=conn
+    ) as connect:
         seed_postgres_target(target)
 
     connect.assert_called_once()

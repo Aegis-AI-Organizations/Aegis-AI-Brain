@@ -108,7 +108,9 @@ def _postgres_credentials(pods: list[dict[str, Any]]) -> tuple[str, str, str]:
             env = _env_from_container(container)
             if any(key.startswith("POSTGRES_") for key in env):
                 return (
-                    env.get("POSTGRES_DB") or env.get("POSTGRES_DATABASE") or "postgres",
+                    env.get("POSTGRES_DB")
+                    or env.get("POSTGRES_DATABASE")
+                    or "postgres",
                     env.get("POSTGRES_USER") or "postgres",
                     env.get("POSTGRES_PASSWORD") or "postgres",
                 )
@@ -117,7 +119,9 @@ def _postgres_credentials(pods: list[dict[str, Any]]) -> tuple[str, str, str]:
 
 def discover_postgres_targets(scan_id: str) -> list[DatabaseTarget]:
     namespace = _kubernetes_namespace(scan_id)
-    services = _kubernetes_get(f"/api/v1/namespaces/{namespace}/services").get("items") or []
+    services = (
+        _kubernetes_get(f"/api/v1/namespaces/{namespace}/services").get("items") or []
+    )
     pods = _kubernetes_get(f"/api/v1/namespaces/{namespace}/pods").get("items") or []
     targets: list[DatabaseTarget] = []
 
@@ -190,9 +194,15 @@ async def seed_target_databases(scan_id: str) -> dict:
         try:
             seed_postgres_target(target)
             seeded.append(target.name)
-            logger.info("Seeded PostgreSQL database service=%s host=%s", target.name, target.host)
+            logger.info(
+                "Seeded PostgreSQL database service=%s host=%s",
+                target.name,
+                target.host,
+            )
         except Exception as exc:
-            logger.exception("Failed to seed PostgreSQL database service=%s", target.name)
+            logger.exception(
+                "Failed to seed PostgreSQL database service=%s", target.name
+            )
             failures.append({"service": target.name, "error": str(exc)})
 
     if failures:

@@ -72,7 +72,9 @@ def _artifact_payload(bucket: str, key: str, content: str) -> dict:
                 data.get("preferred_endpoint_workload") or ""
             ).strip(),
         }
-        payload["target_image"] = str(data.get("target_image") or "topology:minio").strip()
+        payload["target_image"] = str(
+            data.get("target_image") or "topology:minio"
+        ).strip()
         return payload
 
     if isinstance(data.get("topology_json"), str):
@@ -82,7 +84,9 @@ def _artifact_payload(bucket: str, key: str, content: str) -> dict:
                 data.get("preferred_endpoint_workload") or ""
             ).strip(),
         }
-        payload["target_image"] = str(data.get("target_image") or "topology:minio").strip()
+        payload["target_image"] = str(
+            data.get("target_image") or "topology:minio"
+        ).strip()
         return payload
 
     target_image = str(data.get("target_image") or data.get("image") or "").strip()
@@ -114,5 +118,7 @@ async def download_minio_artifact(reference: str) -> dict:
 
     payload = _artifact_payload(bucket, key, content)
     if not payload.get("target_image") and not payload.get("sandbox_request"):
-        raise ValueError(f"MinIO artifact {bucket}/{key} does not describe a deployable target")
+        raise ValueError(
+            f"MinIO artifact {bucket}/{key} does not describe a deployable target"
+        )
     return payload

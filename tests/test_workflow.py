@@ -8,6 +8,9 @@ from workflows.pentest_workflow import PentestWorkflow
 from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 
 
+CREATED_SANDBOX_REQUESTS = []
+
+
 @activity.defn(name="update_scan_status")
 async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
     return f"Successfully updated scan {scan_id} to status {new_status}"
@@ -15,6 +18,7 @@ async def mock_update_scan_status(scan_id: str, new_status: str) -> str:
 
 @activity.defn(name="CreateSandbox")
 async def mock_create_sandbox(request: dict) -> dict:
+    CREATED_SANDBOX_REQUESTS.append(request)
     scan_id = request["scan_id"]
     endpoint_workload = request.get("preferred_endpoint_workload", "")
     return {
@@ -39,6 +43,29 @@ async def mock_generate_and_store_pdf_report(
     scan_id: str, vulnerabilities: list
 ) -> str:
     return f"Stored PDF report for {scan_id}"
+
+
+@activity.defn(name="SeedTargetDatabases")
+async def mock_seed_target_databases(scan_id: str) -> dict:
+    return {
+        "namespace": f"aegis-war-room-{scan_id}",
+        "seeded": ["postgres"],
+        "seeded_count": 1,
+        "seed_flag": "aegis-flag-1234",
+    }
+
+
+@activity.defn(name="DownloadMinIOArtifact")
+async def mock_download_minio_artifact(reference: str) -> dict:
+    return {
+        "bucket": "aegis-ingest",
+        "key": "targets/sandbox.json",
+        "target_image": "topology:minio",
+        "sandbox_request": {
+            "topology_json": '{"containers":[{"name":"web","image":"nginx","ports":[{"number":80}]}]}',
+            "preferred_endpoint_workload": "web",
+        },
+    }
 
 
 @activity.defn(name="run_pentest")
@@ -125,6 +152,8 @@ async def test_pentest_workflow_success():
                 mock_update_scan_status,
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
                 mock_run_pentest,
             ],
         ):
@@ -171,6 +200,8 @@ async def test_pentest_workflow_failure():
                 failing_update_scan_status,
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
                 mock_run_pentest,
             ],
         ):
@@ -205,6 +236,8 @@ async def test_graph_driven_pentest_workflow_success():
                 mock_update_scan_status,
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
                 mock_identify_attack_targets,
                 mock_build_sandbox_topology,
             ],
@@ -230,6 +263,52 @@ async def test_graph_driven_pentest_workflow_success():
                         f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
                         in result
                     )
+
+
+@pytest.mark.asyncio
+async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying():
+    CREATED_SANDBOX_REQUESTS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_GRAPH_MINIO",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
+                mock_identify_attack_targets,
+                mock_build_sandbox_topology,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[mock_create_sandbox, mock_destroy_sandbox],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_targeted_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    result = await env.client.execute_workflow(
+                        GraphDrivenPentestWorkflow.run,
+                        args=[
+                            scan_id,
+                            "minio://aegis-ingest/targets/sandbox.json",
+                            "company-1",
+                        ],
+                        id=f"test-graph-pentest-minio-{scan_id}",
+                        task_queue="TEST_QUEUE_GRAPH_MINIO",
+                    )
+
+    assert "topology:minio" in result
+    assert CREATED_SANDBOX_REQUESTS[-1]["scan_id"] == scan_id
+    assert CREATED_SANDBOX_REQUESTS[-1]["preferred_endpoint_workload"] == "web"
+    assert "topology_json" in CREATED_SANDBOX_REQUESTS[-1]
 
 
 def test_graph_driven_workflow_filters_selected_topology_targets():

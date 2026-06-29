@@ -68,3 +68,6 @@ venv.bak/
 
 # OS files
 .DS_Store
+
+# Local clone of the CrewAI agent repo (reference only, not part of the Brain)
+Aegis-AI-Agent-Crew/

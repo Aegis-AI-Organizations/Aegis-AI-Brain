@@ -170,7 +170,18 @@ async def test_vulnerability_service_get(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
     mock_cursor.fetchall.return_value = [
-        ("v-1", "SQLi", "HIGH", "/", "desc", datetime.now())
+        (
+            "v-1",
+            "SQLi",
+            "HIGH",
+            "/",
+            "desc",
+            datetime.now(),
+            {
+                "exfiltration": {"proof_marker": "aegis-flag-1234"},
+                "sample_records": [{"email": "admin@example.test"}],
+            },
+        )
     ]
 
     servicer = VulnerabilityService()
@@ -178,6 +189,10 @@ async def test_vulnerability_service_get(mock_get_db):
     response = await servicer.GetVulnerabilities(request, MockContext())
     assert len(response.vulnerabilities) == 1
     assert response.vulnerabilities[0].id == "v-1"
+    assert response.vulnerabilities[0].loot_proof == "aegis-flag-1234"
+    assert response.vulnerabilities[0].exfiltrated_data == (
+        '[{"email": "admin@example.test"}]'
+    )
 
 
 @pytest.mark.asyncio

@@ -10,6 +10,35 @@ from .utils import to_pb_timestamp, with_identity
 logger = logging.getLogger("aegis_brain_grpc")
 
 
+def _extract_loot_fields(loot):
+    if not loot:
+        return "", ""
+    if isinstance(loot, str):
+        try:
+            loot = json.loads(loot)
+        except json.JSONDecodeError:
+            return loot, ""
+    if not isinstance(loot, dict):
+        return "", json.dumps(loot)
+
+    exfiltration = loot.get("exfiltration") or {}
+    if not isinstance(exfiltration, dict):
+        exfiltration = {}
+
+    loot_proof = (
+        loot.get("loot_proof")
+        or exfiltration.get("proof_marker")
+        or loot.get("sql_error")
+        or ""
+    )
+    exfiltrated_data = (
+        loot.get("exfiltrated_data")
+        or exfiltration.get("sample_records")
+        or loot.get("sample_records")
+    )
+    return str(loot_proof), json.dumps(exfiltrated_data) if exfiltrated_data else ""
+
+
 class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
     def _get_vulns_db(self, scan_id, company_id):
         conn = None
@@ -18,9 +47,16 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur = conn.cursor()
             cur.execute(
                 """
-                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at
+                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at, latest.loot_data
                 FROM vulnerabilities v
                 JOIN scans s ON v.scan_id = s.id
+                LEFT JOIN LATERAL (
+                    SELECT e.loot_data
+                    FROM evidences e
+                    WHERE e.vulnerability_id = v.id AND e.loot_data IS NOT NULL
+                    ORDER BY e.captured_at DESC
+                    LIMIT 1
+                ) latest ON TRUE
                 WHERE v.scan_id = %s AND s.company_id = %s
                 ORDER BY v.discovered_at DESC
                 """,
@@ -44,13 +80,16 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
         rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id, company_id)
         vulns = []
         for row in rows:
-            v_id, v_type, severity, endpoint, desc, disco = row
+            v_id, v_type, severity, endpoint, desc, disco, loot = row
+            loot_proof, exfiltrated_data = _extract_loot_fields(loot)
             v = vulnerability_pb2.Vulnerability(
                 id=str(v_id),
                 vuln_type=str(v_type) if v_type is not None else "",
                 severity=str(severity) if severity is not None else "",
                 target_endpoint=endpoint if endpoint else "",
                 description=desc if desc else "",
+                loot_proof=loot_proof,
+                exfiltrated_data=exfiltrated_data,
             )
             if disco:
                 v.discovered_at.CopyFrom(to_pb_timestamp(disco))

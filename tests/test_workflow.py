@@ -161,7 +161,11 @@ async def test_pentest_workflow_success():
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
             ):
                 async with Worker(
                     env.client,
@@ -209,7 +213,11 @@ async def test_pentest_workflow_failure():
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
             ):
                 async with Worker(
                     env.client,
@@ -246,7 +254,11 @@ async def test_graph_driven_pentest_workflow_success():
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                    activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
             ):
                 async with Worker(
                     env.client,
@@ -287,7 +299,11 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                    activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
             ):
                 async with Worker(
                     env.client,

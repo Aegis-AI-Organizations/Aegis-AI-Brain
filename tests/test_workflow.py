@@ -46,7 +46,8 @@ async def mock_generate_and_store_pdf_report(
 
 
 @activity.defn(name="SeedTargetDatabases")
-async def mock_seed_target_databases(scan_id: str) -> dict:
+async def mock_seed_target_databases(request: dict) -> dict:
+    scan_id = request["scan_id"]
     return {
         "namespace": f"aegis-war-room-{scan_id}",
         "seeded": ["postgres"],
@@ -160,7 +161,7 @@ async def test_pentest_workflow_success():
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                activities=[mock_create_sandbox, mock_destroy_sandbox],
+                activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
             ):
                 async with Worker(
                     env.client,
@@ -208,7 +209,7 @@ async def test_pentest_workflow_failure():
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                activities=[mock_create_sandbox, mock_destroy_sandbox],
+                activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
             ):
                 async with Worker(
                     env.client,
@@ -245,7 +246,7 @@ async def test_graph_driven_pentest_workflow_success():
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                activities=[mock_create_sandbox, mock_destroy_sandbox],
+                    activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
             ):
                 async with Worker(
                     env.client,
@@ -286,7 +287,7 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
             async with Worker(
                 env.client,
                 task_queue="DEPLOYER_TASK_QUEUE",
-                activities=[mock_create_sandbox, mock_destroy_sandbox],
+                    activities=[mock_create_sandbox, mock_destroy_sandbox, mock_seed_target_databases],
             ):
                 async with Worker(
                     env.client,

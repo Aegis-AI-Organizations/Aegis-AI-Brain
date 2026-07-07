@@ -11,7 +11,6 @@ from activities.db_activities import (
 )
 from activities.attack_targets import identify_attack_targets
 from activities.sandbox_topology import build_sandbox_topology
-from activities.database_seeding import seed_target_databases
 from activities.minio_artifacts import download_minio_artifact
 from config.config import BRAIN_TASK_QUEUE
 
@@ -32,7 +31,6 @@ async def start_worker(client):
             generate_and_store_pdf_report,
             identify_attack_targets,
             build_sandbox_topology,
-            seed_target_databases,
             download_minio_artifact,
         ],
         activity_executor=ThreadPoolExecutor(max_workers=10),

@@ -34,7 +34,10 @@ def test_artifact_payload_maps_topology_json_to_sandbox_request():
 
     assert payload["target_image"] == "topology:minio"
     assert payload["sandbox_request"]["preferred_endpoint_workload"] == "web"
-    assert payload["sandbox_request"]["topology_json"] == '{"containers":[],"databaseSchemas":[],"externalMocks":[]}'
+    assert (
+        payload["sandbox_request"]["topology_json"]
+        == '{"containers":[],"databaseSchemas":[],"externalMocks":[]}'
+    )
 
 
 @pytest.mark.asyncio

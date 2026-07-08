@@ -41,7 +41,9 @@ def _extract_topology(sandbox_request: dict[str, Any]) -> dict[str, Any] | None:
     if isinstance(topology, dict):
         return topology
     if topology is not None:
-        raise SandboxTopologyValidationError("Invalid sandbox topology: topology must be an object")
+        raise SandboxTopologyValidationError(
+            "Invalid sandbox topology: topology must be an object"
+        )
 
     topology_json = sandbox_request.get("topology_json")
     if not topology_json:
@@ -57,7 +59,9 @@ def _extract_topology(sandbox_request: dict[str, Any]) -> dict[str, Any] | None:
             f"Invalid sandbox topology JSON: {exc.msg} at line {exc.lineno} column {exc.colno}"
         ) from exc
     if not isinstance(parsed, dict):
-        raise SandboxTopologyValidationError("Invalid sandbox topology: root must be an object")
+        raise SandboxTopologyValidationError(
+            "Invalid sandbox topology: root must be an object"
+        )
     return parsed
 
 
@@ -69,7 +73,9 @@ def _validate_value(
 
     expected_type = schema.get("type")
     if expected_type and not _matches_type(value, expected_type):
-        return f"{_format_path(path)}: expected {expected_type}, got {_type_name(value)}"
+        return (
+            f"{_format_path(path)}: expected {expected_type}, got {_type_name(value)}"
+        )
 
     if expected_type == "object":
         if not isinstance(value, dict):
@@ -81,7 +87,9 @@ def _validate_value(
         additional = schema.get("additionalProperties", True)
         for key, item in value.items():
             if key in properties:
-                error = _validate_value(item, properties[key], root_schema, path + [key])
+                error = _validate_value(
+                    item, properties[key], root_schema, path + [key]
+                )
             elif isinstance(additional, dict):
                 error = _validate_value(item, additional, root_schema, path + [key])
             elif additional is False:

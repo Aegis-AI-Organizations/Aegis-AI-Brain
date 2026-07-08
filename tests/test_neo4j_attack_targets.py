@@ -48,6 +48,36 @@ def test_identify_attack_targets_orders_and_normalizes_paths():
     assert targets[1]["target_path"] == "/metrics"
 
 
+def test_identify_attack_targets_includes_container_image_metadata():
+    rows = [
+        [
+            "entry-1",
+            "public-web",
+            "/",
+            "target-1",
+            "nginx",
+            "default",
+            "container",
+            "admin",
+            "nginx:1.21.0-alpine",
+            "nginx:1.21.0-alpine",
+            "sha256:abc",
+            1,
+            80,
+        ]
+    ]
+
+    with patch.object(Neo4jAttackTargetService, "_execute_query", return_value=rows):
+        service = Neo4jAttackTargetService(
+            url="http://neo4j.local:7474", user="neo4j", password="secret"
+        )
+        targets = service.identify_attack_targets("company-1")
+
+    assert targets[0]["image"] == "nginx:1.21.0-alpine"
+    assert targets[0]["image_version"] == "nginx:1.21.0-alpine"
+    assert targets[0]["image_hash"] == "sha256:abc"
+
+
 def test_identify_attack_targets_uses_valid_shortest_path_relationship_syntax():
     captured = {}
 
@@ -150,5 +180,6 @@ def test_identify_attack_targets_falls_back_to_direct_selected_routes():
 
     assert len(calls) == 2
     assert "MATCH (target:Route)" in calls[1][0]
+    assert "target_container.imageVersion" in calls[1][0]
     assert targets[0]["target_name"] == "api"
     assert targets[0]["target_path"] == "/login"

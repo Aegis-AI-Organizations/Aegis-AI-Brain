@@ -37,6 +37,9 @@ class AttackTarget:
     target_namespace: str
     target_kind: str
     target_path: str
+    image: str
+    image_version: str
+    image_hash: str
     path_length: int
     criticality: int
     score: int
@@ -51,6 +54,9 @@ class AttackTarget:
             "target_namespace": self.target_namespace,
             "target_kind": self.target_kind,
             "target_path": self.target_path,
+            "image": self.image,
+            "image_version": self.image_version,
+            "image_hash": self.image_hash,
             "path_length": self.path_length,
             "criticality": self.criticality,
             "score": self.score,
@@ -197,6 +203,14 @@ class Neo4jAttackTargetService:
           )
         MATCH p = shortestPath((entry)-[:ROUTE_FROM|ROUTE_TO*..8]-(target))
         WHERE p IS NOT NULL
+        OPTIONAL MATCH (target_container:Container)
+        WHERE target_container.companyId = $company_id
+          AND (
+            target.targetName = target_container.name
+            OR target.sourceName = target_container.name
+            OR target.targetName = target_container.rawId
+            OR target.sourceName = target_container.rawId
+          )
         RETURN
           entry.id AS entry_id,
           entry.sourceName AS entry_name,
@@ -206,6 +220,9 @@ class Neo4jAttackTargetService:
           coalesce(target.targetNamespace, "") AS target_namespace,
           coalesce(target.targetKind, "") AS target_kind,
           coalesce(target.path, "/") AS target_path,
+          coalesce(target_container.image, "") AS image,
+          coalesce(target_container.imageVersion, "") AS image_version,
+          coalesce(target_container.imageHash, target_container.imageSha256, "") AS image_hash,
           length(p) AS path_length,
           CASE
             WHEN toLower(coalesce(target.targetName, "")) CONTAINS "postgres"
@@ -262,9 +279,14 @@ class Neo4jAttackTargetService:
                 target_namespace,
                 target_kind,
                 target_path,
-                path_length,
-                criticality,
-            ) = row[:10]
+            ) = row[:8]
+            if len(row) >= 13:
+                image, image_version, image_hash, path_length, criticality = row[8:13]
+            else:
+                image = ""
+                image_version = ""
+                image_hash = ""
+                path_length, criticality = row[8:10]
 
             normalized_target_path = self._normalize_path(target_path or entry_path)
             key = (
@@ -287,6 +309,9 @@ class Neo4jAttackTargetService:
                     target_namespace=str(target_namespace or ""),
                     target_kind=str(target_kind or ""),
                     target_path=normalized_target_path,
+                    image=str(image or ""),
+                    image_version=str(image_version or ""),
+                    image_hash=str(image_hash or ""),
                     path_length=int(path_length),
                     criticality=int(criticality),
                     score=score,
@@ -294,6 +319,13 @@ class Neo4jAttackTargetService:
             )
 
         targets.sort(key=lambda item: (-item.score, item.path_length, item.target_name))
+        for target in targets[: max(1, int(limit))]:
+            if target.image_version or target.image_hash:
+                logger.info(
+                    "Targeted %s (%s)",
+                    target.image_version or target.image or target.target_name,
+                    target.image_hash or "unknown hash",
+                )
         logger.info("Neo4j attack target selection returned %d target(s)", len(targets))
         return [target.as_dict() for target in targets[: max(1, int(limit))]]
 
@@ -320,6 +352,14 @@ class Neo4jAttackTargetService:
                 )
             }
           )
+        OPTIONAL MATCH (target_container:Container)
+        WHERE target_container.companyId = $company_id
+          AND (
+            target.targetName = target_container.name
+            OR target.sourceName = target_container.name
+            OR target.targetName = target_container.rawId
+            OR target.sourceName = target_container.rawId
+          )
         RETURN
           target.id AS entry_id,
           coalesce(target.sourceName, target.targetName, "") AS entry_name,
@@ -329,6 +369,9 @@ class Neo4jAttackTargetService:
           coalesce(target.targetNamespace, target.sourceNamespace, "") AS target_namespace,
           coalesce(target.targetKind, target.sourceKind, "") AS target_kind,
           coalesce(target.path, "/") AS target_path,
+          coalesce(target_container.image, "") AS image,
+          coalesce(target_container.imageVersion, "") AS image_version,
+          coalesce(target_container.imageHash, target_container.imageSha256, "") AS image_hash,
           0 AS path_length,
           CASE
             WHEN toLower(coalesce(target.targetName, target.sourceName, "")) CONTAINS "postgres"

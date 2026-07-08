@@ -28,7 +28,7 @@ class Neo4jSandboxTopologyService:
     ) -> dict[str, Any]:
         company_id = company_id.strip()
         if not company_id:
-            return {"containers": []}
+            return {"containers": [], "databaseSchemas": [], "externalMocks": []}
 
         normalized_ids = sorted(
             {target_id.strip() for target_id in target_ids or [] if target_id.strip()}
@@ -92,7 +92,7 @@ class Neo4jSandboxTopologyService:
             "Neo4j sandbox topology contains %d container workload(s)",
             len(containers),
         )
-        return {"containers": containers}
+        return {"containers": containers, "databaseSchemas": [], "externalMocks": []}
 
     def _auth_header(self) -> str:
         raw = f"{self.user}:{self.password}".encode("utf-8")

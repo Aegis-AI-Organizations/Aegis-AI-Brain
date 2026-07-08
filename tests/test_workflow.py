@@ -63,7 +63,7 @@ async def mock_download_minio_artifact(reference: str) -> dict:
         "key": "targets/sandbox.json",
         "target_image": "topology:minio",
         "sandbox_request": {
-            "topology_json": '{"containers":[{"name":"web","image":"nginx","ports":[{"number":80}]}]}',
+            "topology_json": '{"containers":[{"name":"web","image":"nginx","ports":[{"number":80}]}],"databaseSchemas":[],"externalMocks":[]}',
             "preferred_endpoint_workload": "web",
         },
     }
@@ -119,7 +119,9 @@ async def mock_build_sandbox_topology(
                 "image": "nginx:latest",
                 "ports": [{"number": 80, "protocol": "tcp"}],
             }
-        ]
+        ],
+        "databaseSchemas": [],
+        "externalMocks": [],
     }
 
 

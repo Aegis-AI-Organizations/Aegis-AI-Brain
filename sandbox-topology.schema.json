@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aegis.ai/schemas/sandbox-topology.schema.json",
+  "title": "Aegis Sandbox Topology",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["containers", "databaseSchemas", "externalMocks"],
+  "properties": {
+    "containers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/workload" }
+    },
+    "services": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/workload" }
+    },
+    "deployments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/workload" }
+    },
+    "databaseSchemas": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/databaseSchema" }
+    },
+    "externalMocks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/externalMock" }
+    },
+    "connections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/connection" }
+    },
+    "routes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/connection" }
+    }
+  },
+  "$defs": {
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "image"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "image": { "type": "string", "minLength": 1 },
+        "ports": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/port" }
+        },
+        "env": { "$ref": "#/$defs/stringMap" },
+        "env_vars": { "$ref": "#/$defs/stringMap" },
+        "replicas": { "type": "integer", "minimum": 0 },
+        "depends_on": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "wait_for": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "required": { "type": "boolean" },
+        "command": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "working_dir": { "type": "string" },
+        "init_containers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/initContainer" }
+        },
+        "config_files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/file" }
+        },
+        "secret_files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/file" }
+        },
+        "empty_dirs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/emptyDir" }
+        },
+        "stateful": { "type": "boolean" },
+        "service": { "$ref": "#/$defs/service" }
+      }
+    },
+    "port": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "number": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "target_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "container_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "protocol": { "type": "string" }
+      }
+    },
+    "initContainer": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "image"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "image": { "type": "string", "minLength": 1 },
+        "command": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "working_dir": { "type": "string" },
+        "env": { "$ref": "#/$defs/stringMap" }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "content"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "content": { "type": "string" },
+        "mode": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "emptyDir": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "mount_path"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "mount_path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string" },
+        "headless": { "type": "boolean" },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "source_name": { "type": "string" },
+        "sourceName": { "type": "string" },
+        "target": { "type": "string" },
+        "target_name": { "type": "string" },
+        "targetName": { "type": "string" }
+      }
+    },
+    "externalMock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "host": { "type": "string" },
+        "capture": { "type": "boolean" },
+        "routes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/externalRoute" }
+        }
+      }
+    },
+    "externalRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": { "type": "string" },
+        "path": { "type": "string" },
+        "status": { "type": "integer", "minimum": 100, "maximum": 599 },
+        "headers": { "$ref": "#/$defs/stringMap" },
+        "body": { "type": "string" },
+        "latency": { "type": "string" }
+      }
+    },
+    "databaseSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "engine": { "type": "string" },
+        "host": { "type": "string" },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "databaseName": { "type": "string" },
+        "database_name": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "sourceContainerId": { "type": "string" },
+        "source_container_id": { "type": "string" },
+        "sourceContainerName": { "type": "string" },
+        "source_container_name": { "type": "string" },
+        "tables": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/databaseTable" }
+        }
+      }
+    },
+    "databaseTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "columns": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/databaseColumn" }
+        },
+        "indexes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/databaseIndex" }
+        },
+        "foreign_keys": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/databaseForeignKey" }
+        }
+      }
+    },
+    "databaseColumn": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "data_type": { "type": "string" },
+        "nullable": { "type": "boolean" },
+        "primary_key": { "type": "boolean" },
+        "default_value": { "type": "string" }
+      }
+    },
+    "databaseIndex": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "unique": { "type": "boolean" }
+      }
+    },
+    "databaseForeignKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "referenced_table": { "type": "string" },
+        "referenced_columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

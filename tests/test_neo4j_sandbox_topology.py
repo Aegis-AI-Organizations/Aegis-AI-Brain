@@ -43,7 +43,9 @@ def test_build_sandbox_topology_maps_containers_to_deployer_payload():
                 "networks": ["backend"],
                 "ports": [{"number": 8080, "protocol": "tcp"}],
             }
-        ]
+        ],
+        "databaseSchemas": [],
+        "externalMocks": [],
     }
 
 

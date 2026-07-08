@@ -74,7 +74,9 @@ class Neo4jSandboxTopologyService:
           coalesce(c.labels, []) AS labels,
           coalesce(c.networks, []) AS networks,
           coalesce(c.ports, []) AS ports,
-          coalesce(c.exposedPorts, []) AS exposed_ports
+          coalesce(c.exposedPorts, []) AS exposed_ports,
+          coalesce(c.imageArchiveRef, "") AS image_archive_ref,
+          coalesce(c.imageArchiveObject, "") AS image_archive_object
         ORDER BY name ASC
         LIMIT 30
         """.format(target_filter=target_filter)
@@ -140,11 +142,13 @@ class Neo4jSandboxTopologyService:
 
     def _row_to_container(self, row: list[Any]) -> dict[str, Any]:
         container_id, name, image, env, labels, networks, ports, exposed_ports = row[:8]
+        image_archive_ref = str(row[8] or "") if len(row) > 8 else ""
+        image_archive_object = str(row[9] or "") if len(row) > 9 else ""
         parsed_ports = self._parse_ports(exposed_ports) or self._parse_ports(ports)
         if not parsed_ports:
             parsed_ports = [{"number": 80, "protocol": "tcp"}]
 
-        return {
+        container = {
             "id": str(container_id or ""),
             "name": self._sanitize_name(str(name or "container")),
             "image": str(image or ""),
@@ -153,6 +157,11 @@ class Neo4jSandboxTopologyService:
             "networks": self._parse_networks(networks),
             "ports": parsed_ports,
         }
+        if image_archive_ref:
+            container["image_archive_ref"] = image_archive_ref
+        if image_archive_object:
+            container["image_archive_object"] = image_archive_object
+        return container
 
     @staticmethod
     def _sanitize_name(value: str) -> str:

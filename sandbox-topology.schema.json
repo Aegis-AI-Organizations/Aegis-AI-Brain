@@ -48,6 +48,10 @@
         "id": { "type": "string" },
         "name": { "type": "string", "minLength": 1 },
         "image": { "type": "string", "minLength": 1 },
+        "image_archive_ref": { "type": "string" },
+        "imageArchiveRef": { "type": "string" },
+        "image_archive_object": { "type": "string" },
+        "imageArchiveObject": { "type": "string" },
         "ports": {
           "type": "array",
           "items": { "$ref": "#/$defs/port" }

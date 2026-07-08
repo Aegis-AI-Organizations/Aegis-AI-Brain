@@ -16,7 +16,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x61\x65gis/v2/topology.proto\x12\x08\x61\x65gis.v2\"7\n\x0fNetworkTopology\x12$\n\x05hosts\x18\x01 \x03(\x0b\x32\x0e.aegis.v2.HostR\x05hosts\"\xbb\x01\n\x04Host\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n\x08hostname\x18\x02 \x01(\tR\x08hostname\x12!\n\x0cip_addresses\x18\x03 \x03(\tR\x0bipAddresses\x12\x33\n\ncontainers\x18\x04 \x03(\x0b\x32\x13.aegis.v2.ContainerR\ncontainers\x12/\n\tprocesses\x18\x05 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\"\x9c\x01\n\tContainer\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05image\x18\x03 \x01(\tR\x05image\x12/\n\tprocesses\x18\x04 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\x12$\n\x05ports\x18\x05 \x03(\x0b\x32\x0e.aegis.v2.PortR\x05ports\"\x8a\x01\n\x07Process\x12\x10\n\x03pid\x18\x01 \x01(\x05R\x03pid\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12&\n\x0c\x63ommand_line\x18\x03 \x01(\tH\x00R\x0b\x63ommandLine\x88\x01\x01\x12\x17\n\x04user\x18\x04 \x01(\tH\x01R\x04user\x88\x01\x01\x42\x0f\n\r_command_lineB\x07\n\x05_user\"_\n\x04Port\x12\x16\n\x06number\x18\x01 \x01(\x05R\x06number\x12\x1a\n\x08protocol\x18\x02 \x01(\tR\x08protocol\x12\x19\n\x05state\x18\x03 \x01(\tH\x00R\x05state\x88\x01\x01\x42\x08\n\x06_stateBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x61\x65gis/v2/topology.proto\x12\x08\x61\x65gis.v2\"7\n\x0fNetworkTopology\x12$\n\x05hosts\x18\x01 \x03(\x0b\x32\x0e.aegis.v2.HostR\x05hosts\"\xbb\x01\n\x04Host\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n\x08hostname\x18\x02 \x01(\tR\x08hostname\x12!\n\x0cip_addresses\x18\x03 \x03(\tR\x0bipAddresses\x12\x33\n\ncontainers\x18\x04 \x03(\x0b\x32\x13.aegis.v2.ContainerR\ncontainers\x12/\n\tprocesses\x18\x05 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\"\x8b\x02\n\tContainer\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05image\x18\x03 \x01(\tR\x05image\x12/\n\tprocesses\x18\x04 \x03(\x0b\x32\x11.aegis.v2.ProcessR\tprocesses\x12$\n\x05ports\x18\x05 \x03(\x0b\x32\x0e.aegis.v2.PortR\x05ports\x12(\n\rimage_version\x18\x06 \x01(\tH\x00R\x0cimageVersion\x88\x01\x01\x12\"\n\nimage_hash\x18\x07 \x01(\tH\x01R\timageHash\x88\x01\x01\x42\x10\n\x0e_image_versionB\r\n\x0b_image_hash\"\x8a\x01\n\x07Process\x12\x10\n\x03pid\x18\x01 \x01(\x05R\x03pid\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12&\n\x0c\x63ommand_line\x18\x03 \x01(\tH\x00R\x0b\x63ommandLine\x88\x01\x01\x12\x17\n\x04user\x18\x04 \x01(\tH\x01R\x04user\x88\x01\x01\x42\x0f\n\r_command_lineB\x07\n\x05_user\"_\n\x04Port\x12\x16\n\x06number\x18\x01 \x01(\x05R\x06number\x12\x1a\n\x08protocol\x18\x02 \x01(\tR\x08protocol\x12\x19\n\x05state\x18\x03 \x01(\tH\x00R\x05state\x88\x01\x01\x42\x08\n\x06_stateBPZNgithub.com/Aegis-AI-Organizations/aegis-ai-api-gateway/internal/agrpc/aegis/v2b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -29,9 +29,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_HOST']._serialized_start=95
   _globals['_HOST']._serialized_end=282
   _globals['_CONTAINER']._serialized_start=285
-  _globals['_CONTAINER']._serialized_end=441
-  _globals['_PROCESS']._serialized_start=444
-  _globals['_PROCESS']._serialized_end=582
-  _globals['_PORT']._serialized_start=584
-  _globals['_PORT']._serialized_end=679
+  _globals['_CONTAINER']._serialized_end=552
+  _globals['_PROCESS']._serialized_start=555
+  _globals['_PROCESS']._serialized_end=693
+  _globals['_PORT']._serialized_start=695
+  _globals['_PORT']._serialized_end=790
 # @@protoc_insertion_point(module_scope)

@@ -89,12 +89,91 @@ class Neo4jSandboxTopologyService:
         rows = self._execute_query(cypher, parameters)
         containers = [self._row_to_container(row) for row in rows if len(row) >= 8]
         containers = [container for container in containers if container.get("image")]
+        routes = self._load_routes(company_id, containers, normalized_ids)
 
         logger.info(
-            "Neo4j sandbox topology contains %d container workload(s)",
+            "Neo4j sandbox topology contains %d container workload(s) and %d route(s)",
             len(containers),
+            len(routes),
         )
-        return {"containers": containers, "databaseSchemas": [], "externalMocks": []}
+        return {
+            "containers": containers,
+            "routes": routes,
+            "databaseSchemas": [],
+            "externalMocks": [],
+        }
+
+    def _load_routes(
+        self,
+        company_id: str,
+        containers: list[dict[str, Any]],
+        target_ids: list[str],
+    ) -> list[dict[str, str]]:
+        workload_names = sorted(
+            {str(container.get("name") or "").strip() for container in containers}
+        )
+        raw_ids = sorted(
+            {str(container.get("id") or "").strip() for container in containers}
+        )
+        if not workload_names and not raw_ids:
+            return []
+
+        parameters: dict[str, Any] = {
+            "company_id": company_id,
+            "workload_names": workload_names,
+            "raw_ids": raw_ids,
+            "target_ids": target_ids,
+        }
+        route_filter = ""
+        if target_ids:
+            route_filter = """
+              AND (
+                r.id IN $target_ids
+                OR r.rawId IN $target_ids
+                OR r.sourceName IN $target_ids
+                OR r.targetName IN $target_ids
+                OR r.sourceName IN $workload_names
+                OR r.targetName IN $workload_names
+                OR r.sourceName IN $raw_ids
+                OR r.targetName IN $raw_ids
+              )
+            """
+
+        cypher = """
+        MATCH (r:Route)
+        WHERE r.companyId = $company_id
+          AND coalesce(r.sourceName, "") <> ""
+          AND coalesce(r.targetName, "") <> ""
+          {route_filter}
+        RETURN
+          coalesce(r.sourceName, "") AS source,
+          coalesce(r.targetName, "") AS target,
+          coalesce(r.kind, "") AS kind
+        ORDER BY source ASC, target ASC
+        LIMIT 100
+        """.format(route_filter=route_filter)
+
+        rows = self._execute_query(cypher, parameters)
+        known = set(workload_names) | {
+            self._sanitize_name(name) for name in workload_names
+        }
+        routes: list[dict[str, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for row in rows:
+            if len(row) < 2:
+                continue
+            source = self._sanitize_name(str(row[0] or ""))
+            target = self._sanitize_name(str(row[1] or ""))
+            if not source or not target or source == target:
+                continue
+            if source not in known or target not in known:
+                continue
+            key = (source, target)
+            if key in seen:
+                continue
+            seen.add(key)
+            routes.append({"source": source, "target": target})
+        return routes
 
     def _auth_header(self) -> str:
         raw = f"{self.user}:{self.password}".encode("utf-8")

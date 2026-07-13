@@ -19,9 +19,28 @@ async def test_update_scan_status_success():
 
         assert "Successfully updated scan test-scan-123 to status COMPLETED" in result
         mock_cursor.execute.assert_called_once()
+        sql_query, query_params = mock_cursor.execute.call_args[0]
+        assert "completed_at = CURRENT_TIMESTAMP" in sql_query
+        assert query_params == ("COMPLETED", "test-scan-123")
         mock_conn.commit.assert_called_once()
         mock_cursor.close.assert_called_once()
         mock_conn.close.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_update_scan_status_keeps_intermediate_completed_at_unchanged():
+    """Test intermediate status updates do not set completed_at."""
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.rowcount = 1
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        activity_env = ActivityEnvironment()
+        await activity_env.run(update_scan_status, "test-scan-123", "ATTACKING")
+
+        sql_query, query_params = mock_cursor.execute.call_args[0]
+        assert "completed_at" not in sql_query
+        assert query_params == ("ATTACKING", "test-scan-123")
 
 
 @pytest.mark.asyncio

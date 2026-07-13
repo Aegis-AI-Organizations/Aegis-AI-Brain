@@ -6,6 +6,8 @@ from reports.engine import build_report
 
 logger = logging.getLogger(__name__)
 
+TERMINAL_SCAN_STATUSES = {"COMPLETED", "FAILED", "CANCELLED"}
+
 
 def _execute_status_update(scan_id: str, new_status: str):
     """Internal helper to execute the SQL update."""
@@ -16,7 +18,13 @@ def _execute_status_update(scan_id: str, new_status: str):
 
     try:
         cur = conn.cursor()
-        cur.execute("UPDATE scans SET status = %s WHERE id = %s", (new_status, scan_id))
+        if new_status in TERMINAL_SCAN_STATUSES:
+            cur.execute(
+                "UPDATE scans SET status = %s, completed_at = CURRENT_TIMESTAMP WHERE id = %s",
+                (new_status, scan_id),
+            )
+        else:
+            cur.execute("UPDATE scans SET status = %s WHERE id = %s", (new_status, scan_id))
 
         if cur.rowcount == 0:
             raise Exception(f"Scan ID {scan_id} not found to update")

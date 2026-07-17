@@ -123,6 +123,7 @@ async def test_scan_service_status(mock_get_db):
         datetime.now(),
         "nginx:latest",
         "wf-1",
+        "s3://aegis-debug/debug-bundles/test-id/bundle.tar.gz",
     )
 
     temporal_client = AsyncMock()
@@ -131,6 +132,9 @@ async def test_scan_service_status(mock_get_db):
     response = await servicer.GetScanStatus(request, MockContext())
     assert response.scan_id == "test-id"
     assert response.status == "COMPLETED"
+    assert (
+        response.debug_bundle == "s3://aegis-debug/debug-bundles/test-id/bundle.tar.gz"
+    )
 
 
 @pytest.mark.asyncio
@@ -139,7 +143,16 @@ async def test_scan_service_list(mock_get_db):
     mock_conn = mock_get_db.return_value
     mock_cursor = mock_conn.cursor.return_value
     mock_cursor.fetchall.return_value = [
-        ("test-id", "wf-1", "nginx", "COMPLETED", datetime.now(), None, "Company X")
+        (
+            "test-id",
+            "wf-1",
+            "nginx",
+            "COMPLETED",
+            datetime.now(),
+            None,
+            "Company X",
+            "s3://aegis-debug/debug-bundles/test-id/bundle.tar.gz",
+        )
     ]
 
     temporal_client = AsyncMock()
@@ -148,6 +161,10 @@ async def test_scan_service_list(mock_get_db):
     response = await servicer.ListScans(request, MockContext())
     assert len(response.scans) == 1
     assert response.scans[0].scan_id == "test-id"
+    assert (
+        response.scans[0].debug_bundle
+        == "s3://aegis-debug/debug-bundles/test-id/bundle.tar.gz"
+    )
 
 
 @pytest.mark.asyncio
@@ -263,6 +280,7 @@ async def test_scan_service_watch_status(mock_get_db):
         None,
         "nginx",
         "wf-1",
+        "",
     )
 
     servicer = ScanService(AsyncMock())

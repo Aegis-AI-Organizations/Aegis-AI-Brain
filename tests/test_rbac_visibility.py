@@ -128,6 +128,7 @@ async def test_list_scans_superadmin_visibility(scan_service):
                 None,
                 None,
                 "Aegis AI",
+                "s3://aegis-debug/debug-bundles/scan/bundle.tar.gz",
             )
         ]
 
@@ -140,6 +141,7 @@ async def test_list_scans_superadmin_visibility(scan_service):
             response = await scan_service.ListScans(request, context)
 
             assert len(response.scans) == 1
+            assert response.scans[0].debug_bundle.startswith("s3://aegis-debug/")
             # Verify called with None company_id for superadmin
             mock_db_list.assert_called_once_with(None)
 

@@ -57,6 +57,47 @@ async def update_scan_status(scan_id: str, new_status: str) -> str:
     return f"Successfully updated scan {scan_id} to status {new_status}"
 
 
+def _execute_update_scan_debug_bundle(scan_id: str, debug_bundle: str):
+    """Internal helper to persist the latest sandbox debug bundle reference."""
+    logger.info(f"Updating scan {scan_id} debug bundle reference...")
+    conn = get_db_connection()
+    if not conn:
+        raise Exception("Database connection failed")
+
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE scans SET debug_bundle = %s WHERE id = %s",
+            (debug_bundle, scan_id),
+        )
+
+        if cur.rowcount == 0:
+            raise Exception(f"Scan ID {scan_id} not found to update debug bundle")
+
+        conn.commit()
+        cur.close()
+        logger.info(f"Scan {scan_id} debug bundle reference updated")
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error updating scan {scan_id} debug bundle reference: {e}")
+        raise e
+    finally:
+        conn.close()
+
+
+@activity.defn
+async def update_scan_debug_bundle(scan_id: str, debug_bundle: str) -> str:
+    """
+    Stores the latest Deployer debug bundle reference for a scan.
+    """
+    if not debug_bundle:
+        return f"No debug bundle reference to update for scan {scan_id}"
+
+    logger.info(f"Activity update_scan_debug_bundle started for scan {scan_id}")
+    _execute_update_scan_debug_bundle(scan_id, debug_bundle)
+    return f"Successfully updated scan {scan_id} debug bundle"
+
+
 def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list):
     """Internal helper to insert vulnerabilities and their evidences."""
 

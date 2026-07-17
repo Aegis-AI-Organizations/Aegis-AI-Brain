@@ -126,12 +126,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur = conn.cursor()
             if company_id:
                 cur.execute(
-                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s AND company_id = %s",
+                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id, debug_bundle FROM scans WHERE id = %s AND company_id = %s",
                     (scan_id, company_id),
                 )
             else:
                 cur.execute(
-                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id FROM scans WHERE id = %s",
+                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id, debug_bundle FROM scans WHERE id = %s",
                     (scan_id,),
                 )
             row = cur.fetchone()
@@ -161,12 +161,13 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
                 grpc.StatusCode.NOT_FOUND, "Scan not found or access denied"
             )
 
-        status, started_at, completed_at, target_image, wf_id = row
+        status, started_at, completed_at, target_image, wf_id, debug_bundle = row
         resp = scan_pb2.GetScanStatusResponse(
             scan_id=str(request.scan_id),
             status=str(status) if status else "",
             temporal_workflow_id=str(wf_id) if wf_id else "",
             target_image=str(target_image) if target_image else "",
+            debug_bundle=str(debug_bundle) if debug_bundle else "",
         )
         if started_at:
             resp.started_at.CopyFrom(to_pb_timestamp(started_at))
@@ -180,12 +181,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur = conn.cursor()
             if company_id:
                 cur.execute(
-                    "SELECT s.id, s.temporal_workflow_id, s.target_image, s.status, s.started_at, s.completed_at, c.name FROM scans s JOIN companies c ON s.company_id = c.id WHERE s.company_id = %s ORDER BY s.started_at DESC",
+                    "SELECT s.id, s.temporal_workflow_id, s.target_image, s.status, s.started_at, s.completed_at, c.name, s.debug_bundle FROM scans s JOIN companies c ON s.company_id = c.id WHERE s.company_id = %s ORDER BY s.started_at DESC",
                     (company_id,),
                 )
             else:
                 cur.execute(
-                    "SELECT s.id, s.temporal_workflow_id, s.target_image, s.status, s.started_at, s.completed_at, c.name FROM scans s JOIN companies c ON s.company_id = c.id ORDER BY s.started_at DESC"
+                    "SELECT s.id, s.temporal_workflow_id, s.target_image, s.status, s.started_at, s.completed_at, c.name, s.debug_bundle FROM scans s JOIN companies c ON s.company_id = c.id ORDER BY s.started_at DESC"
                 )
             rows = cur.fetchall()
             cur.close()
@@ -209,13 +210,23 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
         rows = await asyncio.to_thread(self._list_scans_db, company_id)
         scans = []
         for row in rows:
-            scan_id, wf_id, target, status, started, completed, company_name = row
+            (
+                scan_id,
+                wf_id,
+                target,
+                status,
+                started,
+                completed,
+                company_name,
+                debug_bundle,
+            ) = row
             detail = scan_pb2.ScanDetails(
                 scan_id=str(scan_id) if scan_id else "",
                 temporal_workflow_id=str(wf_id) if wf_id else "",
                 target_image=str(target) if target else "",
                 status=str(status) if status else "",
                 company_name=str(company_name) if company_name else "",
+                debug_bundle=str(debug_bundle) if debug_bundle else "",
             )
             if started:
                 detail.started_at.CopyFrom(to_pb_timestamp(started))

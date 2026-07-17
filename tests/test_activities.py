@@ -1,7 +1,11 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from temporalio.testing import ActivityEnvironment
-from activities.db_activities import update_scan_status, generate_and_store_pdf_report
+from activities.db_activities import (
+    update_scan_status,
+    update_scan_debug_bundle,
+    generate_and_store_pdf_report,
+)
 
 
 @pytest.mark.asyncio
@@ -66,6 +70,40 @@ async def test_update_scan_status_db_fail():
         activity_env = ActivityEnvironment()
         with pytest.raises(Exception, match="Database connection failed"):
             await activity_env.run(update_scan_status, "test-scan-123", "FAILED")
+
+
+@pytest.mark.asyncio
+async def test_update_scan_debug_bundle_success():
+    """Test storing a sandbox debug bundle reference."""
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.rowcount = 1
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        activity_env = ActivityEnvironment()
+        result = await activity_env.run(
+            update_scan_debug_bundle,
+            "scan-123",
+            "s3://aegis-debug/debug-bundles/scan-123/bundle.tar.gz",
+        )
+
+        assert "Successfully updated scan scan-123 debug bundle" in result
+        mock_cursor.execute.assert_called_once_with(
+            "UPDATE scans SET debug_bundle = %s WHERE id = %s",
+            ("s3://aegis-debug/debug-bundles/scan-123/bundle.tar.gz", "scan-123"),
+        )
+        mock_conn.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_update_scan_debug_bundle_skips_empty_reference():
+    """Test empty debug bundle references do not touch the database."""
+    with patch("activities.db_activities.get_db_connection") as mock_get_conn:
+        activity_env = ActivityEnvironment()
+        result = await activity_env.run(update_scan_debug_bundle, "scan-123", "")
+
+        assert "No debug bundle reference to update for scan scan-123" in result
+        mock_get_conn.assert_not_called()
 
 
 @pytest.mark.asyncio

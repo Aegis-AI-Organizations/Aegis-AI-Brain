@@ -6,6 +6,7 @@ from workflows.pentest_workflow import PentestWorkflow
 from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 from activities.db_activities import (
     update_scan_status,
+    update_scan_debug_bundle,
     save_vulnerabilities,
     generate_and_store_pdf_report,
 )
@@ -27,6 +28,7 @@ async def start_worker(client):
         workflows=[PentestWorkflow, GraphDrivenPentestWorkflow],
         activities=[
             update_scan_status,
+            update_scan_debug_bundle,
             save_vulnerabilities,
             generate_and_store_pdf_report,
             identify_attack_targets,

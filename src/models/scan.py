@@ -31,6 +31,7 @@ class Scan(Base):
     completed_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    debug_bundle: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     report_pdf: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
 
     vulnerabilities: Mapped[List[Vulnerability]] = relationship(

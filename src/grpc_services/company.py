@@ -28,6 +28,32 @@ import json
 logger = logging.getLogger(__name__)
 ONBOARDING_INVITATION_TTL_HOURS = 72
 
+ORG_SIZE_BY_STORAGE = {
+    "ORGANIZATION_SIZE_1": company_pb2.ORGANIZATION_SIZE_1,
+    "ORGANIZATION_SIZE_2_10": company_pb2.ORGANIZATION_SIZE_2_10,
+    "ORGANIZATION_SIZE_11_50": company_pb2.ORGANIZATION_SIZE_11_50,
+    "ORGANIZATION_SIZE_51_200": company_pb2.ORGANIZATION_SIZE_51_200,
+    "ORGANIZATION_SIZE_201_500": company_pb2.ORGANIZATION_SIZE_201_500,
+    "ORGANIZATION_SIZE_501_1000": company_pb2.ORGANIZATION_SIZE_501_1000,
+    "ORGANIZATION_SIZE_1001_5000": company_pb2.ORGANIZATION_SIZE_1001_5000,
+    "ORGANIZATION_SIZE_5001_10000": company_pb2.ORGANIZATION_SIZE_5001_10000,
+    "ORGANIZATION_SIZE_10001_PLUS": company_pb2.ORGANIZATION_SIZE_10001_PLUS,
+}
+
+ORG_TYPE_BY_STORAGE = {
+    "ORGANIZATION_TYPE_IT_SERVICES_AND_CONSULTING": company_pb2.ORGANIZATION_TYPE_IT_SERVICES_AND_CONSULTING,
+    "ORGANIZATION_TYPE_SOFTWARE_DEVELOPMENT": company_pb2.ORGANIZATION_TYPE_SOFTWARE_DEVELOPMENT,
+    "ORGANIZATION_TYPE_FINANCIAL_SERVICES": company_pb2.ORGANIZATION_TYPE_FINANCIAL_SERVICES,
+    "ORGANIZATION_TYPE_HOSPITALS_AND_HEALTH_CARE": company_pb2.ORGANIZATION_TYPE_HOSPITALS_AND_HEALTH_CARE,
+    "ORGANIZATION_TYPE_RETAIL": company_pb2.ORGANIZATION_TYPE_RETAIL,
+    "ORGANIZATION_TYPE_GOVERNMENT_ADMINISTRATION": company_pb2.ORGANIZATION_TYPE_GOVERNMENT_ADMINISTRATION,
+    "ORGANIZATION_TYPE_MANUFACTURING": company_pb2.ORGANIZATION_TYPE_MANUFACTURING,
+    "ORGANIZATION_TYPE_OTHER": company_pb2.ORGANIZATION_TYPE_OTHER,
+}
+
+ORG_SIZE_STORAGE_BY_VALUE = {value: key for key, value in ORG_SIZE_BY_STORAGE.items()}
+ORG_TYPE_STORAGE_BY_VALUE = {value: key for key, value in ORG_TYPE_BY_STORAGE.items()}
+
 
 class CompanyCreateError(enum.Enum):
     SUCCESS = 0
@@ -95,6 +121,17 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
             return None, grpc.StatusCode.INVALID_ARGUMENT, "Missing company_id"
         return target_company_id, None, None
 
+    def _resolve_current_company_id(self, identity):
+        role = identity["role"]
+        allowed_roles = ["superadmin", "admin", "owner"]
+        if role not in allowed_roles:
+            return None, grpc.StatusCode.PERMISSION_DENIED, "Insufficient permissions"
+
+        company_id = str(identity.get("company_id") or "")
+        if not company_id:
+            return None, grpc.StatusCode.PERMISSION_DENIED, "Missing company scope"
+        return company_id, None, None
+
     def _validate_managed_user_role(self, role: str, identity):
         try:
             user_role = UserRole(role)
@@ -114,6 +151,60 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
                 return None, "Owners cannot assign internal roles"
 
         return user_role, None
+
+    def _company_summary(self, company: Company):
+        owner_email = company.owner.email if company.owner else ""
+        owner_id = str(company.owner_id) if company.owner_id else ""
+        members = list(company.members or [])
+        member_count = len(members)
+        if owner_id and all(str(m.id) != owner_id for m in members):
+            member_count += 1
+
+        summary_kwargs = {
+            "id": str(company.id),
+            "name": company.name,
+            "owner_id": owner_id,
+            "owner_email": owner_email,
+            "member_count": member_count,
+            "deployment_token": "",
+            "avatar_url": company.owner.avatar_url if company.owner else "",
+            "org_size": ORG_SIZE_BY_STORAGE.get(
+                company.org_size or "",
+                company_pb2.ORGANIZATION_SIZE_UNSPECIFIED,
+            ),
+            "org_type": ORG_TYPE_BY_STORAGE.get(
+                company.org_type or "",
+                company_pb2.ORGANIZATION_TYPE_UNSPECIFIED,
+            ),
+            "token_balance": company.token_balance or 0,
+        }
+        return company_pb2.CompanySummary(**summary_kwargs)
+
+    def _update_current_company_db_sync(self, company_id, name, org_size, org_type):
+        with self.session_factory() as db:
+            company = (
+                db.query(Company)
+                .options(joinedload(Company.owner), joinedload(Company.members))
+                .filter(Company.id == company_id)
+                .first()
+            )
+            if not company:
+                return None, "Company not found"
+
+            if name:
+                company.name = name
+            if org_size != company_pb2.ORGANIZATION_SIZE_UNSPECIFIED:
+                company.org_size = ORG_SIZE_STORAGE_BY_VALUE.get(org_size)
+            if org_type != company_pb2.ORGANIZATION_TYPE_UNSPECIFIED:
+                company.org_type = ORG_TYPE_STORAGE_BY_VALUE.get(org_type)
+
+            db.commit()
+            db.refresh(company)
+            broadcaster.broadcast(
+                "team",
+                ("COMPANY_UPDATED", str(company.id), str(company.id), company.name),
+            )
+            return self._company_summary(company), None
 
     def _create_company_db_sync(self, name: str, owner_email: str):
         with self.session_factory() as db:
@@ -446,25 +537,7 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
 
                 result = []
                 for c in companies:
-                    owner_email = c.owner.email if c.owner else ""
-                    owner_id = str(c.owner_id) if c.owner_id else ""
-                    members = list(c.members or [])
-                    member_count = len(members)
-                    if owner_id and all(str(m.id) != owner_id for m in members):
-                        member_count += 1
-                    summary_kwargs = {
-                        "id": str(c.id),
-                        "name": c.name,
-                        "owner_id": owner_id,
-                        "owner_email": owner_email,
-                        "member_count": member_count,
-                        "deployment_token": "",
-                    }
-                    if hasattr(company_pb2.CompanySummary, "avatar_url"):
-                        summary_kwargs["avatar_url"] = (
-                            c.owner.avatar_url if c.owner else ""
-                        )
-                    result.append(company_pb2.CompanySummary(**summary_kwargs))
+                    result.append(self._company_summary(c))
                 return result
 
     @with_identity(verified_only=True)
@@ -623,6 +696,54 @@ class CompanyService(company_pb2_grpc.CompanyServiceServicer):
     ) -> company_pb2.CreateCompanyResponse:
         metadata = dict(context.invocation_metadata())
         action = metadata.get("x-action", "create-company")
+
+        if action == "update-current-company":
+            company_id, status_code, details = self._resolve_current_company_id(
+                identity
+            )
+            if status_code:
+                context.set_code(status_code)
+                context.set_details(details)
+                return company_pb2.CreateCompanyResponse()
+
+            summary, error = await asyncio.to_thread(
+                self._update_current_company_db_sync,
+                company_id,
+                request.name.strip(),
+                request.org_size,
+                request.org_type,
+            )
+
+            if error:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(error)
+                return company_pb2.CreateCompanyResponse()
+
+            try:
+                with self.session_factory() as db:
+                    audit = AuditLog(
+                        user_id=identity["user_id"],
+                        company_id=company_id,
+                        action="UPDATE_CURRENT_COMPANY",
+                        target_type="COMPANY",
+                        target_id=company_id,
+                        ip_address=context.peer(),
+                        details={
+                            "name": request.name,
+                            "org_size": ORG_SIZE_STORAGE_BY_VALUE.get(
+                                request.org_size, ""
+                            ),
+                            "org_type": ORG_TYPE_STORAGE_BY_VALUE.get(
+                                request.org_type, ""
+                            ),
+                        },
+                    )
+                    db.add(audit)
+                    db.commit()
+            except Exception:
+                logger.exception("Failed to log audit for current company update")
+
+            return company_pb2.CreateCompanyResponse(id=summary.id, name=summary.name)
 
         if action in {"update-user-role", "deactivate-user", "set-user-active"}:
             company_id, status_code, details = self._resolve_user_management_company_id(

@@ -109,6 +109,91 @@ async def test_list_companies_success(company_service, mock_db):
         assert response.companies[0].member_count == 1
 
 
+def test_company_summary_includes_current_company_metadata(company_service):
+    owner = User(id=uuid.uuid4(), email="owner@test.com", avatar_url="avatar.png")
+    company = Company(
+        id=uuid.uuid4(),
+        name="Tenant Corp",
+        owner_id=owner.id,
+        owner=owner,
+        members=[],
+        org_size="ORGANIZATION_SIZE_11_50",
+        org_type="ORGANIZATION_TYPE_SOFTWARE_DEVELOPMENT",
+        token_balance=42,
+    )
+
+    summary = company_service._company_summary(company)
+
+    assert summary.id == str(company.id)
+    assert summary.name == "Tenant Corp"
+    assert summary.owner_email == "owner@test.com"
+    assert summary.member_count == 1
+    assert summary.avatar_url == "avatar.png"
+    assert summary.org_size == company_pb2.ORGANIZATION_SIZE_11_50
+    assert summary.org_type == company_pb2.ORGANIZATION_TYPE_SOFTWARE_DEVELOPMENT
+    assert summary.token_balance == 42
+
+
+def test_update_current_company_db_sync(company_service, mock_db):
+    company = Company(
+        id=uuid.uuid4(),
+        name="Old Name",
+        owner=User(id=uuid.uuid4(), email="owner@test.com"),
+        members=[],
+    )
+    mock_db.query.return_value.options.return_value.filter.return_value.first.return_value = company
+
+    summary, error = company_service._update_current_company_db_sync(
+        str(company.id),
+        "New Name",
+        company_pb2.ORGANIZATION_SIZE_51_200,
+        company_pb2.ORGANIZATION_TYPE_FINANCIAL_SERVICES,
+    )
+
+    assert error is None
+    assert company.name == "New Name"
+    assert company.org_size == "ORGANIZATION_SIZE_51_200"
+    assert company.org_type == "ORGANIZATION_TYPE_FINANCIAL_SERVICES"
+    assert summary.name == "New Name"
+    assert summary.org_size == company_pb2.ORGANIZATION_SIZE_51_200
+    assert summary.org_type == company_pb2.ORGANIZATION_TYPE_FINANCIAL_SERVICES
+    mock_db.commit.assert_called_once()
+    mock_db.refresh.assert_called_once_with(company)
+
+
+@pytest.mark.asyncio
+async def test_owner_updates_current_company(company_service, mock_db):
+    company_id = str(uuid.uuid4())
+    summary = company_pb2.CompanySummary(id=company_id, name="New Name")
+    context = MagicMock()
+    context.invocation_metadata.return_value = [
+        ("x-action", "update-current-company"),
+    ]
+
+    identity = {
+        "user_id": str(uuid.uuid4()),
+        "company_id": company_id,
+        "role": "owner",
+    }
+
+    with patch("asyncio.to_thread", return_value=(summary, None)), patch(
+        "grpc_services.utils.get_identity", return_value=identity
+    ):
+        response = await company_service.CreateCompany(
+            company_pb2.CreateCompanyRequest(
+                name="New Name",
+                org_size=company_pb2.ORGANIZATION_SIZE_2_10,
+                org_type=company_pb2.ORGANIZATION_TYPE_RETAIL,
+            ),
+            context,
+        )
+
+    assert response.id == company_id
+    assert response.name == "New Name"
+    mock_db.add.assert_called_once()
+    mock_db.commit.assert_called_once()
+
+
 @pytest.mark.asyncio
 async def test_onboard_company_success(company_service, mock_db):
     with patch("grpc_services.company.Company") as mock_company_cls, patch(

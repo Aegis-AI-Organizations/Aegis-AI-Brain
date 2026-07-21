@@ -69,6 +69,19 @@ async def mock_download_minio_artifact(reference: str) -> dict:
     }
 
 
+@activity.defn(name="DownloadMinIOArtifact")
+async def mock_download_invalid_topology_artifact(reference: str) -> dict:
+    return {
+        "bucket": "aegis-ingest",
+        "key": "targets/invalid-sandbox.json",
+        "target_image": "topology:minio",
+        "sandbox_request": {
+            "topology_json": '{"containers":[{"name":"web","image":"nginx","ports":[{"number":"80"}]}],"databaseSchemas":[],"externalMocks":[]}',
+            "preferred_endpoint_workload": "web",
+        },
+    }
+
+
 @activity.defn(name="run_pentest")
 async def mock_run_pentest(target_ip: str, port: int) -> dict:
     return {"status": "COMPLETED", "vulnerabilities": []}
@@ -328,6 +341,48 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
     assert CREATED_SANDBOX_REQUESTS[-1]["scan_id"] == scan_id
     assert CREATED_SANDBOX_REQUESTS[-1]["preferred_endpoint_workload"] == "web"
     assert "topology_json" in CREATED_SANDBOX_REQUESTS[-1]
+
+
+@pytest.mark.asyncio
+async def test_pentest_workflow_rejects_invalid_topology_before_create_sandbox():
+    CREATED_SANDBOX_REQUESTS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_INVALID_TOPOLOGY",
+            workflows=[PentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_invalid_topology_artifact,
+                mock_run_pentest,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                scan_id = str(uuid.uuid4())
+                with pytest.raises(Exception) as exc_info:
+                    await env.client.execute_workflow(
+                        PentestWorkflow.run,
+                        args=[
+                            scan_id,
+                            "minio://aegis-ingest/targets/invalid-sandbox.json",
+                        ],
+                        id=f"test-invalid-topology-{scan_id}",
+                        task_queue="TEST_QUEUE_INVALID_TOPOLOGY",
+                    )
+
+    assert "Invalid sandbox topology" in str(exc_info.value.__cause__)
+    assert CREATED_SANDBOX_REQUESTS == []
 
 
 def test_graph_driven_workflow_filters_selected_topology_targets():

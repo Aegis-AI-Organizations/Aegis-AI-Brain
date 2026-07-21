@@ -3,6 +3,7 @@ name = "aegis-ai-brain"
 version = "0.1.0"
 description = "Core orchestration logic for Aegis AI"
 authors = [{ name = "Aegis AI Team" }]
+requires-python = ">=3.11"
 dependencies = [
     "alembic>=1.14.0",
     "temporalio>=1.4.0",
@@ -17,6 +18,7 @@ dependencies = [
     "minio>=7.2.5",
     "bcrypt>=4.0.0",
     "redis>=5.0.0",
+    "jsonschema>=4.23.0",
 ]
 
 [project.optional-dependencies]

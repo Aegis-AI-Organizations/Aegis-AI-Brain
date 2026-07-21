@@ -3,26 +3,42 @@
   "$id": "https://aegis.ai/schemas/sandbox-topology.schema.json",
   "title": "Aegis Sandbox Topology",
   "type": "object",
-  "additionalProperties": true,
-  "required": ["containers", "databaseSchemas", "externalMocks"],
+  "additionalProperties": false,
+  "required": ["databaseSchemas", "externalMocks"],
+  "anyOf": [
+    { "required": ["workloads"] },
+    { "required": ["containers"] },
+    { "required": ["services"] },
+    { "required": ["deployments"] }
+  ],
   "properties": {
+    "workloads": {
+      "description": "Canonical list of workload containers to deploy in the sandbox. containers/services/deployments are accepted as legacy aliases.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/workload" }
+    },
     "containers": {
+      "description": "Legacy alias for workloads emitted by the Agent topology payload.",
       "type": "array",
       "items": { "$ref": "#/$defs/workload" }
     },
     "services": {
+      "description": "Legacy alias for workloads accepted by the Worker Deployer.",
       "type": "array",
       "items": { "$ref": "#/$defs/workload" }
     },
     "deployments": {
+      "description": "Legacy alias for workloads accepted by the Worker Deployer.",
       "type": "array",
       "items": { "$ref": "#/$defs/workload" }
     },
     "databaseSchemas": {
+      "description": "Database schemas discovered by the Agent and later seeded by the Worker Deployer.",
       "type": "array",
       "items": { "$ref": "#/$defs/databaseSchema" }
     },
     "externalMocks": {
+      "description": "External services that must be mocked inside the sandbox.",
       "type": "array",
       "items": { "$ref": "#/$defs/externalMock" }
     },

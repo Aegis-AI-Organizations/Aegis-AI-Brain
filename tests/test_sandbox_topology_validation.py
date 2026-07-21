@@ -39,6 +39,45 @@ def test_validate_sandbox_topology_request_accepts_formal_contract():
     )
 
 
+def test_validate_sandbox_topology_request_accepts_workloads_contract():
+    validate_sandbox_topology_request(
+        {
+            "scan_id": "scan-1",
+            "topology": {
+                "workloads": [
+                    {
+                        "name": "api",
+                        "image": "ghcr.io/aegis/api:latest",
+                        "ports": [{"number": 8080, "protocol": "tcp"}],
+                        "depends_on": ["postgres"],
+                    }
+                ],
+                "databaseSchemas": [
+                    {
+                        "engine": "postgresql",
+                        "host": "postgres",
+                        "port": 5432,
+                        "databaseName": "app",
+                        "tables": [
+                            {
+                                "name": "users",
+                                "columns": [
+                                    {
+                                        "name": "id",
+                                        "data_type": "integer",
+                                        "primary_key": True,
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ],
+                "externalMocks": [],
+            },
+        }
+    )
+
+
 def test_validate_sandbox_topology_request_rejects_malformed_topology():
     with pytest.raises(SandboxTopologyValidationError) as exc_info:
         validate_sandbox_topology_request(

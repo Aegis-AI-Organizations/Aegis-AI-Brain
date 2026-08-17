@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "alembic/versions/20260525_0001_schema_v2_2.py": {
-    "mtime": 1783434991.1936479,
-    "ast_hash": "44f5ff72abcbd9fd2c42b1c5c26f32e7",
+    "mtime": 1786971686.888444,
+    "ast_hash": "d143425e00a1c752e56005f129e9798f",
     "semantic_hash": ""
   },
   "entrypoint.sh": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "src/workflows/graph_pentest_workflow.py": {
-    "mtime": 1786966513.12818,
-    "ast_hash": "e45b5d7dfb1433f4afb9711a7ce41904",
+    "mtime": 1786968411.3106024,
+    "ast_hash": "10903aa8a13fcf8537fa906cd205509d",
     "semantic_hash": ""
   },
   "src/workflows/pentest_workflow.py": {
@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "tests/test_workflow.py": {
-    "mtime": 1786966485.5231822,
-    "ast_hash": "2378458a5c01a0468620c3f5b01ce2e4",
+    "mtime": 1786968411.3102484,
+    "ast_hash": "d59f0475935dd4cc1e8dd355e02a47b9",
     "semantic_hash": ""
   },
   ".github/workflows/aegis-automation.yml": {
@@ -557,6 +557,11 @@
   "migrations/v6_scan_debug_bundle.sql": {
     "mtime": 1786958731.5716536,
     "ast_hash": "df5c703a908382390ebf0a9f00a1ca88",
+    "semantic_hash": ""
+  },
+  "tests/test_schema_migrations.py": {
+    "mtime": 1786971676.6963184,
+    "ast_hash": "8846009e6b2a682aeaafe9a326fdc912",
     "semantic_hash": ""
   }
 }

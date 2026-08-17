@@ -69,6 +69,7 @@
   "67": "sandbox-topology.schema.json",
   "68": "agent_watcher.py",
   "69": "test_search_coverage.py",
+  "70": "VulnerabilityServiceServicer",
   "71": "test_auth_init.py",
   "72": ".Logout",
   "73": ".Refresh",
@@ -80,6 +81,7 @@
   "79": "env.py",
   "80": "20260525_0001_schema_v2_2.py",
   "81": ".GetMe",
+  "82": "TestDatabaseConnection",
   "83": "tables",
   "84": ".UpdateEmail",
   "85": ".UpdatePassword",
@@ -106,5 +108,10 @@
   "106": "__init__.py",
   "107": "workloads",
   "108": "databaseSchema",
+  "109": "containers",
+  "110": "workloads",
+  "111": ".ListAuditLogs",
+  "112": ".ListCompanies",
+  "113": "password",
   "115": ".WatchCompanyUpdates"
 }

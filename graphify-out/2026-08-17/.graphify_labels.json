@@ -69,7 +69,6 @@
   "67": "sandbox-topology.schema.json",
   "68": "agent_watcher.py",
   "69": "test_search_coverage.py",
-  "70": "test_auth_service_ext.py",
   "71": "test_auth_init.py",
   "72": ".Logout",
   "73": ".Refresh",
@@ -81,7 +80,6 @@
   "79": "env.py",
   "80": "20260525_0001_schema_v2_2.py",
   "81": ".GetMe",
-  "82": ".RemoveAvatar",
   "83": "tables",
   "84": ".UpdateEmail",
   "85": ".UpdatePassword",
@@ -108,11 +106,5 @@
   "106": "__init__.py",
   "107": "workloads",
   "108": "databaseSchema",
-  "109": "VulnerabilityServiceServicer",
-  "110": "._login_db_sync",
-  "111": "password",
-  "112": "company_pb2_grpc.py",
-  "113": "Company",
-  "114": "databaseSchemas",
   "115": ".WatchCompanyUpdates"
 }

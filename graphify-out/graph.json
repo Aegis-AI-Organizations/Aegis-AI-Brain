@@ -57,7 +57,7 @@
       "label": "downgrade()",
       "file_type": "code",
       "source_file": "alembic/versions/20260525_0001_schema_v2_2.py",
-      "source_location": "L278",
+      "source_location": "L279",
       "_origin": "ast",
       "id": "alembic_versions_20260525_0001_schema_v2_2_downgrade",
       "community": 80,
@@ -201,7 +201,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_workloads",
-      "community": 7,
+      "community": 110,
       "norm_label": "workloads"
     },
     {
@@ -211,7 +211,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "sandbox_topology_schema_workloads_description",
-      "community": 7,
+      "community": 110,
       "norm_label": "description"
     },
     {
@@ -221,7 +221,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "sandbox_topology_schema_workloads_type",
-      "community": 7,
+      "community": 110,
       "norm_label": "type"
     },
     {
@@ -231,7 +231,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "sandbox_topology_schema_workloads_items",
-      "community": 7,
+      "community": 110,
       "norm_label": "items"
     },
     {
@@ -251,7 +251,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_containers",
-      "community": 7,
+      "community": 109,
       "norm_label": "containers"
     },
     {
@@ -261,7 +261,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "sandbox_topology_schema_containers_description",
-      "community": 7,
+      "community": 109,
       "norm_label": "description"
     },
     {
@@ -271,7 +271,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "sandbox_topology_schema_containers_type",
-      "community": 7,
+      "community": 109,
       "norm_label": "type"
     },
     {
@@ -281,7 +281,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "sandbox_topology_schema_containers_items",
-      "community": 7,
+      "community": 109,
       "norm_label": "items"
     },
     {
@@ -411,7 +411,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_externalmocks",
-      "community": 54,
+      "community": 7,
       "norm_label": "externalmocks"
     },
     {
@@ -421,7 +421,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "sandbox_topology_schema_externalmocks_description",
-      "community": 54,
+      "community": 7,
       "norm_label": "description"
     },
     {
@@ -431,7 +431,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "sandbox_topology_schema_externalmocks_type",
-      "community": 54,
+      "community": 7,
       "norm_label": "type"
     },
     {
@@ -441,7 +441,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "sandbox_topology_schema_externalmocks_items",
-      "community": 54,
+      "community": 7,
       "norm_label": "items"
     },
     {
@@ -631,7 +631,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_name",
-      "community": 53,
+      "community": 36,
       "norm_label": "name"
     },
     {
@@ -641,7 +641,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "sandbox_topology_schema_name_type",
-      "community": 53,
+      "community": 36,
       "norm_label": "type"
     },
     {
@@ -651,7 +651,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "sandbox_topology_schema_name_minlength",
-      "community": 53,
+      "community": 36,
       "norm_label": "minlength"
     },
     {
@@ -1461,7 +1461,7 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "sandbox_topology_schema_defs_file",
-      "community": 34,
+      "community": 6,
       "norm_label": "file"
     },
     {
@@ -1471,7 +1471,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_type",
-      "community": 34,
+      "community": 6,
       "norm_label": "type"
     },
     {
@@ -1481,7 +1481,7 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_additionalproperties",
-      "community": 34,
+      "community": 6,
       "norm_label": "additionalproperties"
     },
     {
@@ -1491,7 +1491,7 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_required",
-      "community": 34,
+      "community": 6,
       "norm_label": "required"
     },
     {
@@ -1501,7 +1501,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_properties",
-      "community": 34,
+      "community": 6,
       "norm_label": "properties"
     },
     {
@@ -1511,7 +1511,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_path",
-      "community": 34,
+      "community": 6,
       "norm_label": "path"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "sandbox_topology_schema_path_type",
-      "community": 34,
+      "community": 6,
       "norm_label": "type"
     },
     {
@@ -1531,7 +1531,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "sandbox_topology_schema_path_minlength",
-      "community": 34,
+      "community": 6,
       "norm_label": "minlength"
     },
     {
@@ -1541,7 +1541,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_content",
-      "community": 34,
+      "community": 6,
       "norm_label": "content"
     },
     {
@@ -1551,7 +1551,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "sandbox_topology_schema_content_type",
-      "community": 34,
+      "community": 6,
       "norm_label": "type"
     },
     {
@@ -1561,7 +1561,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_mode",
-      "community": 34,
+      "community": 6,
       "norm_label": "mode"
     },
     {
@@ -1571,7 +1571,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "sandbox_topology_schema_mode_type",
-      "community": 34,
+      "community": 6,
       "norm_label": "type"
     },
     {
@@ -1581,7 +1581,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "sandbox_topology_schema_mode_minimum",
-      "community": 34,
+      "community": 6,
       "norm_label": "minimum"
     },
     {
@@ -1781,7 +1781,7 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "sandbox_topology_schema_defs_connection",
-      "community": 46,
+      "community": 29,
       "norm_label": "connection"
     },
     {
@@ -1791,7 +1791,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "sandbox_topology_schema_connection_type",
-      "community": 46,
+      "community": 29,
       "norm_label": "type"
     },
     {
@@ -1801,7 +1801,7 @@
       "source_location": "L180",
       "_origin": "ast",
       "id": "sandbox_topology_schema_connection_additionalproperties",
-      "community": 46,
+      "community": 29,
       "norm_label": "additionalproperties"
     },
     {
@@ -2261,7 +2261,7 @@
       "source_location": "L222",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_database_name",
-      "community": 68,
+      "community": 24,
       "norm_label": "database_name"
     },
     {
@@ -2271,7 +2271,7 @@
       "source_location": "L222",
       "_origin": "ast",
       "id": "sandbox_topology_schema_database_name_type",
-      "community": 68,
+      "community": 24,
       "norm_label": "type"
     },
     {
@@ -2301,7 +2301,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_password",
-      "community": 24,
+      "community": 113,
       "norm_label": "password"
     },
     {
@@ -2311,7 +2311,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "sandbox_topology_schema_password_type",
-      "community": 24,
+      "community": 113,
       "norm_label": "type"
     },
     {
@@ -2681,7 +2681,7 @@
       "source_location": "L265",
       "_origin": "ast",
       "id": "sandbox_topology_schema_defs_databaseindex",
-      "community": 53,
+      "community": 36,
       "norm_label": "databaseindex"
     },
     {
@@ -2691,7 +2691,7 @@
       "source_location": "L266",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseindex_type",
-      "community": 53,
+      "community": 36,
       "norm_label": "type"
     },
     {
@@ -2701,7 +2701,7 @@
       "source_location": "L267",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseindex_additionalproperties",
-      "community": 53,
+      "community": 36,
       "norm_label": "additionalproperties"
     },
     {
@@ -2711,7 +2711,7 @@
       "source_location": "L268",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseindex_properties",
-      "community": 53,
+      "community": 36,
       "norm_label": "properties"
     },
     {
@@ -2721,7 +2721,7 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_unique",
-      "community": 53,
+      "community": 36,
       "norm_label": "unique"
     },
     {
@@ -2731,7 +2731,7 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "sandbox_topology_schema_unique_type",
-      "community": 53,
+      "community": 36,
       "norm_label": "type"
     },
     {
@@ -3111,7 +3111,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "object",
-      "community": 42,
+      "community": 21,
       "norm_label": "object"
     },
     {
@@ -3401,7 +3401,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservicestub",
-      "community": 42,
+      "community": 21,
       "norm_label": "authservicestub"
     },
     {
@@ -3411,7 +3411,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservicestub_init",
-      "community": 42,
+      "community": 21,
       "norm_label": ".__init__()"
     },
     {
@@ -3631,7 +3631,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_rationale_9",
-      "community": 42,
+      "community": 21,
       "norm_label": "authservice handles user authentication, session management, and jwt generation."
     },
     {
@@ -3641,7 +3641,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_rationale_13",
-      "community": 42,
+      "community": 21,
       "norm_label": "constructor.          args:             channel: a grpc.channel."
     },
     {
@@ -4631,7 +4631,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc",
-      "community": 36,
+      "community": 26,
       "norm_label": "scan_pb2_grpc.py"
     },
     {
@@ -4641,7 +4641,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservicestub",
-      "community": 36,
+      "community": 26,
       "norm_label": "scanservicestub"
     },
     {
@@ -4651,7 +4651,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservicestub_init",
-      "community": 36,
+      "community": 26,
       "norm_label": ".__init__()"
     },
     {
@@ -4731,7 +4731,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_add_scanserviceservicer_to_server",
-      "community": 36,
+      "community": 26,
       "norm_label": "add_scanserviceservicer_to_server()"
     },
     {
@@ -4741,7 +4741,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice",
-      "community": 36,
+      "community": 26,
       "norm_label": "scanservice"
     },
     {
@@ -4751,7 +4751,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice_startscan",
-      "community": 36,
+      "community": 26,
       "norm_label": ".startscan()"
     },
     {
@@ -4761,7 +4761,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice_getscanstatus",
-      "community": 36,
+      "community": 26,
       "norm_label": ".getscanstatus()"
     },
     {
@@ -4771,7 +4771,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice_listscans",
-      "community": 36,
+      "community": 26,
       "norm_label": ".listscans()"
     },
     {
@@ -4781,7 +4781,7 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice_getscanreport",
-      "community": 36,
+      "community": 26,
       "norm_label": ".getscanreport()"
     },
     {
@@ -4791,7 +4791,7 @@
       "source_location": "L250",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice_watchscanstatus",
-      "community": 36,
+      "community": 26,
       "norm_label": ".watchscanstatus()"
     },
     {
@@ -4801,7 +4801,7 @@
       "source_location": "L277",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanservice_updatescanstatus",
-      "community": 36,
+      "community": 26,
       "norm_label": ".updatescanstatus()"
     },
     {
@@ -4811,7 +4811,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_9",
-      "community": 36,
+      "community": 26,
       "norm_label": "scanservice handles orchestration of security scans."
     },
     {
@@ -4821,7 +4821,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_13",
-      "community": 36,
+      "community": 26,
       "norm_label": "constructor.          args:             channel: a grpc.channel."
     },
     {
@@ -4901,7 +4901,7 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_138",
-      "community": 36,
+      "community": 26,
       "norm_label": "scanservice handles orchestration of security scans."
     },
     {
@@ -4971,7 +4971,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_vulnerabilityserviceservicer",
-      "community": 31,
+      "community": 70,
       "norm_label": "vulnerabilityserviceservicer"
     },
     {
@@ -4981,7 +4981,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_vulnerabilityserviceservicer_getvulnerabilities",
-      "community": 31,
+      "community": 70,
       "norm_label": ".getvulnerabilities()"
     },
     {
@@ -4991,7 +4991,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_vulnerabilityserviceservicer_getevidences",
-      "community": 31,
+      "community": 70,
       "norm_label": ".getevidences()"
     },
     {
@@ -5061,7 +5061,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_rationale_31",
-      "community": 31,
+      "community": 70,
       "norm_label": "vulnerabilityservice handles retrieval of vulnerability data."
     },
     {
@@ -5071,7 +5071,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_rationale_35",
-      "community": 31,
+      "community": 70,
       "norm_label": "getvulnerabilities returns a list of vulnerabilities for a scan."
     },
     {
@@ -5081,7 +5081,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_rationale_42",
-      "community": 31,
+      "community": 70,
       "norm_label": "getevidences returns the evidence collected for a specific vulnerability."
     },
     {
@@ -5491,7 +5491,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice",
-      "community": 5,
+      "community": 84,
       "norm_label": "authservice"
     },
     {
@@ -5501,7 +5501,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_init",
-      "community": 5,
+      "community": 84,
       "norm_label": ".__init__()"
     },
     {
@@ -5521,7 +5521,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_generate_access_token",
-      "community": 5,
+      "community": 54,
       "norm_label": "._generate_access_token()"
     },
     {
@@ -5531,7 +5531,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_hash_token",
-      "community": 5,
+      "community": 54,
       "norm_label": "._hash_token()"
     },
     {
@@ -5541,7 +5541,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_create_session_tokens",
-      "community": 5,
+      "community": 54,
       "norm_label": "._create_session_tokens()"
     },
     {
@@ -5551,7 +5551,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_login_db_sync",
-      "community": 5,
+      "community": 68,
       "norm_label": "._login_db_sync()"
     },
     {
@@ -5561,7 +5561,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "loginrequest",
-      "community": 5,
+      "community": 68,
       "norm_label": "loginrequest"
     },
     {
@@ -5571,7 +5571,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_setup_password_db_sync",
-      "community": 5,
+      "community": 54,
       "norm_label": "._setup_password_db_sync()"
     },
     {
@@ -5611,7 +5611,7 @@
       "source_location": "L176",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_login",
-      "community": 5,
+      "community": 68,
       "norm_label": ".login()"
     },
     {
@@ -5621,7 +5621,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "loginresponse",
-      "community": 5,
+      "community": 68,
       "norm_label": "loginresponse"
     },
     {
@@ -5631,7 +5631,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_refresh_db_sync",
-      "community": 5,
+      "community": 54,
       "norm_label": "._refresh_db_sync()"
     },
     {
@@ -5671,7 +5671,7 @@
       "source_location": "L241",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_get_me_db_sync",
-      "community": 5,
+      "community": 84,
       "norm_label": "._get_me_db_sync()"
     },
     {
@@ -5871,7 +5871,7 @@
       "source_location": "L470",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_removeavatar",
-      "community": 5,
+      "community": 84,
       "norm_label": ".removeavatar()"
     },
     {
@@ -5881,7 +5881,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "removeavatarrequest",
-      "community": 5,
+      "community": 84,
       "norm_label": "removeavatarrequest"
     },
     {
@@ -5891,7 +5891,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "removeavatarresponse",
-      "community": 5,
+      "community": 84,
       "norm_label": "removeavatarresponse"
     },
     {
@@ -5911,7 +5911,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_38",
-      "community": 5,
+      "community": 84,
       "norm_label": "authservice handles user login, token refresh, and logout."
     },
     {
@@ -5931,7 +5931,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_51",
-      "community": 5,
+      "community": 54,
       "norm_label": "generates a jwt access token valid for 15 minutes."
     },
     {
@@ -5941,7 +5941,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_63",
-      "community": 5,
+      "community": 54,
       "norm_label": "helper to hash refresh tokens consistently."
     },
     {
@@ -5951,7 +5951,7 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_79",
-      "community": 5,
+      "community": 68,
       "norm_label": "synchronous part of login logic."
     },
     {
@@ -5971,7 +5971,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_179",
-      "community": 5,
+      "community": 68,
       "norm_label": "authenticates user and returns access + refresh tokens."
     },
     {
@@ -5981,7 +5981,7 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_206",
-      "community": 5,
+      "community": 54,
       "norm_label": "synchronous part of refresh logic."
     },
     {
@@ -6001,7 +6001,7 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_242",
-      "community": 5,
+      "community": 84,
       "norm_label": "synchronous part of getme logic."
     },
     {
@@ -6371,7 +6371,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_grpc_services_company_companycreateerror",
-      "community": 8,
+      "community": 12,
       "norm_label": "companycreateerror"
     },
     {
@@ -6611,7 +6611,7 @@
       "source_location": "L544",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_listcompanies",
-      "community": 8,
+      "community": 112,
       "norm_label": ".listcompanies()"
     },
     {
@@ -6621,7 +6621,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "listcompaniesrequest",
-      "community": 8,
+      "community": 112,
       "norm_label": "listcompaniesrequest"
     },
     {
@@ -6631,7 +6631,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "listcompaniesresponse",
-      "community": 8,
+      "community": 112,
       "norm_label": "listcompaniesresponse"
     },
     {
@@ -6641,7 +6641,7 @@
       "source_location": "L580",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_create_user_db_sync",
-      "community": 8,
+      "community": 38,
       "norm_label": "._create_user_db_sync()"
     },
     {
@@ -6741,7 +6741,7 @@
       "source_location": "L973",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_listauditlogs",
-      "community": 8,
+      "community": 111,
       "norm_label": ".listauditlogs()"
     },
     {
@@ -6751,7 +6751,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "listauditlogsrequest",
-      "community": 8,
+      "community": 111,
       "norm_label": "listauditlogsrequest"
     },
     {
@@ -6761,7 +6761,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "listauditlogsresponse",
-      "community": 8,
+      "community": 111,
       "norm_label": "listauditlogsresponse"
     },
     {
@@ -6981,7 +6981,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_grpc_services_scans_normalize_persisted_target_image",
-      "community": 25,
+      "community": 13,
       "norm_label": "normalize_persisted_target_image()"
     },
     {
@@ -7031,7 +7031,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_grpc_services_scans_scanservice_startscan",
-      "community": 25,
+      "community": 13,
       "norm_label": ".startscan()"
     },
     {
@@ -7121,7 +7121,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_grpc_services_utils_to_pb_timestamp",
-      "community": 25,
+      "community": 13,
       "norm_label": "to_pb_timestamp()"
     },
     {
@@ -7181,7 +7181,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_grpc_services_vulnerabilities_extract_loot_fields",
-      "community": 25,
+      "community": 13,
       "norm_label": "_extract_loot_fields()"
     },
     {
@@ -7211,7 +7211,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_grpc_services_vulnerabilities_vulnerabilityservice_getvulnerabilities",
-      "community": 25,
+      "community": 13,
       "norm_label": ".getvulnerabilities()"
     },
     {
@@ -7321,7 +7321,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_models_audit_log_auditlog",
-      "community": 8,
+      "community": 12,
       "norm_label": "auditlog"
     },
     {
@@ -7331,7 +7331,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_models_audit_log_auditlog_to_dict",
-      "community": 8,
+      "community": 12,
       "norm_label": ".to_dict()"
     },
     {
@@ -7631,7 +7631,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_models_user_userrole",
-      "community": 8,
+      "community": 38,
       "norm_label": "userrole"
     },
     {
@@ -7641,7 +7641,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "str",
-      "community": 8,
+      "community": 38,
       "norm_label": "str"
     },
     {
@@ -7651,7 +7651,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_models_user_useractivationstatus",
-      "community": 8,
+      "community": 12,
       "norm_label": "useractivationstatus"
     },
     {
@@ -7681,7 +7681,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_models_user_rationale_19",
-      "community": 8,
+      "community": 38,
       "norm_label": "user roles matching the postgresql enum 'user_role'."
     },
     {
@@ -7691,7 +7691,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_models_user_rationale_34",
-      "community": 8,
+      "community": 12,
       "norm_label": "lifecycle status for user account activation."
     },
     {
@@ -8481,7 +8481,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_utils_auth_utils",
-      "community": 28,
+      "community": 50,
       "norm_label": "auth_utils.py"
     },
     {
@@ -8758,7 +8758,7 @@
       "label": "._build_crew_pentest_request()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L349",
+      "source_location": "L353",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_crew_pentest_request",
       "community": 0,
@@ -8768,7 +8768,7 @@
       "label": "._extract_topology()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L405",
+      "source_location": "L412",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_extract_topology",
       "community": 0,
@@ -8778,7 +8778,7 @@
       "label": "._download_minio_artifact_if_needed()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L420",
+      "source_location": "L427",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
       "community": 0,
@@ -8788,7 +8788,7 @@
       "label": "._seed_target_databases()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L436",
+      "source_location": "L443",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
       "community": 0,
@@ -8798,7 +8798,7 @@
       "label": "._seed_request_from_sandbox()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L450",
+      "source_location": "L457",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_request_from_sandbox",
       "community": 0,
@@ -8808,7 +8808,7 @@
       "label": "._cleanup()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L471",
+      "source_location": "L478",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_cleanup",
       "community": 0,
@@ -8818,7 +8818,7 @@
       "label": "._handle_workflow_failure()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L481",
+      "source_location": "L488",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "community": 0,
@@ -8838,7 +8838,7 @@
       "label": "._normalize_targets()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L489",
+      "source_location": "L496",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
       "community": 0,
@@ -8848,7 +8848,7 @@
       "label": "._normalize_path()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L528",
+      "source_location": "L535",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_path",
       "community": 0,
@@ -8858,7 +8858,7 @@
       "label": "._build_target_label()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L537",
+      "source_location": "L544",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_target_label",
       "community": 0,
@@ -8868,7 +8868,7 @@
       "label": "._is_topology_scan()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L547",
+      "source_location": "L554",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_topology_scan",
       "community": 0,
@@ -8878,7 +8878,7 @@
       "label": "._is_minio_reference()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L551",
+      "source_location": "L558",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_minio_reference",
       "community": 0,
@@ -8888,7 +8888,7 @@
       "label": "._parse_topology_target_ids()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L556",
+      "source_location": "L563",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_topology_target_ids",
       "community": 0,
@@ -8898,7 +8898,7 @@
       "label": "._filter_targets()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L567",
+      "source_location": "L574",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_filter_targets",
       "community": 0,
@@ -8908,7 +8908,7 @@
       "label": "._parse_endpoint()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L589",
+      "source_location": "L596",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_endpoint",
       "community": 0,
@@ -8918,7 +8918,7 @@
       "label": "._select_preferred_endpoint_workload()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L596",
+      "source_location": "L603",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "community": 0,
@@ -8928,7 +8928,7 @@
       "label": "._normalize_workload_name()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L669",
+      "source_location": "L676",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name",
       "community": 0,
@@ -8938,7 +8938,7 @@
       "label": "._best_endpoint_workload()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L675",
+      "source_location": "L682",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
       "community": 0,
@@ -8948,7 +8948,7 @@
       "label": "._is_low_value_endpoint()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L706",
+      "source_location": "L713",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint",
       "community": 0,
@@ -9331,7 +9331,7 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "tests_test_activities_test_generate_and_store_pdf_report_db_fail",
-      "community": 32,
+      "community": 41,
       "norm_label": "test_generate_and_store_pdf_report_db_fail()"
     },
     {
@@ -9441,7 +9441,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "tests_test_activities_rationale_211",
-      "community": 32,
+      "community": 41,
       "norm_label": "test pdf report activity when db connection cannot be established."
     },
     {
@@ -9841,7 +9841,7 @@
       "source_location": "L300",
       "_origin": "ast",
       "id": "tests_test_auth_service_test_setup_password_used_token",
-      "community": 38,
+      "community": 28,
       "norm_label": "test_setup_password_used_token()"
     },
     {
@@ -9851,7 +9851,7 @@
       "source_location": "L330",
       "_origin": "ast",
       "id": "tests_test_auth_service_test_setup_password_non_pending_user",
-      "community": 28,
+      "community": 38,
       "norm_label": "test_setup_password_non_pending_user()"
     },
     {
@@ -10391,7 +10391,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_db",
-      "community": 13,
+      "community": 82,
       "norm_label": "test_db.py"
     },
     {
@@ -10401,7 +10401,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "tests_test_db_testdatabaseconnection",
-      "community": 13,
+      "community": 82,
       "norm_label": "testdatabaseconnection"
     },
     {
@@ -10411,7 +10411,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_test_db_testdatabaseconnection_test_get_db_connection_success",
-      "community": 13,
+      "community": 82,
       "norm_label": ".test_get_db_connection_success()"
     },
     {
@@ -10421,7 +10421,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_test_db_testdatabaseconnection_test_get_db_connection_failure",
-      "community": 13,
+      "community": 82,
       "norm_label": ".test_get_db_connection_failure()"
     },
     {
@@ -10431,7 +10431,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_test_db_rationale_10",
-      "community": 13,
+      "community": 82,
       "norm_label": "test returning a database connection on success."
     },
     {
@@ -10441,7 +10441,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_test_db_rationale_22",
-      "community": 13,
+      "community": 82,
       "norm_label": "test raising connectionerror when database connection fails."
     },
     {
@@ -11021,7 +11021,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_models",
-      "community": 12,
+      "community": 34,
       "norm_label": "test_models.py"
     },
     {
@@ -11031,7 +11031,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_test_models_db_session",
-      "community": 12,
+      "community": 34,
       "norm_label": "db_session()"
     },
     {
@@ -11041,7 +11041,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "tests_test_models_test_company_creation",
-      "community": 12,
+      "community": 34,
       "norm_label": "test_company_creation()"
     },
     {
@@ -11051,7 +11051,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_models_py_session",
-      "community": 12,
+      "community": 34,
       "norm_label": "session"
     },
     {
@@ -11061,7 +11061,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "tests_test_models_test_user_creation_and_role_enum",
-      "community": 12,
+      "community": 34,
       "norm_label": "test_user_creation_and_role_enum()"
     },
     {
@@ -11071,7 +11071,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "tests_test_models_test_company_user_relationships",
-      "community": 12,
+      "community": 34,
       "norm_label": "test_company_user_relationships()"
     },
     {
@@ -11081,7 +11081,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "tests_test_models_test_refresh_token",
-      "community": 12,
+      "community": 34,
       "norm_label": "test_refresh_token()"
     },
     {
@@ -11091,7 +11091,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "tests_test_models_test_onboarding_invitation",
-      "community": 38,
+      "community": 34,
       "norm_label": "test_onboarding_invitation()"
     },
     {
@@ -11111,7 +11111,7 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "tests_test_models_test_license_model",
-      "community": 12,
+      "community": 34,
       "norm_label": "test_license_model()"
     },
     {
@@ -11121,7 +11121,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_test_models_rationale_23",
-      "community": 12,
+      "community": 34,
       "norm_label": "in-memory sqlite session for testing models."
     },
     {
@@ -11131,7 +11131,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_test_models_rationale_31",
-      "community": 12,
+      "community": 34,
       "norm_label": "tests the company model creation and its basic fields."
     },
     {
@@ -11141,7 +11141,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "tests_test_models_rationale_48",
-      "community": 12,
+      "community": 34,
       "norm_label": "tests the user model, including the role enum and default fields."
     },
     {
@@ -11151,7 +11151,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "tests_test_models_rationale_65",
-      "community": 12,
+      "community": 34,
       "norm_label": "tests complex relationships between companies and users (owner/members)."
     },
     {
@@ -11161,7 +11161,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "tests_test_models_rationale_98",
-      "community": 12,
+      "community": 34,
       "norm_label": "tests the refreshtoken model and its relationship to a user."
     },
     {
@@ -11171,7 +11171,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "tests_test_models_rationale_113",
-      "community": 38,
+      "community": 34,
       "norm_label": "tests first-login invitation persistence and relationship to a user."
     },
     {
@@ -11191,7 +11191,7 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "tests_test_models_rationale_161",
-      "community": 12,
+      "community": 34,
       "norm_label": "tests the basic license model."
     },
     {
@@ -11483,6 +11483,26 @@
       "id": "tests_test_sandbox_topology_validation_test_validate_sandbox_topology_request_rejects_missing_required_fields",
       "community": 17,
       "norm_label": "test_validate_sandbox_topology_request_rejects_missing_required_fields()"
+    },
+    {
+      "label": "test_schema_migrations.py",
+      "file_type": "code",
+      "source_file": "tests/test_schema_migrations.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_test_schema_migrations",
+      "community": 17,
+      "norm_label": "test_schema_migrations.py"
+    },
+    {
+      "label": "test_base_schema_creates_scan_debug_bundle_column()",
+      "file_type": "code",
+      "source_file": "tests/test_schema_migrations.py",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "tests_test_schema_migrations_test_base_schema_creates_scan_debug_bundle_column",
+      "community": 17,
+      "norm_label": "test_base_schema_creates_scan_debug_bundle_column()"
     },
     {
       "label": "test_search_coverage.py",
@@ -11778,7 +11798,7 @@
       "label": "test_graph_driven_workflow_downloads_minio_artifact_before_deploying()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L362",
+      "source_location": "L372",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "community": 0,
@@ -11788,7 +11808,7 @@
       "label": "test_pentest_workflow_rejects_invalid_topology_before_create_sandbox()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L420",
+      "source_location": "L432",
       "_origin": "ast",
       "id": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "community": 0,
@@ -11798,7 +11818,7 @@
       "label": "test_graph_driven_workflow_filters_selected_topology_targets()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L461",
+      "source_location": "L473",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_filters_selected_topology_targets",
       "community": 0,
@@ -11808,7 +11828,7 @@
       "label": "test_graph_driven_workflow_selects_preferred_endpoint_workload()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L489",
+      "source_location": "L501",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_selects_preferred_endpoint_workload",
       "community": 0,
@@ -11818,7 +11838,7 @@
       "label": "test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L519",
+      "source_location": "L531",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict",
       "community": 0,
@@ -11828,7 +11848,7 @@
       "label": "test_graph_driven_workflow_deprioritizes_observability_endpoint()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L542",
+      "source_location": "L554",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_deprioritizes_observability_endpoint",
       "community": 0,
@@ -12530,7 +12550,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "alembic/versions/20260525_0001_schema_v2_2.py",
-      "source_location": "L278",
+      "source_location": "L279",
       "weight": 1.0,
       "source": "alembic_versions_20260525_0001_schema_v2_2",
       "target": "alembic_versions_20260525_0001_schema_v2_2_downgrade",
@@ -16454,7 +16474,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L425",
+      "source_location": "L432",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
       "target": "src_activities_minio_artifacts_download_minio_artifact"
@@ -27273,6 +27293,17 @@
     {
       "relation": "calls",
       "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_schema_migrations.py",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "tests_test_schema_migrations_test_base_schema_creates_scan_debug_bundle_column",
+      "target": "path"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/services/sandbox_topology_validation.py",
       "source_location": "L29",
@@ -27984,7 +28015,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L675",
+      "source_location": "L682",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
@@ -27994,7 +28025,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L349",
+      "source_location": "L353",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_crew_pentest_request",
@@ -28014,7 +28045,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L537",
+      "source_location": "L544",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_target_label",
@@ -28024,7 +28055,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L471",
+      "source_location": "L478",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_cleanup",
@@ -28044,7 +28075,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L420",
+      "source_location": "L427",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
@@ -28054,7 +28085,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L405",
+      "source_location": "L412",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_extract_topology",
@@ -28064,7 +28095,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L567",
+      "source_location": "L574",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_filter_targets",
@@ -28074,7 +28105,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L481",
+      "source_location": "L488",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
@@ -28084,7 +28115,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L706",
+      "source_location": "L713",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint",
@@ -28094,7 +28125,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L551",
+      "source_location": "L558",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_minio_reference",
@@ -28104,7 +28135,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L547",
+      "source_location": "L554",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_topology_scan",
@@ -28114,7 +28145,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L528",
+      "source_location": "L535",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_path",
@@ -28124,7 +28155,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L489",
+      "source_location": "L496",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
@@ -28134,7 +28165,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L669",
+      "source_location": "L676",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name",
@@ -28144,7 +28175,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L589",
+      "source_location": "L596",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_endpoint",
@@ -28154,7 +28185,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L556",
+      "source_location": "L563",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_topology_target_ids",
@@ -28194,7 +28225,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L450",
+      "source_location": "L457",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_request_from_sandbox",
@@ -28204,7 +28235,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L436",
+      "source_location": "L443",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
@@ -28214,7 +28245,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L596",
+      "source_location": "L603",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
@@ -28267,7 +28298,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L543",
+      "source_location": "L555",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_deprioritizes_observability_endpoint",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28278,7 +28309,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L369",
+      "source_location": "L379",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28289,7 +28320,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L462",
+      "source_location": "L474",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_filters_selected_topology_targets",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28300,7 +28331,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L490",
+      "source_location": "L502",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_selects_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28311,7 +28342,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L520",
+      "source_location": "L532",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28464,7 +28495,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L487",
+      "source_location": "L494",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_update_status",
@@ -28486,7 +28517,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L445",
+      "source_location": "L452",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_update_debug_bundle",
@@ -28542,7 +28573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L358",
+      "source_location": "L362",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_crew_pentest_request",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_extract_topology"
@@ -28563,7 +28594,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L421",
+      "source_location": "L428",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_minio_reference",
@@ -28574,7 +28605,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L440",
+      "source_location": "L447",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_request_from_sandbox",
@@ -28585,7 +28616,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L484",
+      "source_location": "L491",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_cleanup",
@@ -28596,7 +28627,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L481",
+      "source_location": "L488",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "target": "src_workflows_graph_pentest_workflow_py_exception",
@@ -28607,7 +28638,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L505",
+      "source_location": "L512",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_target_label",
@@ -28618,7 +28649,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L493",
+      "source_location": "L500",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_path",
@@ -28630,7 +28661,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L663",
+      "source_location": "L670",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload"
@@ -28641,7 +28672,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L641",
+      "source_location": "L648",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint"
@@ -28652,7 +28683,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L606",
+      "source_location": "L613",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name"
@@ -28663,7 +28694,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L680",
+      "source_location": "L687",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name"
@@ -28674,7 +28705,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L707",
+      "source_location": "L714",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name"
@@ -28685,7 +28716,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L683",
+      "source_location": "L690",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint"
@@ -28858,7 +28889,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L426",
+      "source_location": "L438",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "src_workflows_pentest_workflow_pentestworkflow"
@@ -31479,6 +31510,16 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "tests/test_schema_migrations.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "tests_test_schema_migrations",
+      "target": "tests_test_schema_migrations_test_base_schema_creates_scan_debug_bundle_column",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "tests/test_search_coverage.py",
       "source_location": "L89",
       "weight": 1.0,
@@ -31720,7 +31761,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L542",
+      "source_location": "L554",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_deprioritizes_observability_endpoint",
@@ -31730,7 +31771,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L362",
+      "source_location": "L372",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
@@ -31740,7 +31781,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L461",
+      "source_location": "L473",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_filters_selected_topology_targets",
@@ -31750,7 +31791,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L489",
+      "source_location": "L501",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_selects_preferred_endpoint_workload",
@@ -31760,7 +31801,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L519",
+      "source_location": "L531",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict",
@@ -31780,7 +31821,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L420",
+      "source_location": "L432",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
@@ -31812,7 +31853,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L371",
+      "source_location": "L381",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_update_scan_status",
@@ -31823,7 +31864,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L428",
+      "source_location": "L440",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_update_scan_status",
@@ -31856,7 +31897,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L384",
+      "source_location": "L394",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_create_sandbox",
@@ -31878,7 +31919,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L440",
+      "source_location": "L452",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_create_sandbox",
@@ -31911,7 +31952,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L385",
+      "source_location": "L395",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_destroy_sandbox",
@@ -31933,7 +31974,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L441",
+      "source_location": "L453",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_destroy_sandbox",
@@ -31966,7 +32007,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L372",
+      "source_location": "L382",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_save_vulnerabilities",
@@ -31988,7 +32029,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L429",
+      "source_location": "L441",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_save_vulnerabilities",
@@ -32021,7 +32062,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L373",
+      "source_location": "L383",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
@@ -32043,7 +32084,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L430",
+      "source_location": "L442",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
@@ -32076,7 +32117,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L374",
+      "source_location": "L384",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_seed_target_databases",
@@ -32098,7 +32139,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L431",
+      "source_location": "L443",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_seed_target_databases",
@@ -32131,7 +32172,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L375",
+      "source_location": "L385",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_download_minio_artifact",
@@ -32164,7 +32205,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L432",
+      "source_location": "L444",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_download_invalid_topology_artifact",
@@ -32186,7 +32227,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L433",
+      "source_location": "L445",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "tests_test_workflow_mock_run_pentest",
@@ -32219,7 +32260,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L376",
+      "source_location": "L386",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_identify_attack_targets",
@@ -32241,7 +32282,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L377",
+      "source_location": "L387",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_build_sandbox_topology",
@@ -32263,7 +32304,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L392",
+      "source_location": "L402",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_run_targeted_pentest",
@@ -32285,7 +32326,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L397",
+      "source_location": "L407",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "tests_test_workflow_mock_run_crew_pentest",
@@ -32874,5 +32915,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7c2ea9c490d7d64c1faa54e8354c8607184a8f5b"
+  "built_at_commit": "a36d7048ff730aef7d9b2cdb0a940c415981ef32"
 }

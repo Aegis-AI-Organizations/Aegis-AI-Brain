@@ -251,7 +251,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_containers",
-      "community": 70,
+      "community": 7,
       "norm_label": "containers"
     },
     {
@@ -261,7 +261,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "sandbox_topology_schema_containers_description",
-      "community": 70,
+      "community": 7,
       "norm_label": "description"
     },
     {
@@ -271,7 +271,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "sandbox_topology_schema_containers_type",
-      "community": 70,
+      "community": 7,
       "norm_label": "type"
     },
     {
@@ -281,7 +281,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "sandbox_topology_schema_containers_items",
-      "community": 70,
+      "community": 7,
       "norm_label": "items"
     },
     {
@@ -371,7 +371,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_databaseschemas",
-      "community": 114,
+      "community": 7,
       "norm_label": "databaseschemas"
     },
     {
@@ -381,7 +381,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseschemas_description",
-      "community": 114,
+      "community": 7,
       "norm_label": "description"
     },
     {
@@ -391,7 +391,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseschemas_type",
-      "community": 114,
+      "community": 7,
       "norm_label": "type"
     },
     {
@@ -401,7 +401,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseschemas_items",
-      "community": 114,
+      "community": 7,
       "norm_label": "items"
     },
     {
@@ -411,7 +411,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_externalmocks",
-      "community": 7,
+      "community": 54,
       "norm_label": "externalmocks"
     },
     {
@@ -421,7 +421,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "sandbox_topology_schema_externalmocks_description",
-      "community": 7,
+      "community": 54,
       "norm_label": "description"
     },
     {
@@ -431,7 +431,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "sandbox_topology_schema_externalmocks_type",
-      "community": 7,
+      "community": 54,
       "norm_label": "type"
     },
     {
@@ -441,7 +441,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "sandbox_topology_schema_externalmocks_items",
-      "community": 7,
+      "community": 54,
       "norm_label": "items"
     },
     {
@@ -631,7 +631,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_name",
-      "community": 48,
+      "community": 53,
       "norm_label": "name"
     },
     {
@@ -641,7 +641,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "sandbox_topology_schema_name_type",
-      "community": 48,
+      "community": 53,
       "norm_label": "type"
     },
     {
@@ -651,7 +651,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "sandbox_topology_schema_name_minlength",
-      "community": 48,
+      "community": 53,
       "norm_label": "minlength"
     },
     {
@@ -1461,7 +1461,7 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "sandbox_topology_schema_defs_file",
-      "community": 6,
+      "community": 34,
       "norm_label": "file"
     },
     {
@@ -1471,7 +1471,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_type",
-      "community": 6,
+      "community": 34,
       "norm_label": "type"
     },
     {
@@ -1481,7 +1481,7 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_additionalproperties",
-      "community": 6,
+      "community": 34,
       "norm_label": "additionalproperties"
     },
     {
@@ -1491,7 +1491,7 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_required",
-      "community": 6,
+      "community": 34,
       "norm_label": "required"
     },
     {
@@ -1501,7 +1501,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "sandbox_topology_schema_file_properties",
-      "community": 6,
+      "community": 34,
       "norm_label": "properties"
     },
     {
@@ -1511,7 +1511,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_path",
-      "community": 6,
+      "community": 34,
       "norm_label": "path"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "sandbox_topology_schema_path_type",
-      "community": 6,
+      "community": 34,
       "norm_label": "type"
     },
     {
@@ -1531,7 +1531,7 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "sandbox_topology_schema_path_minlength",
-      "community": 6,
+      "community": 34,
       "norm_label": "minlength"
     },
     {
@@ -1541,7 +1541,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_content",
-      "community": 6,
+      "community": 34,
       "norm_label": "content"
     },
     {
@@ -1551,7 +1551,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "sandbox_topology_schema_content_type",
-      "community": 6,
+      "community": 34,
       "norm_label": "type"
     },
     {
@@ -1561,7 +1561,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_mode",
-      "community": 6,
+      "community": 34,
       "norm_label": "mode"
     },
     {
@@ -1571,7 +1571,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "sandbox_topology_schema_mode_type",
-      "community": 6,
+      "community": 34,
       "norm_label": "type"
     },
     {
@@ -1581,7 +1581,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "sandbox_topology_schema_mode_minimum",
-      "community": 6,
+      "community": 34,
       "norm_label": "minimum"
     },
     {
@@ -2261,7 +2261,7 @@
       "source_location": "L222",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_database_name",
-      "community": 24,
+      "community": 68,
       "norm_label": "database_name"
     },
     {
@@ -2271,7 +2271,7 @@
       "source_location": "L222",
       "_origin": "ast",
       "id": "sandbox_topology_schema_database_name_type",
-      "community": 24,
+      "community": 68,
       "norm_label": "type"
     },
     {
@@ -2301,7 +2301,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_password",
-      "community": 111,
+      "community": 24,
       "norm_label": "password"
     },
     {
@@ -2311,7 +2311,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "sandbox_topology_schema_password_type",
-      "community": 111,
+      "community": 24,
       "norm_label": "type"
     },
     {
@@ -2741,7 +2741,7 @@
       "source_location": "L277",
       "_origin": "ast",
       "id": "sandbox_topology_schema_defs_databaseforeignkey",
-      "community": 54,
+      "community": 53,
       "norm_label": "databaseforeignkey"
     },
     {
@@ -2751,7 +2751,7 @@
       "source_location": "L278",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseforeignkey_type",
-      "community": 54,
+      "community": 53,
       "norm_label": "type"
     },
     {
@@ -2761,7 +2761,7 @@
       "source_location": "L279",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseforeignkey_additionalproperties",
-      "community": 54,
+      "community": 53,
       "norm_label": "additionalproperties"
     },
     {
@@ -2771,7 +2771,7 @@
       "source_location": "L280",
       "_origin": "ast",
       "id": "sandbox_topology_schema_databaseforeignkey_properties",
-      "community": 54,
+      "community": 53,
       "norm_label": "properties"
     },
     {
@@ -2781,7 +2781,7 @@
       "source_location": "L286",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_referenced_table",
-      "community": 54,
+      "community": 53,
       "norm_label": "referenced_table"
     },
     {
@@ -2791,7 +2791,7 @@
       "source_location": "L286",
       "_origin": "ast",
       "id": "sandbox_topology_schema_referenced_table_type",
-      "community": 54,
+      "community": 53,
       "norm_label": "type"
     },
     {
@@ -2801,7 +2801,7 @@
       "source_location": "L287",
       "_origin": "ast",
       "id": "sandbox_topology_schema_properties_referenced_columns",
-      "community": 54,
+      "community": 53,
       "norm_label": "referenced_columns"
     },
     {
@@ -2811,7 +2811,7 @@
       "source_location": "L288",
       "_origin": "ast",
       "id": "sandbox_topology_schema_referenced_columns_type",
-      "community": 54,
+      "community": 53,
       "norm_label": "type"
     },
     {
@@ -2821,7 +2821,7 @@
       "source_location": "L289",
       "_origin": "ast",
       "id": "sandbox_topology_schema_referenced_columns_items",
-      "community": 54,
+      "community": 53,
       "norm_label": "items"
     },
     {
@@ -3031,7 +3031,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_activities_minio_artifacts_parse_minio_reference",
-      "community": 40,
+      "community": 43,
       "norm_label": "parse_minio_reference()"
     },
     {
@@ -3041,7 +3041,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_activities_minio_artifacts_artifact_payload",
-      "community": 40,
+      "community": 43,
       "norm_label": "_artifact_payload()"
     },
     {
@@ -3051,7 +3051,7 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "src_activities_minio_artifacts_download_minio_artifact",
-      "community": 40,
+      "community": 43,
       "norm_label": "download_minio_artifact()"
     },
     {
@@ -3111,7 +3111,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "object",
-      "community": 21,
+      "community": 42,
       "norm_label": "object"
     },
     {
@@ -3131,7 +3131,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer",
-      "community": 34,
+      "community": 23,
       "norm_label": "agentserviceservicer"
     },
     {
@@ -3141,7 +3141,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer_registeragent",
-      "community": 34,
+      "community": 23,
       "norm_label": ".registeragent()"
     },
     {
@@ -3151,7 +3151,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer_updateagentstatus",
-      "community": 34,
+      "community": 23,
       "norm_label": ".updateagentstatus()"
     },
     {
@@ -3161,7 +3161,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer_getuploadlink",
-      "community": 34,
+      "community": 23,
       "norm_label": ".getuploadlink()"
     },
     {
@@ -3171,7 +3171,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer_verifyagentsecret",
-      "community": 34,
+      "community": 23,
       "norm_label": ".verifyagentsecret()"
     },
     {
@@ -3181,7 +3181,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer_listagents",
-      "community": 34,
+      "community": 23,
       "norm_label": ".listagents()"
     },
     {
@@ -3191,7 +3191,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_agentserviceservicer_getagentstatussummary",
-      "community": 34,
+      "community": 23,
       "norm_label": ".getagentstatussummary()"
     },
     {
@@ -3301,7 +3301,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_50",
-      "community": 34,
+      "community": 23,
       "norm_label": "missing associated documentation comment in .proto file."
     },
     {
@@ -3311,7 +3311,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_53",
-      "community": 34,
+      "community": 23,
       "norm_label": "registeragent is the onboarding call for a new agent using a deployment token."
     },
     {
@@ -3321,7 +3321,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_60",
-      "community": 34,
+      "community": 23,
       "norm_label": "updateagentstatus updates the current state of a persistent agent."
     },
     {
@@ -3331,7 +3331,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_67",
-      "community": 34,
+      "community": 23,
       "norm_label": "getuploadlink returns a presigned url for minio file uploads."
     },
     {
@@ -3341,7 +3341,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_74",
-      "community": 34,
+      "community": 23,
       "norm_label": "verifyagentsecret validates an operational secret against an agent id."
     },
     {
@@ -3351,7 +3351,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_81",
-      "community": 34,
+      "community": 23,
       "norm_label": "listagents returns the persistent agents attached to a company."
     },
     {
@@ -3361,7 +3361,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_aegis_v2_agent_pb2_grpc_rationale_88",
-      "community": 34,
+      "community": 23,
       "norm_label": "getagentstatussummary returns aggregated agent status counters for a company."
     },
     {
@@ -3391,7 +3391,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc",
-      "community": 15,
+      "community": 37,
       "norm_label": "auth_pb2_grpc.py"
     },
     {
@@ -3401,7 +3401,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservicestub",
-      "community": 21,
+      "community": 42,
       "norm_label": "authservicestub"
     },
     {
@@ -3411,7 +3411,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservicestub_init",
-      "community": 21,
+      "community": 42,
       "norm_label": ".__init__()"
     },
     {
@@ -3521,7 +3521,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_add_authserviceservicer_to_server",
-      "community": 15,
+      "community": 37,
       "norm_label": "add_authserviceservicer_to_server()"
     },
     {
@@ -3531,7 +3531,7 @@
       "source_location": "L188",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice",
-      "community": 15,
+      "community": 37,
       "norm_label": "authservice"
     },
     {
@@ -3541,7 +3541,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_login",
-      "community": 15,
+      "community": 37,
       "norm_label": ".login()"
     },
     {
@@ -3551,7 +3551,7 @@
       "source_location": "L220",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_refresh",
-      "community": 15,
+      "community": 37,
       "norm_label": ".refresh()"
     },
     {
@@ -3561,7 +3561,7 @@
       "source_location": "L247",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_logout",
-      "community": 15,
+      "community": 37,
       "norm_label": ".logout()"
     },
     {
@@ -3571,7 +3571,7 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_setuppassword",
-      "community": 15,
+      "community": 37,
       "norm_label": ".setuppassword()"
     },
     {
@@ -3581,7 +3581,7 @@
       "source_location": "L301",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_getme",
-      "community": 15,
+      "community": 37,
       "norm_label": ".getme()"
     },
     {
@@ -3591,7 +3591,7 @@
       "source_location": "L328",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_updateprofile",
-      "community": 15,
+      "community": 37,
       "norm_label": ".updateprofile()"
     },
     {
@@ -3601,7 +3601,7 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_updateemail",
-      "community": 15,
+      "community": 37,
       "norm_label": ".updateemail()"
     },
     {
@@ -3611,7 +3611,7 @@
       "source_location": "L382",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_updatepassword",
-      "community": 15,
+      "community": 37,
       "norm_label": ".updatepassword()"
     },
     {
@@ -3621,7 +3621,7 @@
       "source_location": "L409",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_authservice_removeavatar",
-      "community": 15,
+      "community": 37,
       "norm_label": ".removeavatar()"
     },
     {
@@ -3631,7 +3631,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_rationale_9",
-      "community": 21,
+      "community": 42,
       "norm_label": "authservice handles user authentication, session management, and jwt generation."
     },
     {
@@ -3641,7 +3641,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_rationale_13",
-      "community": 21,
+      "community": 42,
       "norm_label": "constructor.          args:             channel: a grpc.channel."
     },
     {
@@ -3751,7 +3751,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "src_aegis_v2_auth_pb2_grpc_rationale_189",
-      "community": 15,
+      "community": 37,
       "norm_label": "authservice handles user authentication, session management, and jwt generation."
     },
     {
@@ -4031,7 +4031,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_aegis_v2_company_pb2_grpc",
-      "community": 112,
+      "community": 107,
       "norm_label": "company_pb2_grpc.py"
     },
     {
@@ -4041,7 +4041,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_aegis_v2_company_pb2_grpc_companyservicestub",
-      "community": 112,
+      "community": 107,
       "norm_label": "companyservicestub"
     },
     {
@@ -4051,7 +4051,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_aegis_v2_company_pb2_grpc_companyservicestub_init",
-      "community": 112,
+      "community": 107,
       "norm_label": ".__init__()"
     },
     {
@@ -4141,7 +4141,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_aegis_v2_company_pb2_grpc_add_companyserviceservicer_to_server",
-      "community": 112,
+      "community": 107,
       "norm_label": "add_companyserviceservicer_to_server()"
     },
     {
@@ -4231,7 +4231,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_aegis_v2_company_pb2_grpc_rationale_9",
-      "community": 112,
+      "community": 107,
       "norm_label": "companyservice handles registration and administrative management of companies."
     },
     {
@@ -4241,7 +4241,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_aegis_v2_company_pb2_grpc_rationale_13",
-      "community": 112,
+      "community": 107,
       "norm_label": "constructor.          args:             channel: a grpc.channel."
     },
     {
@@ -4661,7 +4661,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer",
-      "community": 36,
+      "community": 26,
       "norm_label": "scanserviceservicer"
     },
     {
@@ -4671,7 +4671,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer_startscan",
-      "community": 36,
+      "community": 26,
       "norm_label": ".startscan()"
     },
     {
@@ -4681,7 +4681,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer_getscanstatus",
-      "community": 36,
+      "community": 26,
       "norm_label": ".getscanstatus()"
     },
     {
@@ -4691,7 +4691,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer_listscans",
-      "community": 36,
+      "community": 26,
       "norm_label": ".listscans()"
     },
     {
@@ -4701,7 +4701,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer_getscanreport",
-      "community": 36,
+      "community": 26,
       "norm_label": ".getscanreport()"
     },
     {
@@ -4711,7 +4711,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer_watchscanstatus",
-      "community": 36,
+      "community": 26,
       "norm_label": ".watchscanstatus()"
     },
     {
@@ -4721,7 +4721,7 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_scanserviceservicer_updatescanstatus",
-      "community": 36,
+      "community": 26,
       "norm_label": ".updatescanstatus()"
     },
     {
@@ -4831,7 +4831,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_51",
-      "community": 36,
+      "community": 26,
       "norm_label": "scanservice handles orchestration of security scans."
     },
     {
@@ -4841,7 +4841,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_55",
-      "community": 36,
+      "community": 26,
       "norm_label": "startscan initiates a new security scan for a target image."
     },
     {
@@ -4851,7 +4851,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_62",
-      "community": 36,
+      "community": 26,
       "norm_label": "getscanstatus returns the current status and timing of a scan."
     },
     {
@@ -4861,7 +4861,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_69",
-      "community": 36,
+      "community": 26,
       "norm_label": "listscans retrieves a history of all scans."
     },
     {
@@ -4871,7 +4871,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_76",
-      "community": 36,
+      "community": 26,
       "norm_label": "getscanreport returns the pdf report data for a completed scan."
     },
     {
@@ -4881,7 +4881,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_83",
-      "community": 36,
+      "community": 26,
       "norm_label": "watchscanstatus provides a stream of scan status updates."
     },
     {
@@ -4891,7 +4891,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_aegis_v2_scan_pb2_grpc_rationale_90",
-      "community": 36,
+      "community": 26,
       "norm_label": "updatescanstatus updates the status of a scan (called by agents)."
     },
     {
@@ -4971,7 +4971,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_vulnerabilityserviceservicer",
-      "community": 109,
+      "community": 31,
       "norm_label": "vulnerabilityserviceservicer"
     },
     {
@@ -4981,7 +4981,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_vulnerabilityserviceservicer_getvulnerabilities",
-      "community": 109,
+      "community": 31,
       "norm_label": ".getvulnerabilities()"
     },
     {
@@ -4991,7 +4991,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_vulnerabilityserviceservicer_getevidences",
-      "community": 109,
+      "community": 31,
       "norm_label": ".getevidences()"
     },
     {
@@ -5061,7 +5061,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_rationale_31",
-      "community": 109,
+      "community": 31,
       "norm_label": "vulnerabilityservice handles retrieval of vulnerability data."
     },
     {
@@ -5071,7 +5071,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_rationale_35",
-      "community": 109,
+      "community": 31,
       "norm_label": "getvulnerabilities returns a list of vulnerabilities for a scan."
     },
     {
@@ -5081,7 +5081,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_aegis_v2_vulnerability_pb2_grpc_rationale_42",
-      "community": 109,
+      "community": 31,
       "norm_label": "getevidences returns the evidence collected for a specific vulnerability."
     },
     {
@@ -5101,7 +5101,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_config_config",
-      "community": 26,
+      "community": 40,
       "norm_label": "config.py"
     },
     {
@@ -5111,7 +5111,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_config_db",
-      "community": 26,
+      "community": 25,
       "norm_label": "db.py"
     },
     {
@@ -5121,7 +5121,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_config_db_build_db_url",
-      "community": 14,
+      "community": 35,
       "norm_label": "_build_db_url()"
     },
     {
@@ -5131,7 +5131,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "url",
-      "community": 14,
+      "community": 35,
       "norm_label": "url"
     },
     {
@@ -5141,7 +5141,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_config_db_get_engine",
-      "community": 14,
+      "community": 35,
       "norm_label": "get_engine()"
     },
     {
@@ -5201,7 +5201,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_config_db_rationale_25",
-      "community": 14,
+      "community": 35,
       "norm_label": "builds the sqlalchemy db url securely."
     },
     {
@@ -5211,7 +5211,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_config_db_rationale_44",
-      "community": 14,
+      "community": 35,
       "norm_label": "lazily initializes and returns the sqlalchemy engine."
     },
     {
@@ -5251,7 +5251,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_grpc_server",
-      "community": 26,
+      "community": 25,
       "norm_label": "grpc_server.py"
     },
     {
@@ -5281,7 +5281,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_grpc_services_agent",
-      "community": 26,
+      "community": 25,
       "norm_label": "agent.py"
     },
     {
@@ -5471,7 +5471,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_grpc_services_auth",
-      "community": 26,
+      "community": 50,
       "norm_label": "auth.py"
     },
     {
@@ -5491,7 +5491,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice",
-      "community": 43,
+      "community": 5,
       "norm_label": "authservice"
     },
     {
@@ -5501,7 +5501,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_init",
-      "community": 43,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -5521,7 +5521,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_generate_access_token",
-      "community": 43,
+      "community": 5,
       "norm_label": "._generate_access_token()"
     },
     {
@@ -5531,7 +5531,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_hash_token",
-      "community": 43,
+      "community": 5,
       "norm_label": "._hash_token()"
     },
     {
@@ -5541,7 +5541,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_create_session_tokens",
-      "community": 43,
+      "community": 5,
       "norm_label": "._create_session_tokens()"
     },
     {
@@ -5551,7 +5551,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_login_db_sync",
-      "community": 110,
+      "community": 5,
       "norm_label": "._login_db_sync()"
     },
     {
@@ -5561,7 +5561,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "loginrequest",
-      "community": 110,
+      "community": 5,
       "norm_label": "loginrequest"
     },
     {
@@ -5571,7 +5571,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_setup_password_db_sync",
-      "community": 43,
+      "community": 5,
       "norm_label": "._setup_password_db_sync()"
     },
     {
@@ -5611,7 +5611,7 @@
       "source_location": "L176",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_login",
-      "community": 110,
+      "community": 5,
       "norm_label": ".login()"
     },
     {
@@ -5621,7 +5621,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "loginresponse",
-      "community": 110,
+      "community": 5,
       "norm_label": "loginresponse"
     },
     {
@@ -5631,7 +5631,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_refresh_db_sync",
-      "community": 43,
+      "community": 5,
       "norm_label": "._refresh_db_sync()"
     },
     {
@@ -5871,7 +5871,7 @@
       "source_location": "L470",
       "_origin": "ast",
       "id": "src_grpc_services_auth_authservice_removeavatar",
-      "community": 82,
+      "community": 5,
       "norm_label": ".removeavatar()"
     },
     {
@@ -5881,7 +5881,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "removeavatarrequest",
-      "community": 82,
+      "community": 5,
       "norm_label": "removeavatarrequest"
     },
     {
@@ -5891,7 +5891,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "removeavatarresponse",
-      "community": 82,
+      "community": 5,
       "norm_label": "removeavatarresponse"
     },
     {
@@ -5911,7 +5911,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_38",
-      "community": 43,
+      "community": 5,
       "norm_label": "authservice handles user login, token refresh, and logout."
     },
     {
@@ -5931,7 +5931,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_51",
-      "community": 43,
+      "community": 5,
       "norm_label": "generates a jwt access token valid for 15 minutes."
     },
     {
@@ -5941,7 +5941,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_63",
-      "community": 43,
+      "community": 5,
       "norm_label": "helper to hash refresh tokens consistently."
     },
     {
@@ -5951,7 +5951,7 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_79",
-      "community": 110,
+      "community": 5,
       "norm_label": "synchronous part of login logic."
     },
     {
@@ -5971,7 +5971,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_179",
-      "community": 110,
+      "community": 5,
       "norm_label": "authenticates user and returns access + refresh tokens."
     },
     {
@@ -5981,7 +5981,7 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "src_grpc_services_auth_rationale_206",
-      "community": 43,
+      "community": 5,
       "norm_label": "synchronous part of refresh logic."
     },
     {
@@ -6041,7 +6041,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_grpc_services_billing",
-      "community": 26,
+      "community": 25,
       "norm_label": "billing.py"
     },
     {
@@ -6368,17 +6368,17 @@
       "label": "CompanyCreateError",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L32",
+      "source_location": "L58",
       "_origin": "ast",
       "id": "src_grpc_services_company_companycreateerror",
-      "community": 38,
+      "community": 8,
       "norm_label": "companycreateerror"
     },
     {
       "label": "CompanyService",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L39",
+      "source_location": "L65",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice",
       "community": 8,
@@ -6388,7 +6388,7 @@
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L42",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_init",
       "community": 1,
@@ -6398,7 +6398,7 @@
       "label": ".session_factory()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L47",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_session_factory",
       "community": 8,
@@ -6408,7 +6408,7 @@
       "label": "._resolve_agent_token_company_id()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L52",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_resolve_agent_token_company_id",
       "community": 63,
@@ -6418,27 +6418,57 @@
       "label": "._resolve_user_management_company_id()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L75",
+      "source_location": "L101",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_resolve_user_management_company_id",
       "community": 8,
       "norm_label": "._resolve_user_management_company_id()"
     },
     {
+      "label": "._resolve_current_company_id()",
+      "file_type": "code",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L124",
+      "_origin": "ast",
+      "id": "src_grpc_services_company_companyservice_resolve_current_company_id",
+      "community": 8,
+      "norm_label": "._resolve_current_company_id()"
+    },
+    {
       "label": "._validate_managed_user_role()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L98",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_validate_managed_user_role",
       "community": 8,
       "norm_label": "._validate_managed_user_role()"
     },
     {
+      "label": "._company_summary()",
+      "file_type": "code",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L155",
+      "_origin": "ast",
+      "id": "src_grpc_services_company_companyservice_company_summary",
+      "community": 8,
+      "norm_label": "._company_summary()"
+    },
+    {
+      "label": "._update_current_company_db_sync()",
+      "file_type": "code",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L183",
+      "_origin": "ast",
+      "id": "src_grpc_services_company_companyservice_update_current_company_db_sync",
+      "community": 8,
+      "norm_label": "._update_current_company_db_sync()"
+    },
+    {
       "label": "._create_company_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L118",
+      "source_location": "L209",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_create_company_db_sync",
       "community": 8,
@@ -6448,7 +6478,7 @@
       "label": "._onboard_company_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L155",
+      "source_location": "L246",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_onboard_company_db_sync",
       "community": 8,
@@ -6458,7 +6488,7 @@
       "label": ".OnboardCompany()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L233",
+      "source_location": "L324",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_onboardcompany",
       "community": 8,
@@ -6488,7 +6518,7 @@
       "label": "._rotate_agent_token_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L299",
+      "source_location": "L390",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_rotate_agent_token_db_sync",
       "community": 8,
@@ -6498,7 +6528,7 @@
       "label": "._revoke_agent_token_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L315",
+      "source_location": "L406",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_revoke_agent_token_db_sync",
       "community": 8,
@@ -6508,7 +6538,7 @@
       "label": ".RotateAgentToken()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L331",
+      "source_location": "L422",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_rotateagenttoken",
       "community": 63,
@@ -6538,7 +6568,7 @@
       "label": ".RevokeAgentToken()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L357",
+      "source_location": "L448",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_revokeagenttoken",
       "community": 63,
@@ -6568,7 +6598,7 @@
       "label": "._list_entities_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L382",
+      "source_location": "L473",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_list_entities_db_sync",
       "community": 8,
@@ -6578,10 +6608,10 @@
       "label": ".ListCompanies()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L471",
+      "source_location": "L544",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_listcompanies",
-      "community": 68,
+      "community": 8,
       "norm_label": ".listcompanies()"
     },
     {
@@ -6591,7 +6621,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "listcompaniesrequest",
-      "community": 68,
+      "community": 8,
       "norm_label": "listcompaniesrequest"
     },
     {
@@ -6601,24 +6631,24 @@
       "source_location": "",
       "_origin": "ast",
       "id": "listcompaniesresponse",
-      "community": 68,
+      "community": 8,
       "norm_label": "listcompaniesresponse"
     },
     {
       "label": "._create_user_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L507",
+      "source_location": "L580",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_create_user_db_sync",
-      "community": 38,
+      "community": 8,
       "norm_label": "._create_user_db_sync()"
     },
     {
       "label": "._update_user_role_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L555",
+      "source_location": "L628",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_update_user_role_db_sync",
       "community": 8,
@@ -6628,7 +6658,7 @@
       "label": "._set_user_active_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L587",
+      "source_location": "L660",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_set_user_active_db_sync",
       "community": 8,
@@ -6638,7 +6668,7 @@
       "label": "._deactivate_user_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L617",
+      "source_location": "L690",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_deactivate_user_db_sync",
       "community": 8,
@@ -6648,7 +6678,7 @@
       "label": ".CreateCompany()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L621",
+      "source_location": "L694",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_createcompany",
       "community": 8,
@@ -6678,7 +6708,7 @@
       "label": ".WatchCompanyUpdates()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L811",
+      "source_location": "L932",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_watchcompanyupdates",
       "community": 115,
@@ -6708,7 +6738,7 @@
       "label": ".ListAuditLogs()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L852",
+      "source_location": "L973",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_listauditlogs",
       "community": 8,
@@ -6738,7 +6768,7 @@
       "label": "._list_audit_logs_db_sync()",
       "file_type": "code",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L888",
+      "source_location": "L1009",
       "_origin": "ast",
       "id": "src_grpc_services_company_companyservice_list_audit_logs_db_sync",
       "community": 8,
@@ -6748,9 +6778,9 @@
       "label": "CompanyService handles company creation and administrative listing.",
       "file_type": "rationale",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L40",
+      "source_location": "L66",
       "_origin": "ast",
-      "id": "src_grpc_services_company_rationale_40",
+      "id": "src_grpc_services_company_rationale_66",
       "community": 8,
       "norm_label": "companyservice handles company creation and administrative listing."
     },
@@ -6761,7 +6791,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_grpc_services_interceptors",
-      "community": 26,
+      "community": 16,
       "norm_label": "interceptors.py"
     },
     {
@@ -6821,7 +6851,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_grpc_services_internal_auth",
-      "community": 26,
+      "community": 25,
       "norm_label": "internal_auth.py"
     },
     {
@@ -7161,7 +7191,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_grpc_services_vulnerabilities_vulnerabilityservice",
-      "community": 25,
+      "community": 13,
       "norm_label": "vulnerabilityservice"
     },
     {
@@ -7171,7 +7201,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_grpc_services_vulnerabilities_vulnerabilityservice_get_vulns_db",
-      "community": 25,
+      "community": 13,
       "norm_label": "._get_vulns_db()"
     },
     {
@@ -7191,7 +7221,7 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "src_grpc_services_vulnerabilities_vulnerabilityservice_get_evidences_db",
-      "community": 25,
+      "community": 13,
       "norm_label": "._get_evidences_db()"
     },
     {
@@ -7201,7 +7231,7 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "src_grpc_services_vulnerabilities_vulnerabilityservice_getevidences",
-      "community": 25,
+      "community": 13,
       "norm_label": ".getevidences()"
     },
     {
@@ -7211,7 +7241,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_main",
-      "community": 26,
+      "community": 40,
       "norm_label": "main.py"
     },
     {
@@ -7321,7 +7351,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_models_base_base",
-      "community": 37,
+      "community": 12,
       "norm_label": "base"
     },
     {
@@ -7331,7 +7361,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "declarativebase",
-      "community": 37,
+      "community": 12,
       "norm_label": "declarativebase"
     },
     {
@@ -7341,7 +7371,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_models_base_rationale_5",
-      "community": 37,
+      "community": 12,
       "norm_label": "modern sqlalchemy declarative base for all models."
     },
     {
@@ -7361,7 +7391,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_models_company_company",
-      "community": 113,
+      "community": 4,
       "norm_label": "company"
     },
     {
@@ -7371,7 +7401,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_models_company_company_repr",
-      "community": 113,
+      "community": 4,
       "norm_label": ".__repr__()"
     },
     {
@@ -7381,7 +7411,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_models_company_rationale_17",
-      "community": 113,
+      "community": 4,
       "norm_label": "company model mapped to the 'companies' table."
     },
     {
@@ -7501,7 +7531,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_models_scan_scan",
-      "community": 37,
+      "community": 12,
       "norm_label": "scan"
     },
     {
@@ -7511,7 +7541,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_models_scan_scan_repr",
-      "community": 37,
+      "community": 12,
       "norm_label": ".__repr__()"
     },
     {
@@ -7521,7 +7551,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_models_scan_vulnerability",
-      "community": 37,
+      "community": 12,
       "norm_label": "vulnerability"
     },
     {
@@ -7531,7 +7561,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_models_scan_vulnerability_repr",
-      "community": 37,
+      "community": 12,
       "norm_label": ".__repr__()"
     },
     {
@@ -7541,7 +7571,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_models_scan_evidence",
-      "community": 37,
+      "community": 12,
       "norm_label": "evidence"
     },
     {
@@ -7551,7 +7581,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_models_scan_evidence_repr",
-      "community": 37,
+      "community": 12,
       "norm_label": ".__repr__()"
     },
     {
@@ -7561,7 +7591,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_models_scan_rationale_14",
-      "community": 37,
+      "community": 12,
       "norm_label": "scan model mapped to the 'scans' table."
     },
     {
@@ -7571,7 +7601,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_models_scan_rationale_48",
-      "community": 37,
+      "community": 12,
       "norm_label": "vulnerability model mapped to the 'vulnerabilities' table."
     },
     {
@@ -7581,7 +7611,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_models_scan_rationale_76",
-      "community": 37,
+      "community": 12,
       "norm_label": "evidence model mapped to the 'evidences' table."
     },
     {
@@ -7601,7 +7631,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_models_user_userrole",
-      "community": 38,
+      "community": 8,
       "norm_label": "userrole"
     },
     {
@@ -7611,7 +7641,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "str",
-      "community": 38,
+      "community": 8,
       "norm_label": "str"
     },
     {
@@ -7621,7 +7651,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_models_user_useractivationstatus",
-      "community": 38,
+      "community": 8,
       "norm_label": "useractivationstatus"
     },
     {
@@ -7651,7 +7681,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_models_user_rationale_19",
-      "community": 38,
+      "community": 8,
       "norm_label": "user roles matching the postgresql enum 'user_role'."
     },
     {
@@ -7661,7 +7691,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_models_user_rationale_34",
-      "community": 38,
+      "community": 8,
       "norm_label": "lifecycle status for user account activation."
     },
     {
@@ -7921,7 +7951,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_services_agent_watcher_agentwatcher_init",
-      "community": 14,
+      "community": 35,
       "norm_label": ".__init__()"
     },
     {
@@ -8201,7 +8231,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_services_neo4j_sandbox_topology",
-      "community": 27,
+      "community": 40,
       "norm_label": "neo4j_sandbox_topology.py"
     },
     {
@@ -8361,7 +8391,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "valueerror",
-      "community": 40,
+      "community": 43,
       "norm_label": "valueerror"
     },
     {
@@ -8738,7 +8768,7 @@
       "label": "._extract_topology()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L404",
+      "source_location": "L405",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_extract_topology",
       "community": 0,
@@ -8748,7 +8778,7 @@
       "label": "._download_minio_artifact_if_needed()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L419",
+      "source_location": "L420",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
       "community": 0,
@@ -8758,7 +8788,7 @@
       "label": "._seed_target_databases()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L435",
+      "source_location": "L436",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
       "community": 0,
@@ -8768,7 +8798,7 @@
       "label": "._seed_request_from_sandbox()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L449",
+      "source_location": "L450",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_request_from_sandbox",
       "community": 0,
@@ -8778,7 +8808,7 @@
       "label": "._cleanup()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L470",
+      "source_location": "L471",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_cleanup",
       "community": 0,
@@ -8788,7 +8818,7 @@
       "label": "._handle_workflow_failure()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L480",
+      "source_location": "L481",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "community": 0,
@@ -8808,7 +8838,7 @@
       "label": "._normalize_targets()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L488",
+      "source_location": "L489",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
       "community": 0,
@@ -8818,7 +8848,7 @@
       "label": "._normalize_path()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L527",
+      "source_location": "L528",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_path",
       "community": 0,
@@ -8828,7 +8858,7 @@
       "label": "._build_target_label()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L536",
+      "source_location": "L537",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_target_label",
       "community": 0,
@@ -8838,7 +8868,7 @@
       "label": "._is_topology_scan()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L546",
+      "source_location": "L547",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_topology_scan",
       "community": 0,
@@ -8848,7 +8878,7 @@
       "label": "._is_minio_reference()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L550",
+      "source_location": "L551",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_minio_reference",
       "community": 0,
@@ -8858,7 +8888,7 @@
       "label": "._parse_topology_target_ids()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L555",
+      "source_location": "L556",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_topology_target_ids",
       "community": 0,
@@ -8868,7 +8898,7 @@
       "label": "._filter_targets()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L566",
+      "source_location": "L567",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_filter_targets",
       "community": 0,
@@ -8878,7 +8908,7 @@
       "label": "._parse_endpoint()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L588",
+      "source_location": "L589",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_endpoint",
       "community": 0,
@@ -8888,7 +8918,7 @@
       "label": "._select_preferred_endpoint_workload()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L595",
+      "source_location": "L596",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "community": 0,
@@ -8898,7 +8928,7 @@
       "label": "._normalize_workload_name()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L668",
+      "source_location": "L669",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name",
       "community": 0,
@@ -8908,7 +8938,7 @@
       "label": "._best_endpoint_workload()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L674",
+      "source_location": "L675",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
       "community": 0,
@@ -8918,7 +8948,7 @@
       "label": "._is_low_value_endpoint()",
       "file_type": "code",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L705",
+      "source_location": "L706",
       "_origin": "ast",
       "id": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint",
       "community": 0,
@@ -9301,7 +9331,7 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "tests_test_activities_test_generate_and_store_pdf_report_db_fail",
-      "community": 41,
+      "community": 32,
       "norm_label": "test_generate_and_store_pdf_report_db_fail()"
     },
     {
@@ -9411,7 +9441,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "tests_test_activities_rationale_211",
-      "community": 41,
+      "community": 32,
       "norm_label": "test pdf report activity when db connection cannot be established."
     },
     {
@@ -9811,7 +9841,7 @@
       "source_location": "L300",
       "_origin": "ast",
       "id": "tests_test_auth_service_test_setup_password_used_token",
-      "community": 28,
+      "community": 38,
       "norm_label": "test_setup_password_used_token()"
     },
     {
@@ -9821,7 +9851,7 @@
       "source_location": "L330",
       "_origin": "ast",
       "id": "tests_test_auth_service_test_setup_password_non_pending_user",
-      "community": 38,
+      "community": 28,
       "norm_label": "test_setup_password_non_pending_user()"
     },
     {
@@ -10135,10 +10165,40 @@
       "norm_label": "test_list_companies_success()"
     },
     {
+      "label": "test_company_summary_includes_current_company_metadata()",
+      "file_type": "code",
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L112",
+      "_origin": "ast",
+      "id": "tests_test_company_service_test_company_summary_includes_current_company_metadata",
+      "community": 4,
+      "norm_label": "test_company_summary_includes_current_company_metadata()"
+    },
+    {
+      "label": "test_update_current_company_db_sync()",
+      "file_type": "code",
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L137",
+      "_origin": "ast",
+      "id": "tests_test_company_service_test_update_current_company_db_sync",
+      "community": 4,
+      "norm_label": "test_update_current_company_db_sync()"
+    },
+    {
+      "label": "test_owner_updates_current_company()",
+      "file_type": "code",
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L165",
+      "_origin": "ast",
+      "id": "tests_test_company_service_test_owner_updates_current_company",
+      "community": 4,
+      "norm_label": "test_owner_updates_current_company()"
+    },
+    {
       "label": "test_onboard_company_success()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L113",
+      "source_location": "L198",
       "_origin": "ast",
       "id": "tests_test_company_service_test_onboard_company_success",
       "community": 38,
@@ -10148,17 +10208,17 @@
       "label": "test_rotate_agent_token_success_for_owner()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L183",
+      "source_location": "L268",
       "_origin": "ast",
       "id": "tests_test_company_service_test_rotate_agent_token_success_for_owner",
-      "community": 113,
+      "community": 4,
       "norm_label": "test_rotate_agent_token_success_for_owner()"
     },
     {
       "label": "test_rotate_agent_token_denies_cross_company_owner()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L208",
+      "source_location": "L293",
       "_origin": "ast",
       "id": "tests_test_company_service_test_rotate_agent_token_denies_cross_company_owner",
       "community": 4,
@@ -10168,17 +10228,17 @@
       "label": "test_revoke_agent_token_success_for_owner()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L230",
+      "source_location": "L315",
       "_origin": "ast",
       "id": "tests_test_company_service_test_revoke_agent_token_success_for_owner",
-      "community": 113,
+      "community": 4,
       "norm_label": "test_revoke_agent_token_success_for_owner()"
     },
     {
       "label": "test_revoke_agent_token_returns_not_found()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L256",
+      "source_location": "L341",
       "_origin": "ast",
       "id": "tests_test_company_service_test_revoke_agent_token_returns_not_found",
       "community": 4,
@@ -10188,7 +10248,7 @@
       "label": "test_watch_company_updates_success()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L276",
+      "source_location": "L361",
       "_origin": "ast",
       "id": "tests_test_company_service_test_watch_company_updates_success",
       "community": 4,
@@ -10198,17 +10258,17 @@
       "label": "test_create_user_success()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L312",
+      "source_location": "L397",
       "_origin": "ast",
       "id": "tests_test_company_service_test_create_user_success",
-      "community": 113,
+      "community": 4,
       "norm_label": "test_create_user_success()"
     },
     {
       "label": "test_list_users_includes_all_company_owners()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L372",
+      "source_location": "L457",
       "_origin": "ast",
       "id": "tests_test_company_service_test_list_users_includes_all_company_owners",
       "community": 4,
@@ -10218,7 +10278,7 @@
       "label": "test_list_users_marks_inactive_collaborators()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L410",
+      "source_location": "L495",
       "_origin": "ast",
       "id": "tests_test_company_service_test_list_users_marks_inactive_collaborators",
       "community": 4,
@@ -10228,7 +10288,7 @@
       "label": "test_resolve_user_management_company_id_rejects_invalid_scope()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L462",
+      "source_location": "L547",
       "_origin": "ast",
       "id": "tests_test_company_service_test_resolve_user_management_company_id_rejects_invalid_scope",
       "community": 4,
@@ -10238,7 +10298,7 @@
       "label": "test_validate_managed_user_role_rejects_unknown_role()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L478",
+      "source_location": "L563",
       "_origin": "ast",
       "id": "tests_test_company_service_test_validate_managed_user_role_rejects_unknown_role",
       "community": 4,
@@ -10248,7 +10308,7 @@
       "label": "test_owner_updates_tenant_user_role()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L488",
+      "source_location": "L573",
       "_origin": "ast",
       "id": "tests_test_company_service_test_owner_updates_tenant_user_role",
       "community": 4,
@@ -10258,7 +10318,7 @@
       "label": "test_owner_cannot_assign_internal_role()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L526",
+      "source_location": "L611",
       "_origin": "ast",
       "id": "tests_test_company_service_test_owner_cannot_assign_internal_role",
       "community": 4,
@@ -10268,7 +10328,7 @@
       "label": "test_billing_client_role_is_no_longer_assignable()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L551",
+      "source_location": "L636",
       "_origin": "ast",
       "id": "tests_test_company_service_test_billing_client_role_is_no_longer_assignable",
       "community": 4,
@@ -10278,7 +10338,7 @@
       "label": "test_owner_cannot_update_own_role()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L578",
+      "source_location": "L663",
       "_origin": "ast",
       "id": "tests_test_company_service_test_owner_cannot_update_own_role",
       "community": 4,
@@ -10288,7 +10348,7 @@
       "label": "test_owner_deactivates_tenant_user()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L604",
+      "source_location": "L689",
       "_origin": "ast",
       "id": "tests_test_company_service_test_owner_deactivates_tenant_user",
       "community": 4,
@@ -10298,7 +10358,7 @@
       "label": "test_owner_deactivates_another_owner()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L641",
+      "source_location": "L726",
       "_origin": "ast",
       "id": "tests_test_company_service_test_owner_deactivates_another_owner",
       "community": 4,
@@ -10308,7 +10368,7 @@
       "label": "test_superadmin_deactivates_company_owner_linked_by_owner_id()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L679",
+      "source_location": "L764",
       "_origin": "ast",
       "id": "tests_test_company_service_test_superadmin_deactivates_company_owner_linked_by_owner_id",
       "community": 4,
@@ -10318,7 +10378,7 @@
       "label": "test_owner_reactivates_tenant_user()",
       "file_type": "code",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L720",
+      "source_location": "L805",
       "_origin": "ast",
       "id": "tests_test_company_service_test_owner_reactivates_tenant_user",
       "community": 4,
@@ -10921,7 +10981,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_minio_artifacts",
-      "community": 40,
+      "community": 43,
       "norm_label": "test_minio_artifacts.py"
     },
     {
@@ -10931,7 +10991,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "tests_test_minio_artifacts_test_parse_minio_reference_supports_explicit_and_default_bucket",
-      "community": 40,
+      "community": 43,
       "norm_label": "test_parse_minio_reference_supports_explicit_and_default_bucket()"
     },
     {
@@ -10941,7 +11001,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_test_minio_artifacts_test_artifact_payload_maps_topology_json_to_sandbox_request",
-      "community": 40,
+      "community": 43,
       "norm_label": "test_artifact_payload_maps_topology_json_to_sandbox_request()"
     },
     {
@@ -10951,7 +11011,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "tests_test_minio_artifacts_test_download_minio_artifact_reads_object_and_returns_deployable_payload",
-      "community": 40,
+      "community": 43,
       "norm_label": "test_download_minio_artifact_reads_object_and_returns_deployable_payload()"
     },
     {
@@ -11031,7 +11091,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "tests_test_models_test_onboarding_invitation",
-      "community": 12,
+      "community": 38,
       "norm_label": "test_onboarding_invitation()"
     },
     {
@@ -11041,7 +11101,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "tests_test_models_test_scan_vulnerability_evidence_chain",
-      "community": 37,
+      "community": 12,
       "norm_label": "test_scan_vulnerability_evidence_chain()"
     },
     {
@@ -11111,7 +11171,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "tests_test_models_rationale_113",
-      "community": 12,
+      "community": 38,
       "norm_label": "tests first-login invitation persistence and relationship to a user."
     },
     {
@@ -11121,7 +11181,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "tests_test_models_rationale_133",
-      "community": 37,
+      "community": 12,
       "norm_label": "tests the full chain of scans, vulnerabilities, and evidences."
     },
     {
@@ -11538,7 +11598,7 @@
       "label": "mock_update_scan_status()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_update_scan_status",
       "community": 0,
@@ -11548,7 +11608,7 @@
       "label": "mock_create_sandbox()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L20",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_create_sandbox",
       "community": 0,
@@ -11558,7 +11618,7 @@
       "label": "mock_destroy_sandbox()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L32",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_destroy_sandbox",
       "community": 0,
@@ -11568,7 +11628,7 @@
       "label": "mock_save_vulnerabilities()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L37",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_save_vulnerabilities",
       "community": 0,
@@ -11578,7 +11638,7 @@
       "label": "mock_generate_and_store_pdf_report()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L42",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_generate_and_store_pdf_report",
       "community": 0,
@@ -11588,7 +11648,7 @@
       "label": "mock_seed_target_databases()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L49",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_seed_target_databases",
       "community": 0,
@@ -11598,7 +11658,7 @@
       "label": "mock_download_minio_artifact()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L60",
+      "source_location": "L61",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_download_minio_artifact",
       "community": 0,
@@ -11608,7 +11668,7 @@
       "label": "mock_download_invalid_topology_artifact()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L73",
+      "source_location": "L74",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_download_invalid_topology_artifact",
       "community": 0,
@@ -11618,7 +11678,7 @@
       "label": "mock_run_pentest()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L86",
+      "source_location": "L87",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_run_pentest",
       "community": 0,
@@ -11628,7 +11688,7 @@
       "label": "mock_identify_attack_targets()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L91",
+      "source_location": "L92",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_identify_attack_targets",
       "community": 0,
@@ -11638,7 +11698,7 @@
       "label": "mock_build_sandbox_topology()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L125",
+      "source_location": "L126",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_build_sandbox_topology",
       "community": 0,
@@ -11648,17 +11708,27 @@
       "label": "mock_run_targeted_pentest()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L142",
+      "source_location": "L143",
       "_origin": "ast",
       "id": "tests_test_workflow_mock_run_targeted_pentest",
       "community": 0,
       "norm_label": "mock_run_targeted_pentest()"
     },
     {
+      "label": "mock_run_crew_pentest()",
+      "file_type": "code",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L160",
+      "_origin": "ast",
+      "id": "tests_test_workflow_mock_run_crew_pentest",
+      "community": 0,
+      "norm_label": "mock_run_crew_pentest()"
+    },
+    {
       "label": "test_pentest_workflow_success()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L159",
+      "source_location": "L166",
       "_origin": "ast",
       "id": "tests_test_workflow_test_pentest_workflow_success",
       "community": 0,
@@ -11668,7 +11738,7 @@
       "label": "failing_update_scan_status()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L205",
+      "source_location": "L212",
       "_origin": "ast",
       "id": "tests_test_workflow_failing_update_scan_status",
       "community": 0,
@@ -11678,7 +11748,7 @@
       "label": "test_pentest_workflow_failure()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L212",
+      "source_location": "L219",
       "_origin": "ast",
       "id": "tests_test_workflow_test_pentest_workflow_failure",
       "community": 0,
@@ -11688,7 +11758,7 @@
       "label": "test_graph_driven_pentest_workflow_success()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L253",
+      "source_location": "L260",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
       "community": 0,
@@ -11698,7 +11768,7 @@
       "label": "test_graph_driven_workflow_builds_crewai_activity_payload()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L296",
+      "source_location": "L315",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_builds_crewai_activity_payload",
       "community": 0,
@@ -11708,7 +11778,7 @@
       "label": "test_graph_driven_workflow_downloads_minio_artifact_before_deploying()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L342",
+      "source_location": "L362",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "community": 0,
@@ -11718,7 +11788,7 @@
       "label": "test_pentest_workflow_rejects_invalid_topology_before_create_sandbox()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L392",
+      "source_location": "L420",
       "_origin": "ast",
       "id": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "community": 0,
@@ -11728,7 +11798,7 @@
       "label": "test_graph_driven_workflow_filters_selected_topology_targets()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L433",
+      "source_location": "L461",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_filters_selected_topology_targets",
       "community": 0,
@@ -11738,7 +11808,7 @@
       "label": "test_graph_driven_workflow_selects_preferred_endpoint_workload()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L461",
+      "source_location": "L489",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_selects_preferred_endpoint_workload",
       "community": 0,
@@ -11748,7 +11818,7 @@
       "label": "test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L491",
+      "source_location": "L519",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict",
       "community": 0,
@@ -11758,7 +11828,7 @@
       "label": "test_graph_driven_workflow_deprioritizes_observability_endpoint()",
       "file_type": "code",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L514",
+      "source_location": "L542",
       "_origin": "ast",
       "id": "tests_test_workflow_test_graph_driven_workflow_deprioritizes_observability_endpoint",
       "community": 0,
@@ -11768,9 +11838,9 @@
       "label": "Test full workflow utilizing mock database activity.",
       "file_type": "rationale",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L160",
+      "source_location": "L167",
       "_origin": "ast",
-      "id": "tests_test_workflow_rationale_160",
+      "id": "tests_test_workflow_rationale_167",
       "community": 0,
       "norm_label": "test full workflow utilizing mock database activity."
     },
@@ -11778,9 +11848,9 @@
       "label": "Test full workflow falling back on FAILED status update.",
       "file_type": "rationale",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L213",
+      "source_location": "L220",
       "_origin": "ast",
-      "id": "tests_test_workflow_rationale_213",
+      "id": "tests_test_workflow_rationale_220",
       "community": 0,
       "norm_label": "test full workflow falling back on failed status update."
     },
@@ -16384,7 +16454,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L424",
+      "source_location": "L425",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
       "target": "src_activities_minio_artifacts_download_minio_artifact"
@@ -18973,7 +19043,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L49",
+      "source_location": "L75",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_session_factory",
       "target": "src_config_db_get_session_factory"
@@ -21677,7 +21747,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L32",
+      "source_location": "L58",
       "weight": 1.0,
       "source": "src_grpc_services_company",
       "target": "src_grpc_services_company_companycreateerror",
@@ -21687,7 +21757,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L39",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_grpc_services_company",
       "target": "src_grpc_services_company_companyservice",
@@ -21812,7 +21882,17 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L118",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice",
+      "target": "src_grpc_services_company_companyservice_company_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L209",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_create_company_db_sync",
@@ -21822,7 +21902,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L507",
+      "source_location": "L580",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_create_user_db_sync",
@@ -21832,7 +21912,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L621",
+      "source_location": "L694",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_createcompany",
@@ -21842,7 +21922,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L617",
+      "source_location": "L690",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_deactivate_user_db_sync",
@@ -21852,7 +21932,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L42",
+      "source_location": "L68",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_init",
@@ -21862,7 +21942,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L888",
+      "source_location": "L1009",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_list_audit_logs_db_sync",
@@ -21872,7 +21952,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L382",
+      "source_location": "L473",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_list_entities_db_sync",
@@ -21882,7 +21962,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L852",
+      "source_location": "L973",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_listauditlogs",
@@ -21892,7 +21972,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L471",
+      "source_location": "L544",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_listcompanies",
@@ -21902,7 +21982,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L155",
+      "source_location": "L246",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_onboard_company_db_sync",
@@ -21912,7 +21992,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L233",
+      "source_location": "L324",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_onboardcompany",
@@ -21922,7 +22002,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L52",
+      "source_location": "L78",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_resolve_agent_token_company_id",
@@ -21932,7 +22012,17 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L75",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice",
+      "target": "src_grpc_services_company_companyservice_resolve_current_company_id",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L101",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_resolve_user_management_company_id",
@@ -21942,7 +22032,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L315",
+      "source_location": "L406",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_revoke_agent_token_db_sync",
@@ -21952,7 +22042,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L357",
+      "source_location": "L448",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_revokeagenttoken",
@@ -21962,7 +22052,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L299",
+      "source_location": "L390",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_rotate_agent_token_db_sync",
@@ -21972,7 +22062,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L331",
+      "source_location": "L422",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_rotateagenttoken",
@@ -21982,7 +22072,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L47",
+      "source_location": "L73",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -21992,7 +22082,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L587",
+      "source_location": "L660",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_set_user_active_db_sync",
@@ -22002,7 +22092,17 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L555",
+      "source_location": "L183",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice",
+      "target": "src_grpc_services_company_companyservice_update_current_company_db_sync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L628",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_update_user_role_db_sync",
@@ -22012,7 +22112,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L98",
+      "source_location": "L135",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_validate_managed_user_role",
@@ -22022,7 +22122,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L811",
+      "source_location": "L932",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice",
       "target": "src_grpc_services_company_companyservice_watchcompanyupdates",
@@ -22092,9 +22192,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L40",
+      "source_location": "L66",
       "weight": 1.0,
-      "source": "src_grpc_services_company_rationale_40",
+      "source": "src_grpc_services_company_rationale_66",
       "target": "src_grpc_services_company_companyservice",
       "confidence_score": 1.0
     },
@@ -22104,7 +22204,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L44",
+      "source_location": "L70",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_init",
       "target": "src_services_email_service_create_email_service"
@@ -22114,7 +22214,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L42",
+      "source_location": "L68",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_init",
       "target": "src_services_email_service_emailservice",
@@ -22125,7 +22225,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L119",
+      "source_location": "L210",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_company_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22136,7 +22236,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L508",
+      "source_location": "L581",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_user_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22147,7 +22247,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L688",
+      "source_location": "L723",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22158,7 +22258,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L889",
+      "source_location": "L1010",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_list_audit_logs_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22169,7 +22269,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L388",
+      "source_location": "L479",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_list_entities_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22180,7 +22280,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L161",
+      "source_location": "L252",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboard_company_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22191,7 +22291,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L261",
+      "source_location": "L352",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboardcompany",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22202,7 +22302,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L316",
+      "source_location": "L407",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_revoke_agent_token_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22213,7 +22313,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L300",
+      "source_location": "L391",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_rotate_agent_token_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22224,7 +22324,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L592",
+      "source_location": "L665",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_set_user_active_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22235,7 +22335,18 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L560",
+      "source_location": "L184",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice_update_current_company_db_sync",
+      "target": "src_grpc_services_company_companyservice_session_factory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L633",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_update_user_role_db_sync",
       "target": "src_grpc_services_company_companyservice_session_factory",
@@ -22246,7 +22357,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L360",
+      "source_location": "L451",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_revokeagenttoken",
       "target": "src_grpc_services_company_companyservice_resolve_agent_token_company_id",
@@ -22257,7 +22368,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L334",
+      "source_location": "L425",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_rotateagenttoken",
       "target": "src_grpc_services_company_companyservice_resolve_agent_token_company_id",
@@ -22268,7 +22379,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L628",
+      "source_location": "L749",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "src_grpc_services_company_companyservice_resolve_user_management_company_id",
@@ -22279,7 +22390,18 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L719",
+      "source_location": "L701",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice_createcompany",
+      "target": "src_grpc_services_company_companyservice_resolve_current_company_id",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L840",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "src_grpc_services_company_companyservice_validate_managed_user_role",
@@ -22290,7 +22412,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L561",
+      "source_location": "L634",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_update_user_role_db_sync",
       "target": "src_grpc_services_company_companyservice_validate_managed_user_role",
@@ -22302,21 +22424,43 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L100",
+      "source_location": "L137",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_validate_managed_user_role",
       "target": "src_models_user_userrole"
     },
     {
-      "relation": "indirect_call",
-      "context": "argument",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L126",
+      "source_location": "L155",
       "weight": 1.0,
-      "source": "src_grpc_services_company_companyservice_create_company_db_sync",
-      "target": "src_models_company_company"
+      "source": "src_grpc_services_company_companyservice_company_summary",
+      "target": "src_models_company_company",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L540",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice_list_entities_db_sync",
+      "target": "src_grpc_services_company_companyservice_company_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L207",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice_update_current_company_db_sync",
+      "target": "src_grpc_services_company_companyservice_company_summary",
+      "confidence_score": 1.0
     },
     {
       "relation": "indirect_call",
@@ -22324,21 +22468,43 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L121",
+      "source_location": "L186",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice_update_current_company_db_sync",
+      "target": "src_models_company_company"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L222",
+      "weight": 1.0,
+      "source": "src_grpc_services_company_companyservice_create_company_db_sync",
+      "target": "src_models_company_company",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/grpc_services/company.py",
+      "source_location": "L212",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_company_db_sync",
       "target": "src_models_user_user"
     },
     {
-      "relation": "indirect_call",
-      "context": "argument",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L169",
+      "source_location": "L268",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboard_company_db_sync",
-      "target": "src_models_company_company"
+      "target": "src_models_company_company",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -22346,7 +22512,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L198",
+      "source_location": "L289",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboard_company_db_sync",
       "target": "src_models_onboarding_invitation_onboardinginvitation"
@@ -22357,7 +22523,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L163",
+      "source_location": "L254",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboard_company_db_sync",
       "target": "src_models_user_user"
@@ -22368,7 +22534,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L187",
+      "source_location": "L278",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboard_company_db_sync",
       "target": "src_utils_auth_utils_hash_password"
@@ -22378,7 +22544,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L233",
+      "source_location": "L324",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboardcompany",
       "target": "onboardcompanyrequest",
@@ -22389,7 +22555,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L233",
+      "source_location": "L324",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboardcompany",
       "target": "onboardcompanyresponse",
@@ -22401,7 +22567,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L262",
+      "source_location": "L353",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboardcompany",
       "target": "src_models_audit_log_auditlog"
@@ -22412,7 +22578,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L282",
+      "source_location": "L373",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_onboardcompany",
       "target": "src_utils_email_utils_send_onboarding_invitation_email"
@@ -22423,7 +22589,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L301",
+      "source_location": "L392",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_rotate_agent_token_db_sync",
       "target": "src_models_company_company"
@@ -22434,7 +22600,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L317",
+      "source_location": "L408",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_revoke_agent_token_db_sync",
       "target": "src_models_company_company"
@@ -22444,7 +22610,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L331",
+      "source_location": "L422",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_rotateagenttoken",
       "target": "rotateagenttokenrequest",
@@ -22455,7 +22621,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L331",
+      "source_location": "L422",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_rotateagenttoken",
       "target": "rotateagenttokenresponse",
@@ -22466,7 +22632,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L357",
+      "source_location": "L448",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_revokeagenttoken",
       "target": "revokeagenttokenrequest",
@@ -22477,7 +22643,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L357",
+      "source_location": "L448",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_revokeagenttoken",
       "target": "revokeagenttokenresponse",
@@ -22489,7 +22655,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L430",
+      "source_location": "L521",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_list_entities_db_sync",
       "target": "src_models_company_company"
@@ -22500,7 +22666,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L391",
+      "source_location": "L482",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_list_entities_db_sync",
       "target": "src_models_user_user"
@@ -22510,7 +22676,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L471",
+      "source_location": "L544",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_listcompanies",
       "target": "listcompaniesrequest",
@@ -22521,7 +22687,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L471",
+      "source_location": "L544",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_listcompanies",
       "target": "listcompaniesresponse",
@@ -22533,7 +22699,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L514",
+      "source_location": "L587",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_user_db_sync",
       "target": "src_models_company_company"
@@ -22544,7 +22710,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L538",
+      "source_location": "L611",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_user_db_sync",
       "target": "src_models_onboarding_invitation_onboardinginvitation"
@@ -22555,7 +22721,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L510",
+      "source_location": "L583",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_user_db_sync",
       "target": "src_models_user_user"
@@ -22566,7 +22732,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L519",
+      "source_location": "L592",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_user_db_sync",
       "target": "src_models_user_userrole"
@@ -22577,7 +22743,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L528",
+      "source_location": "L601",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_create_user_db_sync",
       "target": "src_utils_auth_utils_hash_password"
@@ -22588,7 +22754,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L567",
+      "source_location": "L640",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_update_user_role_db_sync",
       "target": "src_models_user_user"
@@ -22598,7 +22764,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L618",
+      "source_location": "L691",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_deactivate_user_db_sync",
       "target": "src_grpc_services_company_companyservice_set_user_active_db_sync",
@@ -22610,7 +22776,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L595",
+      "source_location": "L668",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_set_user_active_db_sync",
       "target": "src_models_user_user"
@@ -22620,7 +22786,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L621",
+      "source_location": "L694",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "createcompanyrequest",
@@ -22631,7 +22797,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L621",
+      "source_location": "L694",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "createcompanyresponse",
@@ -22643,7 +22809,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L689",
+      "source_location": "L724",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "src_models_audit_log_auditlog"
@@ -22654,7 +22820,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L763",
+      "source_location": "L884",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_createcompany",
       "target": "src_utils_email_utils_send_user_invitation_email"
@@ -22664,7 +22830,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L811",
+      "source_location": "L932",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_watchcompanyupdates",
       "target": "watchcompanyupdatesrequest",
@@ -22675,7 +22841,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L811",
+      "source_location": "L932",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_watchcompanyupdates",
       "target": "watchcompanyupdatesresponse",
@@ -22686,7 +22852,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L852",
+      "source_location": "L973",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_listauditlogs",
       "target": "listauditlogsrequest",
@@ -22697,7 +22863,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L852",
+      "source_location": "L973",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_listauditlogs",
       "target": "listauditlogsresponse",
@@ -22709,7 +22875,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/grpc_services/company.py",
-      "source_location": "L890",
+      "source_location": "L1011",
       "weight": 1.0,
       "source": "src_grpc_services_company_companyservice_list_audit_logs_db_sync",
       "target": "src_models_audit_log_auditlog"
@@ -24117,7 +24283,18 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L318",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "tests_test_company_service_test_company_summary_includes_current_company_metadata",
+      "target": "src_models_company_company"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L403",
       "weight": 1.0,
       "source": "tests_test_company_service_test_create_user_success",
       "target": "src_models_company_company"
@@ -24139,7 +24316,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L232",
+      "source_location": "L317",
       "weight": 1.0,
       "source": "tests_test_company_service_test_revoke_agent_token_success_for_owner",
       "target": "src_models_company_company"
@@ -24150,9 +24327,20 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L185",
+      "source_location": "L270",
       "weight": 1.0,
       "source": "tests_test_company_service_test_rotate_agent_token_success_for_owner",
+      "target": "src_models_company_company"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "tests_test_company_service_test_update_current_company_db_sync",
       "target": "src_models_company_company"
     },
     {
@@ -24392,7 +24580,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L166",
+      "source_location": "L251",
       "weight": 1.0,
       "source": "tests_test_company_service_test_onboard_company_success",
       "target": "src_models_onboarding_invitation_onboardinginvitation"
@@ -24792,6 +24980,17 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "tests_test_company_service_test_company_summary_includes_current_company_metadata",
+      "target": "src_models_user_user"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_company_service.py",
       "source_location": "L37",
       "weight": 1.0,
       "source": "tests_test_company_service_test_create_company_success",
@@ -24814,7 +25013,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L374",
+      "source_location": "L459",
       "weight": 1.0,
       "source": "tests_test_company_service_test_list_users_includes_all_company_owners",
       "target": "src_models_user_user"
@@ -24825,7 +25024,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L412",
+      "source_location": "L497",
       "weight": 1.0,
       "source": "tests_test_company_service_test_list_users_marks_inactive_collaborators",
       "target": "src_models_user_user"
@@ -24836,7 +25035,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L645",
+      "source_location": "L730",
       "weight": 1.0,
       "source": "tests_test_company_service_test_owner_deactivates_another_owner",
       "target": "src_models_user_user"
@@ -24847,7 +25046,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L607",
+      "source_location": "L692",
       "weight": 1.0,
       "source": "tests_test_company_service_test_owner_deactivates_tenant_user",
       "target": "src_models_user_user"
@@ -24858,7 +25057,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L723",
+      "source_location": "L808",
       "weight": 1.0,
       "source": "tests_test_company_service_test_owner_reactivates_tenant_user",
       "target": "src_models_user_user"
@@ -24869,7 +25068,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L491",
+      "source_location": "L576",
       "weight": 1.0,
       "source": "tests_test_company_service_test_owner_updates_tenant_user_role",
       "target": "src_models_user_user"
@@ -24880,9 +25079,20 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_company_service.py",
-      "source_location": "L684",
+      "source_location": "L769",
       "weight": 1.0,
       "source": "tests_test_company_service_test_superadmin_deactivates_company_owner_linked_by_owner_id",
+      "target": "src_models_user_user"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "tests_test_company_service_test_update_current_company_db_sync",
       "target": "src_models_user_user"
     },
     {
@@ -27774,7 +27984,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L674",
+      "source_location": "L675",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
@@ -27804,7 +28014,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L536",
+      "source_location": "L537",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_target_label",
@@ -27814,7 +28024,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L470",
+      "source_location": "L471",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_cleanup",
@@ -27834,7 +28044,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L419",
+      "source_location": "L420",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
@@ -27844,7 +28054,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L404",
+      "source_location": "L405",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_extract_topology",
@@ -27854,7 +28064,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L566",
+      "source_location": "L567",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_filter_targets",
@@ -27864,7 +28074,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L480",
+      "source_location": "L481",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
@@ -27874,7 +28084,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L705",
+      "source_location": "L706",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint",
@@ -27884,7 +28094,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L550",
+      "source_location": "L551",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_minio_reference",
@@ -27894,7 +28104,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L546",
+      "source_location": "L547",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_topology_scan",
@@ -27904,7 +28114,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L527",
+      "source_location": "L528",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_path",
@@ -27914,7 +28124,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L488",
+      "source_location": "L489",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
@@ -27924,7 +28134,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L668",
+      "source_location": "L669",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name",
@@ -27934,7 +28144,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L588",
+      "source_location": "L589",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_endpoint",
@@ -27944,7 +28154,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L555",
+      "source_location": "L556",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_parse_topology_target_ids",
@@ -27984,7 +28194,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L449",
+      "source_location": "L450",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_request_from_sandbox",
@@ -27994,7 +28204,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L435",
+      "source_location": "L436",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
@@ -28004,7 +28214,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L595",
+      "source_location": "L596",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
@@ -28046,7 +28256,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L258",
+      "source_location": "L266",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28057,7 +28267,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L515",
+      "source_location": "L543",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_deprioritizes_observability_endpoint",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28068,7 +28278,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L348",
+      "source_location": "L369",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28079,7 +28289,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L434",
+      "source_location": "L462",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_filters_selected_topology_targets",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28090,7 +28300,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L462",
+      "source_location": "L490",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_selects_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28101,7 +28311,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L492",
+      "source_location": "L520",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow"
@@ -28254,7 +28464,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L486",
+      "source_location": "L487",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_update_status",
@@ -28276,7 +28486,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L444",
+      "source_location": "L445",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_update_debug_bundle",
@@ -28343,7 +28553,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L297",
+      "source_location": "L316",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_builds_crewai_activity_payload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_crew_pentest_request"
@@ -28353,7 +28563,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L420",
+      "source_location": "L421",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_download_minio_artifact_if_needed",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_minio_reference",
@@ -28364,7 +28574,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L439",
+      "source_location": "L440",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_target_databases",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_seed_request_from_sandbox",
@@ -28375,7 +28585,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L483",
+      "source_location": "L484",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_cleanup",
@@ -28386,7 +28596,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L480",
+      "source_location": "L481",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_handle_workflow_failure",
       "target": "src_workflows_graph_pentest_workflow_py_exception",
@@ -28397,7 +28607,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L504",
+      "source_location": "L505",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_build_target_label",
@@ -28408,7 +28618,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L492",
+      "source_location": "L493",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_targets",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_path",
@@ -28420,7 +28630,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L662",
+      "source_location": "L663",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload"
@@ -28431,7 +28641,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L640",
+      "source_location": "L641",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint"
@@ -28442,7 +28652,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L605",
+      "source_location": "L606",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_select_preferred_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name"
@@ -28453,7 +28663,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L679",
+      "source_location": "L680",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name"
@@ -28464,7 +28674,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L706",
+      "source_location": "L707",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_normalize_workload_name"
@@ -28475,7 +28685,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/workflows/graph_pentest_workflow.py",
-      "source_location": "L682",
+      "source_location": "L683",
       "weight": 1.0,
       "source": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_best_endpoint_workload",
       "target": "src_workflows_graph_pentest_workflow_graphdrivenpentestworkflow_is_low_value_endpoint"
@@ -28637,7 +28847,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L218",
+      "source_location": "L225",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_failure",
       "target": "src_workflows_pentest_workflow_pentestworkflow"
@@ -28648,7 +28858,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L398",
+      "source_location": "L426",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
       "target": "src_workflows_pentest_workflow_pentestworkflow"
@@ -28659,7 +28869,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_workflow.py",
-      "source_location": "L166",
+      "source_location": "L173",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_success",
       "target": "src_workflows_pentest_workflow_pentestworkflow"
@@ -29764,10 +29974,20 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L551",
+      "source_location": "L636",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_billing_client_role_is_no_longer_assignable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "tests_test_company_service",
+      "target": "tests_test_company_service_test_company_summary_includes_current_company_metadata",
       "confidence_score": 1.0
     },
     {
@@ -29794,7 +30014,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L312",
+      "source_location": "L397",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_create_user_success",
@@ -29824,7 +30044,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L372",
+      "source_location": "L457",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_list_users_includes_all_company_owners",
@@ -29834,7 +30054,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L410",
+      "source_location": "L495",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_list_users_marks_inactive_collaborators",
@@ -29844,7 +30064,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L113",
+      "source_location": "L198",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_onboard_company_success",
@@ -29854,7 +30074,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L526",
+      "source_location": "L611",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_owner_cannot_assign_internal_role",
@@ -29864,7 +30084,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L578",
+      "source_location": "L663",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_owner_cannot_update_own_role",
@@ -29874,7 +30094,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L641",
+      "source_location": "L726",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_owner_deactivates_another_owner",
@@ -29884,7 +30104,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L604",
+      "source_location": "L689",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_owner_deactivates_tenant_user",
@@ -29894,7 +30114,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L720",
+      "source_location": "L805",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_owner_reactivates_tenant_user",
@@ -29904,7 +30124,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L488",
+      "source_location": "L165",
+      "weight": 1.0,
+      "source": "tests_test_company_service",
+      "target": "tests_test_company_service_test_owner_updates_current_company",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L573",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_owner_updates_tenant_user_role",
@@ -29914,7 +30144,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L462",
+      "source_location": "L547",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_resolve_user_management_company_id_rejects_invalid_scope",
@@ -29924,7 +30154,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L256",
+      "source_location": "L341",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_revoke_agent_token_returns_not_found",
@@ -29934,7 +30164,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L230",
+      "source_location": "L315",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_revoke_agent_token_success_for_owner",
@@ -29944,7 +30174,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L208",
+      "source_location": "L293",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_rotate_agent_token_denies_cross_company_owner",
@@ -29954,7 +30184,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L183",
+      "source_location": "L268",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_rotate_agent_token_success_for_owner",
@@ -29964,7 +30194,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L679",
+      "source_location": "L764",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_superadmin_deactivates_company_owner_linked_by_owner_id",
@@ -29974,7 +30204,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L478",
+      "source_location": "L137",
+      "weight": 1.0,
+      "source": "tests_test_company_service",
+      "target": "tests_test_company_service_test_update_current_company_db_sync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_company_service.py",
+      "source_location": "L563",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_validate_managed_user_role_rejects_unknown_role",
@@ -29984,7 +30224,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_company_service.py",
-      "source_location": "L276",
+      "source_location": "L361",
       "weight": 1.0,
       "source": "tests_test_company_service",
       "target": "tests_test_company_service_test_watch_company_updates_success",
@@ -31320,7 +31560,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L205",
+      "source_location": "L212",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_failing_update_scan_status",
@@ -31330,7 +31570,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L125",
+      "source_location": "L126",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_build_sandbox_topology",
@@ -31340,7 +31580,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_create_sandbox",
@@ -31350,7 +31590,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_destroy_sandbox",
@@ -31360,7 +31600,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L73",
+      "source_location": "L74",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_download_invalid_topology_artifact",
@@ -31370,7 +31610,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L60",
+      "source_location": "L61",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_download_minio_artifact",
@@ -31380,7 +31620,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L42",
+      "source_location": "L43",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
@@ -31390,7 +31630,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L91",
+      "source_location": "L92",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_identify_attack_targets",
@@ -31400,7 +31640,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L86",
+      "source_location": "L160",
+      "weight": 1.0,
+      "source": "tests_test_workflow",
+      "target": "tests_test_workflow_mock_run_crew_pentest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L87",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_run_pentest",
@@ -31410,7 +31660,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L142",
+      "source_location": "L143",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_run_targeted_pentest",
@@ -31420,7 +31670,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_save_vulnerabilities",
@@ -31430,7 +31680,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_seed_target_databases",
@@ -31440,7 +31690,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_mock_update_scan_status",
@@ -31450,7 +31700,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L253",
+      "source_location": "L260",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
@@ -31460,7 +31710,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L296",
+      "source_location": "L315",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_builds_crewai_activity_payload",
@@ -31470,7 +31720,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L514",
+      "source_location": "L542",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_deprioritizes_observability_endpoint",
@@ -31480,7 +31730,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L342",
+      "source_location": "L362",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
@@ -31490,7 +31740,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L433",
+      "source_location": "L461",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_filters_selected_topology_targets",
@@ -31500,7 +31750,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L461",
+      "source_location": "L489",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_selects_preferred_endpoint_workload",
@@ -31510,7 +31760,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L491",
+      "source_location": "L519",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_graph_driven_workflow_uses_graph_targets_when_selected_filter_is_too_strict",
@@ -31520,7 +31770,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L212",
+      "source_location": "L219",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_pentest_workflow_failure",
@@ -31530,7 +31780,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L392",
+      "source_location": "L420",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
@@ -31540,7 +31790,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L159",
+      "source_location": "L166",
       "weight": 1.0,
       "source": "tests_test_workflow",
       "target": "tests_test_workflow_test_pentest_workflow_success",
@@ -31551,461 +31801,10 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L260",
+      "source_location": "L268",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
       "target": "tests_test_workflow_mock_update_scan_status",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L350",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_update_scan_status",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L400",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_update_scan_status",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L168",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_update_scan_status",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L273",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_create_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L363",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_create_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L232",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_create_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L412",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_create_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L180",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_create_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L274",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_destroy_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L364",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_destroy_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L233",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_destroy_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L413",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_destroy_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L181",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_destroy_sandbox",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L261",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_save_vulnerabilities",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L351",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_save_vulnerabilities",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L221",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_save_vulnerabilities",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L401",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_save_vulnerabilities",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L169",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_save_vulnerabilities",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L262",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L352",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L222",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L402",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L170",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L263",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_seed_target_databases",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L353",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_seed_target_databases",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L223",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_seed_target_databases",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L403",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_seed_target_databases",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L171",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_seed_target_databases",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L264",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_download_minio_artifact",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L354",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_download_minio_artifact",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L224",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_download_minio_artifact",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L172",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_download_minio_artifact",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L404",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_download_invalid_topology_artifact",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L225",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_failure",
-      "target": "tests_test_workflow_mock_run_pentest",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L405",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
-      "target": "tests_test_workflow_mock_run_pentest",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L173",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_run_pentest",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L265",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_identify_attack_targets",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L355",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_identify_attack_targets",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L266",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_build_sandbox_topology",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L356",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
-      "target": "tests_test_workflow_mock_build_sandbox_topology",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "collection",
-      "confidence": "INFERRED",
-      "source_file": "tests/test_workflow.py",
-      "source_location": "L281",
-      "weight": 1.0,
-      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
-      "target": "tests_test_workflow_mock_run_targeted_pentest",
       "confidence_score": 0.5
     },
     {
@@ -32016,16 +31815,489 @@
       "source_location": "L371",
       "weight": 1.0,
       "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_update_scan_status",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L428",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_update_scan_status",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_update_scan_status",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L281",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_create_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L384",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_create_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L239",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_create_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L440",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_create_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_create_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L282",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_destroy_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L385",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_destroy_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L240",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_destroy_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L441",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_destroy_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_destroy_sandbox",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L269",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_save_vulnerabilities",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L372",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_save_vulnerabilities",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L228",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_save_vulnerabilities",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L429",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_save_vulnerabilities",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L176",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_save_vulnerabilities",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L270",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L373",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L430",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L177",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_generate_and_store_pdf_report",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L271",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_seed_target_databases",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L374",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_seed_target_databases",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L230",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_seed_target_databases",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L431",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_seed_target_databases",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L178",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_seed_target_databases",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L272",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_download_minio_artifact",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L375",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_download_minio_artifact",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L231",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_download_minio_artifact",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L179",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_download_minio_artifact",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L432",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_download_invalid_topology_artifact",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L232",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_failure",
+      "target": "tests_test_workflow_mock_run_pentest",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L433",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_rejects_invalid_topology_before_create_sandbox",
+      "target": "tests_test_workflow_mock_run_pentest",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L180",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_run_pentest",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L273",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_identify_attack_targets",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L376",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_identify_attack_targets",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L274",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_build_sandbox_topology",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L377",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_build_sandbox_topology",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L289",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
       "target": "tests_test_workflow_mock_run_targeted_pentest",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L392",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_run_targeted_pentest",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L294",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_pentest_workflow_success",
+      "target": "tests_test_workflow_mock_run_crew_pentest",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "collection",
+      "confidence": "INFERRED",
+      "source_file": "tests/test_workflow.py",
+      "source_location": "L397",
+      "weight": 1.0,
+      "source": "tests_test_workflow_test_graph_driven_workflow_downloads_minio_artifact_before_deploying",
+      "target": "tests_test_workflow_mock_run_crew_pentest",
       "confidence_score": 0.5
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L160",
+      "source_location": "L167",
       "weight": 1.0,
-      "source": "tests_test_workflow_rationale_160",
+      "source": "tests_test_workflow_rationale_167",
       "target": "tests_test_workflow_test_pentest_workflow_success",
       "confidence_score": 1.0
     },
@@ -32034,7 +32306,7 @@
       "context": "collection",
       "confidence": "INFERRED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L220",
+      "source_location": "L227",
       "weight": 1.0,
       "source": "tests_test_workflow_test_pentest_workflow_failure",
       "target": "tests_test_workflow_failing_update_scan_status",
@@ -32044,9 +32316,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_workflow.py",
-      "source_location": "L213",
+      "source_location": "L220",
       "weight": 1.0,
-      "source": "tests_test_workflow_rationale_213",
+      "source": "tests_test_workflow_rationale_220",
       "target": "tests_test_workflow_test_pentest_workflow_failure",
       "confidence_score": 1.0
     },
@@ -32602,5 +32874,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "9222bf3ec7f6ba15555103af759effcf338563c4"
+  "built_at_commit": "7c2ea9c490d7d64c1faa54e8354c8607184a8f5b"
 }

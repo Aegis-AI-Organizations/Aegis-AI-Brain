@@ -1,16 +1,16 @@
 # Graph Report - Aegis-AI-Brain  (2026-08-17)
 
 ## Corpus Check
-- 104 files · ~38,682 words
+- 105 files · ~38,712 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1249 nodes · 1961 edges · 108 communities (92 shown, 16 thin omitted)
-- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 321 edges (avg confidence: 0.72)
+- 1251 nodes · 1963 edges · 115 communities (98 shown, 17 thin omitted)
+- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 322 edges (avg confidence: 0.72)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7c2ea9c4`
+- Built from commit: `a36d7048`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -82,6 +82,7 @@
 - [[_COMMUNITY_.RevokeAgentToken|.RevokeAgentToken]]
 - [[_COMMUNITY_sandbox-topology.schema.json|sandbox-topology.schema.json]]
 - [[_COMMUNITY_agent_watcher.py|agent_watcher.py]]
+- [[_COMMUNITY_VulnerabilityServiceServicer|VulnerabilityServiceServicer]]
 - [[_COMMUNITY_test_auth_init.py|test_auth_init.py]]
 - [[_COMMUNITY_.Logout|.Logout]]
 - [[_COMMUNITY_.Refresh|.Refresh]]
@@ -91,6 +92,7 @@
 - [[_COMMUNITY_.SetupPassword|.SetupPassword]]
 - [[_COMMUNITY_conftest.py|conftest.py]]
 - [[_COMMUNITY_.GetMe|.GetMe]]
+- [[_COMMUNITY_TestDatabaseConnection|TestDatabaseConnection]]
 - [[_COMMUNITY_tables|tables]]
 - [[_COMMUNITY_.UpdateEmail|.UpdateEmail]]
 - [[_COMMUNITY_.UpdatePassword|.UpdatePassword]]
@@ -105,6 +107,11 @@
 - [[_COMMUNITY_aegis-ai-brain|aegis-ai-brain]]
 - [[_COMMUNITY_workloads|workloads]]
 - [[_COMMUNITY_databaseSchema|databaseSchema]]
+- [[_COMMUNITY_containers|containers]]
+- [[_COMMUNITY_workloads|workloads]]
+- [[_COMMUNITY_.ListAuditLogs|.ListAuditLogs]]
+- [[_COMMUNITY_.ListCompanies|.ListCompanies]]
+- [[_COMMUNITY_password|password]]
 - [[_COMMUNITY_.WatchCompanyUpdates|.WatchCompanyUpdates]]
 
 ## God Nodes (most connected - your core abstractions)
@@ -124,17 +131,17 @@
   tests/test_auth_service.py → src/models/user.py
 - `test_list_users_owner_visibility()` --calls--> `User`  [INFERRED]
   tests/test_rbac_visibility.py → src/models/user.py
+- `test_generate_and_store_pdf_report_db_fail()` --indirect_call--> `generate_and_store_pdf_report()`  [INFERRED]
+  tests/test_activities.py → src/activities/db_activities.py
 - `test_download_minio_artifact_reads_object_and_returns_deployable_payload()` --calls--> `download_minio_artifact()`  [INFERRED]
   tests/test_minio_artifacts.py → src/activities/minio_artifacts.py
 - `test_grpc_server_mtls_fails_when_certificate_missing()` --calls--> `serve()`  [INFERRED]
-  tests/test_grpc_server_entry.py → src/grpc_server.py
-- `test_grpc_server_mtls_requires_client_certificate()` --calls--> `serve()`  [INFERRED]
   tests/test_grpc_server_entry.py → src/grpc_server.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (108 total, 16 thin omitted)
+## Communities (115 total, 17 thin omitted)
 
 ### Community 0 - "GraphDrivenPentestWorkflow"
 Cohesion: 0.09
@@ -157,20 +164,20 @@ Cohesion: 0.07
 Nodes (21): Company, Company model mapped to the 'companies' table., User model mapped to the 'users' table., User, test_update_email_conflict(), test_update_password_invalid_old(), test_update_profile_success(), test_company_summary_includes_current_company_metadata() (+13 more)
 
 ### Community 5 - "AuthService"
-Cohesion: 0.10
-Nodes (16): LoginRequest, LoginResponse, RemoveAvatarRequest, RemoveAvatarResponse, AuthErrorCode, AuthService, Authenticates user and returns Access + Refresh tokens., Synchronous part of Refresh logic. (+8 more)
+Cohesion: 0.29
+Nodes (4): AuthErrorCode, Structured error codes for Auth synchronization methods., Synchronous part of Logout logic., Lazy-loaded session factory to avoid startup failure.
 
 ### Community 6 - "properties"
-Cohesion: 0.12
-Nodes (16): type, externalRoute, additionalProperties, properties, type, $ref, type, type (+8 more)
+Cohesion: 0.07
+Nodes (29): type, type, externalRoute, file, additionalProperties, properties, type, additionalProperties (+21 more)
 
 ### Community 7 - "$ref"
-Cohesion: 0.11
-Nodes (19): items, type, description, items, type, description, items, type (+11 more)
+Cohesion: 0.13
+Nodes (15): items, type, description, items, type, description, items, type (+7 more)
 
 ### Community 8 - "CompanyService"
-Cohesion: 0.09
-Nodes (17): CreateCompanyRequest, CreateCompanyResponse, ListAuditLogsRequest, ListAuditLogsResponse, ListCompaniesRequest, ListCompaniesResponse, OnboardCompanyRequest, OnboardCompanyResponse (+9 more)
+Cohesion: 0.16
+Nodes (6): CreateCompanyRequest, CreateCompanyResponse, OnboardCompanyRequest, OnboardCompanyResponse, CompanyService, CompanyService handles company creation and administrative listing.
 
 ### Community 9 - "AgentService"
 Cohesion: 0.11
@@ -185,12 +192,12 @@ Cohesion: 0.08
 Nodes (12): BillingService, BillingServiceServicer, BillingServiceStub, BillingService handles token management and consumption history., Constructor.          Args:             channel: A grpc.Channel., BillingService handles token management and consumption history., GetBalance retrieves the current token balance for a company., GetLedger retrieves the history of token transactions for a company. (+4 more)
 
 ### Community 12 - "test_auth_service.py"
-Cohesion: 0.08
-Nodes (26): DeclarativeBase, Base, Modern SQLAlchemy declarative base for all models., License, License model mapped to the 'licenses' table., Evidence, Scan model mapped to the 'scans' table., Vulnerability model mapped to the 'vulnerabilities' table. (+18 more)
+Cohesion: 0.10
+Nodes (17): DeclarativeBase, CompanyCreateError, AuditLog, Base, Modern SQLAlchemy declarative base for all models., License, License model mapped to the 'licenses' table., Evidence (+9 more)
 
 ### Community 13 - "get_db_connection"
-Cohesion: 0.11
-Nodes (8): Connection, get_db_connection(), Establishes a raw connection to the PostgreSQL database (legacy)., ScanService, VulnerabilityService, Test returning a database connection on success., Test raising ConnectionError when database connection fails., TestDatabaseConnection
+Cohesion: 0.13
+Nodes (8): Connection, get_db_connection(), Establishes a raw connection to the PostgreSQL database (legacy)., normalize_persisted_target_image(), ScanService, to_pb_timestamp(), _extract_loot_fields(), VulnerabilityService
 
 ### Community 14 - "database_seeding.py"
 Cohesion: 0.43
@@ -205,8 +212,8 @@ Cohesion: 0.18
 Nodes (13): serve(), AuthInterceptor, gRPC interceptor for JWT validation and verified identity injection., test_grpc_server_mtls_fails_when_certificate_missing(), test_grpc_server_mtls_requires_client_certificate(), test_grpc_server_serve_registration(), MockHandlerCallDetails, test_auth_interceptor_expired_token() (+5 more)
 
 ### Community 17 - "sandbox_topology_validation.py"
-Cohesion: 0.30
-Nodes (13): Path, _extract_topology(), _format_path(), Any, SandboxTopologyValidationError, _schema(), _schema_path(), validate_sandbox_topology() (+5 more)
+Cohesion: 0.25
+Nodes (14): Path, _extract_topology(), _format_path(), Any, SandboxTopologyValidationError, _schema(), _schema_path(), validate_sandbox_topology() (+6 more)
 
 ### Community 18 - "test_grpc_server.py"
 Cohesion: 0.18
@@ -221,8 +228,8 @@ Cohesion: 0.17
 Nodes (8): PentestWorkflow, Exception, Helper to update scan status via activity., Ask the dedicated Deployer worker to create the sandbox., Execute the actual pentest activity on the Worker., Main orchestration workflow that simulates a pentest., Ask the dedicated Deployer worker to destroy the sandbox., Handles cleanup and status update on workflow failure.
 
 ### Community 21 - "object"
-Cohesion: 0.15
-Nodes (8): InternalAuthService, InternalAuthServiceServicer, InternalAuthServiceStub, Constructor.          Args:             channel: A grpc.Channel., InternalAuthService handles internal authentication and authorization between se, VerifyToken validates a raw JWT token and returns the associated tenant informat, InternalAuthService handles internal authentication and authorization between se, InternalAuthService handles internal authentication and authorization between se
+Cohesion: 0.12
+Nodes (12): object, AuthServiceStub, Constructor.          Args:             channel: A grpc.Channel., AuthService handles user authentication, session management, and JWT generation., InternalAuthService, InternalAuthServiceServicer, InternalAuthServiceStub, Constructor.          Args:             channel: A grpc.Channel. (+4 more)
 
 ### Community 23 - "Base"
 Cohesion: 0.07
@@ -230,15 +237,15 @@ Nodes (13): AgentService, AgentServiceServicer, AgentServiceStub, Constructor.  
 
 ### Community 24 - "properties"
 Cohesion: 0.12
-Nodes (17): type, properties, type, type, databaseName, engine, password, source_container_id (+9 more)
+Nodes (17): type, type, properties, type, database_name, databaseName, engine, source_container_id (+9 more)
 
 ### Community 25 - "AuthService"
-Cohesion: 0.21
-Nodes (7): normalize_persisted_target_image(), get_identity(), Securely extracts identity from verified context or gRPC metadata fallback., Decorator to inject identity into the handler.     Supports both async functions, to_pb_timestamp(), with_identity(), _extract_loot_fields()
+Cohesion: 0.30
+Nodes (4): get_identity(), Securely extracts identity from verified context or gRPC metadata fallback., Decorator to inject identity into the handler.     Supports both async functions, with_identity()
 
 ### Community 26 - "db.py"
-Cohesion: 0.14
-Nodes (8): ScanService handles orchestration of security scans., StartScan initiates a new security scan for a target image., GetScanStatus returns the current status and timing of a scan., ListScans retrieves a history of all scans., GetScanReport returns the PDF report data for a completed scan., WatchScanStatus provides a stream of scan status updates., UpdateScanStatus updates the status of a scan (called by Agents)., ScanServiceServicer
+Cohesion: 0.07
+Nodes (13): Constructor.          Args:             channel: A grpc.Channel., ScanService handles orchestration of security scans., ScanService handles orchestration of security scans., StartScan initiates a new security scan for a target image., GetScanStatus returns the current status and timing of a scan., ListScans retrieves a history of all scans., GetScanReport returns the PDF report data for a completed scan., WatchScanStatus provides a stream of scan status updates. (+5 more)
 
 ### Community 27 - "Neo4jSandboxTopologyService"
 Cohesion: 0.26
@@ -249,52 +256,52 @@ Cohesion: 0.10
 Nodes (15): hash_password(), Verifies a plain-text password against a stored bcrypt hash.      Args:, Hashes a plain-text password using the bcrypt algorithm.      Args:         pass, verify_password(), test_login_db_error(), test_login_inactive_user(), test_login_success(), test_refresh_success() (+7 more)
 
 ### Community 29 - "properties"
-Cohesion: 0.15
-Nodes (13): properties, source, source_name, sourceName, target, target_name, targetName, type (+5 more)
+Cohesion: 0.12
+Nodes (16): additionalProperties, properties, type, connection, source, source_name, sourceName, target (+8 more)
 
 ### Community 30 - "CompanyServiceServicer"
 Cohesion: 0.12
 Nodes (9): CompanyServiceServicer, ListAuditLogs retrieves system audit trails (Admin only)., CompanyService handles registration and administrative management of companies., CreateCompany registers a new company in the system., ListCompanies retrieves all companies (SuperAdmin only)., OnboardCompany handles the creation of a new company and its owner in one step., RotateAgentToken generates a new deployment token for a company., RevokeAgentToken invalidates the current deployment token for a company. (+1 more)
 
 ### Community 31 - "VulnerabilityService"
-Cohesion: 0.12
-Nodes (9): Constructor.          Args:             channel: A grpc.Channel., VulnerabilityService handles retrieval of vulnerability data., GetVulnerabilities returns a list of vulnerabilities for a scan., GetEvidences returns the evidence collected for a specific vulnerability., VulnerabilityService handles retrieval of vulnerability data., VulnerabilityService handles retrieval of vulnerability data., VulnerabilityService, VulnerabilityServiceServicer (+1 more)
+Cohesion: 0.20
+Nodes (5): Constructor.          Args:             channel: A grpc.Channel., VulnerabilityService handles retrieval of vulnerability data., VulnerabilityService handles retrieval of vulnerability data., VulnerabilityService, VulnerabilityServiceStub
 
 ### Community 32 - "test_models.py"
-Cohesion: 0.20
-Nodes (10): _execute_generate_and_store_pdf_report(), generate_and_store_pdf_report(), Generates PDF bytes in memory and stores them in scans.report_pdf., Generates a structured PDF report in memory and stores it in scans.report_pdf., Test generating and storing a PDF report successfully., Test exception when storing PDF for a missing scan., Test PDF report activity when DB connection cannot be established., test_generate_and_store_pdf_report_db_fail() (+2 more)
+Cohesion: 0.25
+Nodes (8): _execute_generate_and_store_pdf_report(), generate_and_store_pdf_report(), Generates PDF bytes in memory and stores them in scans.report_pdf., Generates a structured PDF report in memory and stores it in scans.report_pdf., Test generating and storing a PDF report successfully., Test exception when storing PDF for a missing scan., test_generate_and_store_pdf_report_not_found(), test_generate_and_store_pdf_report_success()
 
 ### Community 33 - "properties"
 Cohesion: 0.13
 Nodes (15): items, type, initContainer, $ref, minLength, type, additionalProperties, properties (+7 more)
 
 ### Community 34 - "AgentService"
-Cohesion: 0.15
-Nodes (13): type, file, additionalProperties, properties, required, type, minimum, type (+5 more)
+Cohesion: 0.17
+Nodes (15): db_session(), Session, Tests first-login invitation persistence and relationship to a user., Tests the basic License model., In-memory SQLite session for testing models., Tests the Company model creation and its basic fields., Tests the User model, including the role enum and default fields., Tests complex relationships between companies and users (owner/members). (+7 more)
 
 ### Community 35 - "AgentServiceServicer"
 Cohesion: 0.15
 Nodes (10): _build_db_url(), get_engine(), get_session(), get_session_factory(), Session, Builds the SQLAlchemy DB URL securely., Lazily initializes and returns the SQLAlchemy engine., Lazily initializes and returns the session factory. (+2 more)
 
 ### Community 36 - "ScanService"
-Cohesion: 0.14
-Nodes (5): Constructor.          Args:             channel: A grpc.Channel., ScanService handles orchestration of security scans., ScanService handles orchestration of security scans., ScanService, ScanServiceStub
+Cohesion: 0.22
+Nodes (9): additionalProperties, properties, type, databaseIndex, minLength, type, name, unique (+1 more)
 
 ### Community 38 - "OnboardingInvitation"
-Cohesion: 0.22
-Nodes (6): OnboardingInvitation, One-time token used to activate an onboarded owner account., test_setup_password_used_token(), test_onboard_company_success(), Tests first-login invitation persistence and relationship to a user., test_onboarding_invitation()
+Cohesion: 0.20
+Nodes (7): OnboardingInvitation, One-time token used to activate an onboarded owner account., User roles matching the PostgreSQL Enum 'user_role'., UserRole, str, test_setup_password_non_pending_user(), test_onboard_company_success()
 
 ### Community 39 - "type"
 Cohesion: 0.15
 Nodes (13): items, type, items, type, items, type, type, aliases (+5 more)
 
 ### Community 41 - "update_scan_status"
-Cohesion: 0.19
-Nodes (12): _execute_status_update(), Internal helper to execute the SQL update., Updates the status of a specific scan in the PostgreSQL database., update_scan_status(), Test updating the status of a scan successfully., Test intermediate status updates do not set completed_at., Test activity throwing exception when rowcount is 0., Test activity throwing exception when DB is down. (+4 more)
+Cohesion: 0.16
+Nodes (14): _execute_status_update(), Internal helper to execute the SQL update., Updates the status of a specific scan in the PostgreSQL database., update_scan_status(), Test updating the status of a scan successfully., Test PDF report activity when DB connection cannot be established., Test intermediate status updates do not set completed_at., Test activity throwing exception when rowcount is 0. (+6 more)
 
 ### Community 42 - "ping_pb2_grpc.py"
-Cohesion: 0.12
-Nodes (12): object, AuthServiceStub, Constructor.          Args:             channel: A grpc.Channel., AuthService handles user authentication, session management, and JWT generation., PingService, PingServiceServicer, PingServiceStub, Constructor.          Args:             channel: A grpc.Channel. (+4 more)
+Cohesion: 0.15
+Nodes (8): PingService, PingServiceServicer, PingServiceStub, Constructor.          Args:             channel: A grpc.Channel., Missing associated documentation comment in .proto file., Missing associated documentation comment in .proto file., Missing associated documentation comment in .proto file., Missing associated documentation comment in .proto file.
 
 ### Community 43 - "get_session_factory"
 Cohesion: 0.32
@@ -309,8 +316,8 @@ Cohesion: 0.17
 Nodes (11): 📡 Agents & Statut Runtime, 🗄️ Architecture de la Base de Données & Modèles, 🔐 Authentification & Suivi de Session, 🛠️ Détails d'Implémentation, 🏢 Entreprises & Multi-Tenancy, 🏗️ Modèles Principaux, 🎯 Pentest & Vulnérabilités, Support JSONB (+3 more)
 
 ### Community 46 - "$defs"
-Cohesion: 0.17
-Nodes (12): type, additionalProperties, type, $defs, connection, stringMap, workload, additionalProperties (+4 more)
+Cohesion: 0.22
+Nodes (9): type, $defs, stringMap, workload, additionalProperties, type, additionalProperties, required (+1 more)
 
 ### Community 47 - "properties"
 Cohesion: 0.17
@@ -333,12 +340,12 @@ Cohesion: 0.20
 Nodes (9): 1. Proto (`Aegis-AI-Proto`), 2. Brain (`Aegis-AI-Brain`), 3. API Gateway (`Aegis-AI-Api-Gateway`), 4. Dashboard (`Aegis-AI-Dashboard`), Changes Made, CI/CD Stabilization, Real-Time Update Flow, Verification (+1 more)
 
 ### Community 53 - "columns"
-Cohesion: 0.10
-Nodes (21): items, type, additionalProperties, properties, type, additionalProperties, properties, type (+13 more)
+Cohesion: 0.17
+Nodes (12): items, type, additionalProperties, properties, type, databaseForeignKey, columns, referenced_columns (+4 more)
 
 ### Community 54 - "properties"
-Cohesion: 0.50
-Nodes (4): description, items, type, externalMocks
+Cohesion: 0.29
+Nodes (3): Synchronous part of Refresh logic., Generates a JWT Access Token valid for 15 minutes., Helper to hash refresh tokens consistently.
 
 ### Community 55 - "properties"
 Cohesion: 0.25
@@ -388,6 +395,14 @@ Nodes (16): items, type, items, type, items, type, $ref, items (+8 more)
 Cohesion: 0.25
 Nodes (7): additionalProperties, anyOf, $id, required, $schema, title, type
 
+### Community 68 - "agent_watcher.py"
+Cohesion: 0.33
+Nodes (4): LoginRequest, LoginResponse, Authenticates user and returns Access + Refresh tokens., Synchronous part of Login logic.
+
+### Community 70 - "VulnerabilityServiceServicer"
+Cohesion: 0.33
+Nodes (4): VulnerabilityService handles retrieval of vulnerability data., GetVulnerabilities returns a list of vulnerabilities for a scan., GetEvidences returns the evidence collected for a specific vulnerability., VulnerabilityServiceServicer
+
 ### Community 71 - "test_auth_init.py"
 Cohesion: 0.40
 Nodes (4): Verify session_factory is only created on first access., Verify AuthService initializes without triggering DB configuration., test_auth_service_init_is_truly_lazy(), test_auth_service_lazy_factory()
@@ -416,9 +431,17 @@ Nodes (4): target_port, maximum, minimum, type
 Cohesion: 0.50
 Nodes (3): SetupPasswordRequest, SetupPasswordResponse, Activates an invited account and starts a user session.
 
+### Community 82 - "TestDatabaseConnection"
+Cohesion: 0.33
+Nodes (3): Test returning a database connection on success., Test raising ConnectionError when database connection fails., TestDatabaseConnection
+
 ### Community 83 - "tables"
 Cohesion: 0.67
 Nodes (3): tables, items, type
+
+### Community 84 - ".UpdateEmail"
+Cohesion: 0.18
+Nodes (7): RemoveAvatarRequest, RemoveAvatarResponse, AuthService, Synchronous part of GetMe logic., AuthService handles user login, token refresh, and logout., UpdateEmailRequest, UpdateEmailResponse
 
 ### Community 87 - ".WatchCompanyUpdates"
 Cohesion: 0.50
@@ -436,19 +459,27 @@ Nodes (5): CompanyService, CompanyServiceStub, Constructor.          Args:      
 Cohesion: 0.67
 Nodes (3): additionalProperties, type, databaseSchema
 
+### Community 109 - "containers"
+Cohesion: 0.50
+Nodes (4): description, items, type, containers
+
+### Community 110 - "workloads"
+Cohesion: 0.50
+Nodes (4): workloads, description, items, type
+
 ## Knowledge Gaps
 - **178 isolated node(s):** `entrypoint.sh script`, `aegis-ai-brain`, `$schema`, `$id`, `title` (+173 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthService` connect `AuthService` to `User`, `OnboardingInvitation`, `.Logout`, `.Refresh`, `CompanyService`, `.SetupPassword`, `.GetMe`, `CompanyService`, `.UpdateEmail`, `.UpdatePassword`, `.UpdateProfile`?**
+- **Why does `AuthService` connect `.UpdateEmail` to `agent_watcher.py`, `AuthService`, `OnboardingInvitation`, `User`, `.Logout`, `.Refresh`, `test_auth_service.py`, `.SetupPassword`, `.GetMe`, `CompanyService`, `.UpdatePassword`, `properties`, `.UpdateProfile`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `$defs` connect `$defs` to `properties`, `AgentService`, `sandbox-topology.schema.json`, `properties`, `databaseSchema`, `properties`, `name`, `properties`, `columns`, `properties`, `externalMock`, `service`?**
+- **Why does `$defs` connect `$defs` to `properties`, `sandbox-topology.schema.json`, `ScanService`, `properties`, `databaseSchema`, `properties`, `name`, `properties`, `service`, `columns`, `properties`, `externalMock`, `properties`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
-- **Why does `User` connect `User` to `test_rbac_visibility.py`, `AuthService`, `OnboardingInvitation`, `CompanyService`, `test_auth_service.py`, `CompanyService`, `hash_password`?**
+- **Why does `User` connect `User` to `test_rbac_visibility.py`, `AgentService`, `agent_watcher.py`, `AuthService`, `OnboardingInvitation`, `CompanyService`, `test_auth_service.py`, `CompanyService`, `.UpdateEmail`, `properties`, `hash_password`?**
   _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **Are the 47 inferred relationships involving `User` (e.g. with `AuthErrorCode` and `AuthService`) actually correct?**
   _`User` has 47 INFERRED edges - model-reasoned connections that need verification._

@@ -317,10 +317,20 @@ def test_graph_driven_workflow_builds_crewai_activity_payload():
         scan_id="scan-1",
         sandbox_host="aegis-target.aegis-war-room-scan-1.svc.cluster.local",
         sandbox_port=8080,
-        attack_targets=[{"path": "/search", "label": "default-search", "target_name": "aegis-target", "criticality": 5, "score": 9}],
+        attack_targets=[
+            {
+                "path": "/search",
+                "label": "default-search",
+                "target_name": "aegis-target",
+                "criticality": 5,
+                "score": 9,
+            }
+        ],
         sandbox_request={
             "preferred_endpoint_workload": "aegis-target",
-            "topology": {"containers": [{"name": "aegis-target", "image": "python:3.12-alpine"}]},
+            "topology": {
+                "containers": [{"name": "aegis-target", "image": "python:3.12-alpine"}]
+            },
         },
         pentest_report={"status": "COMPLETED", "target_count": 1},
         seed_contract={"seed_flag": "aegis-flag-1234", "seeded_count": 0},
@@ -412,7 +422,9 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
     assert CREATED_SANDBOX_REQUESTS[-1]["scan_id"] == scan_id
     assert CREATED_SANDBOX_REQUESTS[-1]["preferred_endpoint_workload"] == "web"
     assert "topology_json" in CREATED_SANDBOX_REQUESTS[-1]
-    assert CREWAI_REQUESTS[-1]["topology_summary"]["preferred_endpoint_workload"] == "web"
+    assert (
+        CREWAI_REQUESTS[-1]["topology_summary"]["preferred_endpoint_workload"] == "web"
+    )
     assert CREWAI_REQUESTS[-1]["pentest_report"]["status"] == "COMPLETED"
 
 

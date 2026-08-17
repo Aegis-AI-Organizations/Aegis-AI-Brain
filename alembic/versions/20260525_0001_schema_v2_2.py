@@ -103,6 +103,7 @@ def upgrade() -> None:
         ),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("report_pdf", sa.LargeBinary(), nullable=True),
+        sa.Column("debug_bundle", sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("temporal_workflow_id"),
     )

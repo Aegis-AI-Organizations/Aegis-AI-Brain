@@ -349,6 +349,7 @@ def test_graph_driven_workflow_builds_crewai_activity_payload():
             "pentest_target_count": 1,
         },
         "seed_contract": {"seed_flag": "aegis-flag-1234", "seeded_count": 0},
+        "pentest_report": {"status": "COMPLETED", "target_count": 1},
         "constraints": {
             "mode": "non_destructive",
             "allow_patch_apply": False,
@@ -412,6 +413,7 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
     assert CREATED_SANDBOX_REQUESTS[-1]["preferred_endpoint_workload"] == "web"
     assert "topology_json" in CREATED_SANDBOX_REQUESTS[-1]
     assert CREWAI_REQUESTS[-1]["topology_summary"]["preferred_endpoint_workload"] == "web"
+    assert CREWAI_REQUESTS[-1]["pentest_report"]["status"] == "COMPLETED"
 
 
 @pytest.mark.asyncio

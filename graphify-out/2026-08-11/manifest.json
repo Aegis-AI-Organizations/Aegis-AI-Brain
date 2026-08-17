@@ -1,0 +1,562 @@
+{
+  "alembic/env.py": {
+    "mtime": 1783434991.1926835,
+    "ast_hash": "f6e4c97080a9bd86811818c8b0058b36",
+    "semantic_hash": ""
+  },
+  "alembic/versions/20260525_0001_schema_v2_2.py": {
+    "mtime": 1783434991.1936479,
+    "ast_hash": "44f5ff72abcbd9fd2c42b1c5c26f32e7",
+    "semantic_hash": ""
+  },
+  "entrypoint.sh": {
+    "mtime": 1779712716.0,
+    "ast_hash": "08f8925d99db9b380ec90af0ec5f2b97",
+    "semantic_hash": ""
+  },
+  "migrations/v2_billing_system.sql": {
+    "mtime": 1779621801.0,
+    "ast_hash": "7966ad7e577d1b9424774c4643845b68",
+    "semantic_hash": ""
+  },
+  "migrations/v3_agent_management.sql": {
+    "mtime": 1779621801.0,
+    "ast_hash": "4bd28e1aaf5dab26a9e70e0ebd1c2cf0",
+    "semantic_hash": ""
+  },
+  "migrations/v3_user_activation_status.sql": {
+    "mtime": 1779621801.0,
+    "ast_hash": "7d3fcf0d81872b627cf6f54bfc53259d",
+    "semantic_hash": ""
+  },
+  "migrations/v4_onboarding_invitations.sql": {
+    "mtime": 1779621801.0,
+    "ast_hash": "337dfedd16f062e3643f2441d08fcb7e",
+    "semantic_hash": ""
+  },
+  "pyproject.toml": {
+    "mtime": 1784646543.3957274,
+    "ast_hash": "d2b90acf66d35368dc4d1445e879e86a",
+    "semantic_hash": ""
+  },
+  "sandbox-topology.schema.json": {
+    "mtime": 1784646543.3959143,
+    "ast_hash": "1af653252ac4c610c546987e1b140032",
+    "semantic_hash": ""
+  },
+  "src/activities/attack_targets.py": {
+    "mtime": 1783434991.1944904,
+    "ast_hash": "d159780d22597747948e18bf774ac55d",
+    "semantic_hash": ""
+  },
+  "src/activities/db_activities.py": {
+    "mtime": 1784297897.8918815,
+    "ast_hash": "c077aefc4df10f86aefb5f722cb87d7a",
+    "semantic_hash": ""
+  },
+  "src/activities/minio_artifacts.py": {
+    "mtime": 1782396108.9576478,
+    "ast_hash": "8caaff3a5fa7231764a5709ca8703299",
+    "semantic_hash": ""
+  },
+  "src/activities/sandbox_topology.py": {
+    "mtime": 1783434991.1951592,
+    "ast_hash": "77e616dba01ada2f39a6388afa8032f4",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/agent_pb2.py": {
+    "mtime": 1779711506.0,
+    "ast_hash": "977ba1eaa4ce5d8076eac7c0ebd815fb",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/agent_pb2_grpc.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "60786cd164971fcbc212e058631c18d1",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/auth_pb2.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "ac0b818e86ad3a3389e4bbcde5b10ac9",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/auth_pb2_grpc.py": {
+    "mtime": 1778053741.0,
+    "ast_hash": "bb974fdbc58a94d851b0db81a3880928",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/billing_pb2.py": {
+    "mtime": 1777968126.0,
+    "ast_hash": "b0861b4470384ffc4c28803f7fe024df",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/billing_pb2_grpc.py": {
+    "mtime": 1777797219.0,
+    "ast_hash": "266ce4ccfefa2b504ac529c13d053138",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/company_pb2.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "529524f9d07885c9e7ee8fab2a6f1477",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/company_pb2_grpc.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "dd4b4c1a697318a44d2691160f650540",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/internal_auth_pb2.py": {
+    "mtime": 1777968126.0,
+    "ast_hash": "349fee45c618913151123ad851076c16",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/internal_auth_pb2_grpc.py": {
+    "mtime": 1777797219.0,
+    "ast_hash": "e609c9b6a316e215cbd9de333fb884e7",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/ping_pb2.py": {
+    "mtime": 1777968126.0,
+    "ast_hash": "9e6b47f9c1acc55d7169a6074a037f55",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/ping_pb2_grpc.py": {
+    "mtime": 1777796198.0,
+    "ast_hash": "61c621526e2c2e4fce56baef038c2c92",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/scan_pb2.py": {
+    "mtime": 1784646543.3541558,
+    "ast_hash": "4eba363fce6965fa7fec2d4a187e883f",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/scan_pb2_grpc.py": {
+    "mtime": 1784646543.354649,
+    "ast_hash": "5dc5a7675926b2978234d118c1ce6bc2",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/topology_pb2.py": {
+    "mtime": 1784646543.3548841,
+    "ast_hash": "62ec1d9aea8f8047533227bf29c291d5",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/topology_pb2_grpc.py": {
+    "mtime": 1779621801.0,
+    "ast_hash": "e9188036472e22547cb5e2869d984574",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/vulnerability_pb2.py": {
+    "mtime": 1783434992.388463,
+    "ast_hash": "53c069c7d8e2f2900adfbf5c7785dfb0",
+    "semantic_hash": ""
+  },
+  "src/aegis/v2/vulnerability_pb2_grpc.py": {
+    "mtime": 1782987675.2366037,
+    "ast_hash": "8c75e7d8d47d9e88b3615049e58512b4",
+    "semantic_hash": ""
+  },
+  "src/config/config.py": {
+    "mtime": 1780586541.0,
+    "ast_hash": "0090649d0e6204727ff63a9e5324a125",
+    "semantic_hash": ""
+  },
+  "src/config/db.py": {
+    "mtime": 1779621801.0,
+    "ast_hash": "ba6c0bd4d9185e2ff1c999e6e92d58a8",
+    "semantic_hash": ""
+  },
+  "src/grpc_server.py": {
+    "mtime": 1780161608.0,
+    "ast_hash": "e5650f195e12518d2f6bc4cc6c43927e",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/__init__.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/agent.py": {
+    "mtime": 1780493825.0,
+    "ast_hash": "0bd4546ce57e59f355fc65368b1659b4",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/auth.py": {
+    "mtime": 1781168121.0,
+    "ast_hash": "6d33b8e4fbd64a4afc8fa4e4880c6aad",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/billing.py": {
+    "mtime": 1781168249.0,
+    "ast_hash": "91c35f8b40f2f14b1e0ac843399f4898",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/broadcaster.py": {
+    "mtime": 1777739601.0,
+    "ast_hash": "de10ed53dc8e49f6b8415df763e6bb87",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/company.py": {
+    "mtime": 1781772098.0,
+    "ast_hash": "5e79e72c6281b1d1f6d20419bd995bb3",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/interceptors.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "606b6c073df98a465c90bc989bc588ed",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/internal_auth.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "905ea26e5fefc6942efc698a21c82e61",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/ping.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "04ccc66412fcbff5b5ff03d29da51987",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/scans.py": {
+    "mtime": 1784297897.89901,
+    "ast_hash": "bc9d6f78d9c1513a57bd62a75abe74d1",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/utils.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "ff33cd0ff39fd711a1c12527253c3c84",
+    "semantic_hash": ""
+  },
+  "src/grpc_services/vulnerabilities.py": {
+    "mtime": 1782987531.5611968,
+    "ast_hash": "59fbfa26392c4ef9d8da6ccfee1a8910",
+    "semantic_hash": ""
+  },
+  "src/main.py": {
+    "mtime": 1779711994.0,
+    "ast_hash": "5161d7c93a82fcb0cb15e0ff3602fd40",
+    "semantic_hash": ""
+  },
+  "src/models/__init__.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "8eef97c8c9ea7df92b75e3f7066d268f",
+    "semantic_hash": ""
+  },
+  "src/models/agent.py": {
+    "mtime": 1777888609.0,
+    "ast_hash": "f30236fb1a4400c7356920d59d396154",
+    "semantic_hash": ""
+  },
+  "src/models/audit_log.py": {
+    "mtime": 1779621801.0,
+    "ast_hash": "9e42c42178a6ba8388d39eeddd3705fd",
+    "semantic_hash": ""
+  },
+  "src/models/base.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "2055a9c91cbd4481ca93abc43ee92b94",
+    "semantic_hash": ""
+  },
+  "src/models/company.py": {
+    "mtime": 1779712292.0,
+    "ast_hash": "257c7453ad3d42f7e69ac1c99fa7c2fb",
+    "semantic_hash": ""
+  },
+  "src/models/license.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "cd444d70346c567f5423509c979977d6",
+    "semantic_hash": ""
+  },
+  "src/models/onboarding_invitation.py": {
+    "mtime": 1779621801.0,
+    "ast_hash": "e8d972ddbbf865545ad6d3f9408e4ac4",
+    "semantic_hash": ""
+  },
+  "src/models/scan.py": {
+    "mtime": 1784297897.889897,
+    "ast_hash": "a8df1320438f5db9f7da0df33b39704f",
+    "semantic_hash": ""
+  },
+  "src/models/user.py": {
+    "mtime": 1777968126.0,
+    "ast_hash": "fa0d4fb13cdf14a33253c555ba7b95cb",
+    "semantic_hash": ""
+  },
+  "src/reports/__init__.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "src/reports/engine.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "52676291748854ed7f16cdd40551dd8f",
+    "semantic_hash": ""
+  },
+  "src/services/agent_watcher.py": {
+    "mtime": 1779621801.0,
+    "ast_hash": "7eafcc636ca070f05659d4e5704062bc",
+    "semantic_hash": ""
+  },
+  "src/services/email_service.py": {
+    "mtime": 1783434991.195515,
+    "ast_hash": "08a90cc9e57b91654311afe1436a0d01",
+    "semantic_hash": ""
+  },
+  "src/services/neo4j_attack_targets.py": {
+    "mtime": 1783500125.4682035,
+    "ast_hash": "52b8d69dd63519be30c5cde193c8af65",
+    "semantic_hash": ""
+  },
+  "src/services/neo4j_sandbox_topology.py": {
+    "mtime": 1783675723.098814,
+    "ast_hash": "ea3d16ec8d21a8f9f45504df2910c1ee",
+    "semantic_hash": ""
+  },
+  "src/services/sandbox_topology_validation.py": {
+    "mtime": 1784646543.3960488,
+    "ast_hash": "d1d379ee5598a1f36efa5db99a7f7c26",
+    "semantic_hash": ""
+  },
+  "src/utils/auth_utils.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "2ddb7936df05a1945f95f892614ee172",
+    "semantic_hash": ""
+  },
+  "src/utils/email_utils.py": {
+    "mtime": 1783434991.1966603,
+    "ast_hash": "0ec31355597765a0c42de38282d78a51",
+    "semantic_hash": ""
+  },
+  "src/worker.py": {
+    "mtime": 1784297897.8937163,
+    "ast_hash": "8d2d56f996d43b8d2db4f86cf84dc2fe",
+    "semantic_hash": ""
+  },
+  "src/workflows/graph_pentest_workflow.py": {
+    "mtime": 1784646543.3962412,
+    "ast_hash": "dc6d91ac49fdde53de9ecf15e4dfced0",
+    "semantic_hash": ""
+  },
+  "src/workflows/pentest_workflow.py": {
+    "mtime": 1784646543.3964617,
+    "ast_hash": "6aa7ec1f022af705008e64110261b6af",
+    "semantic_hash": ""
+  },
+  "tests/conftest.py": {
+    "mtime": 1777739601.0,
+    "ast_hash": "2cf61625367a0666f16abb72f61b5636",
+    "semantic_hash": ""
+  },
+  "tests/test_activities.py": {
+    "mtime": 1784297956.9005413,
+    "ast_hash": "f6d56c79f5a2b3a31c7a9c393dc7f3a2",
+    "semantic_hash": ""
+  },
+  "tests/test_agent_service.py": {
+    "mtime": 1783434991.1973786,
+    "ast_hash": "27fa4790e2459b02865200ecc3d3f3f8",
+    "semantic_hash": ""
+  },
+  "tests/test_auth_init.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "de59267f2f08a5916fdcfcb9d7bca481",
+    "semantic_hash": ""
+  },
+  "tests/test_auth_service.py": {
+    "mtime": 1781168121.0,
+    "ast_hash": "3cd693904824de5a12c08eb8d89e28a1",
+    "semantic_hash": ""
+  },
+  "tests/test_auth_service_ext.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "0f9359404356d1b829306384ccd97db3",
+    "semantic_hash": ""
+  },
+  "tests/test_auth_utils.py": {
+    "mtime": 1779201971.0,
+    "ast_hash": "f9414f665f1a76a62134703404ba624d",
+    "semantic_hash": ""
+  },
+  "tests/test_billing_service.py": {
+    "mtime": 1781168438.0,
+    "ast_hash": "fdade1624988f3a65a8fcfe9d62cdb03",
+    "semantic_hash": ""
+  },
+  "tests/test_company_service.py": {
+    "mtime": 1781772098.0,
+    "ast_hash": "a1c7d22dc329ca907d0925c7b873e36a",
+    "semantic_hash": ""
+  },
+  "tests/test_db.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "92ba967337223c77574a4ebf3de57115",
+    "semantic_hash": ""
+  },
+  "tests/test_email_utils.py": {
+    "mtime": 1783434991.1980052,
+    "ast_hash": "ae23155c3fc63e364fe3ff37f0f0bac3",
+    "semantic_hash": ""
+  },
+  "tests/test_grpc_server.py": {
+    "mtime": 1784297978.0214527,
+    "ast_hash": "9936d3a8534a3d995ec6b1eb05582263",
+    "semantic_hash": ""
+  },
+  "tests/test_grpc_server_entry.py": {
+    "mtime": 1779713877.0,
+    "ast_hash": "c91e9bff33530a0558effadb22afe315",
+    "semantic_hash": ""
+  },
+  "tests/test_interceptors.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "d6027c3d97b229ee922ae6587e00f377",
+    "semantic_hash": ""
+  },
+  "tests/test_internal_auth.py": {
+    "mtime": 1783434992.35854,
+    "ast_hash": "70a63c8111953d0861e6bd95af440a37",
+    "semantic_hash": ""
+  },
+  "tests/test_minio_artifacts.py": {
+    "mtime": 1783517032.6170814,
+    "ast_hash": "c0ac4e876fadd5945bbc5baba478e64e",
+    "semantic_hash": ""
+  },
+  "tests/test_models.py": {
+    "mtime": 1777968126.0,
+    "ast_hash": "ced98cec18ef1fd04b0a46fe3b52aed1",
+    "semantic_hash": ""
+  },
+  "tests/test_neo4j_attack_targets.py": {
+    "mtime": 1783500141.0129073,
+    "ast_hash": "d8403f77039613b765f367aa62faac73",
+    "semantic_hash": ""
+  },
+  "tests/test_neo4j_sandbox_topology.py": {
+    "mtime": 1783675278.3458834,
+    "ast_hash": "0f8e3732570044d4e63577a27e0ad9ae",
+    "semantic_hash": ""
+  },
+  "tests/test_rbac_visibility.py": {
+    "mtime": 1784297956.90132,
+    "ast_hash": "9ead8cb7282dfd00eff30ebeace50aee",
+    "semantic_hash": ""
+  },
+  "tests/test_reports_extra.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "37817e729be5271be62586d9814a9ee9",
+    "semantic_hash": ""
+  },
+  "tests/test_sandbox_topology_validation.py": {
+    "mtime": 1784646543.3966064,
+    "ast_hash": "951f5cd64946c96a5c5aa772d9f3a334",
+    "semantic_hash": ""
+  },
+  "tests/test_search_coverage.py": {
+    "mtime": 1780161622.0,
+    "ast_hash": "66c545766306a6073253afba94f92cff",
+    "semantic_hash": ""
+  },
+  "tests/test_services_extra.py": {
+    "mtime": 1777733871.0,
+    "ast_hash": "0bf46e542a2ead53cabfb1023ff1d939",
+    "semantic_hash": ""
+  },
+  "tests/test_workflow.py": {
+    "mtime": 1784646543.3967435,
+    "ast_hash": "7d1936b6eef3d43eb7ead0fc267a310e",
+    "semantic_hash": ""
+  },
+  ".github/workflows/aegis-automation.yml": {
+    "mtime": 1779711506.0,
+    "ast_hash": "a4bbb6ca10642ddfc24d0f8f405cd404",
+    "semantic_hash": ""
+  },
+  ".github/workflows/build-and-test.yml": {
+    "mtime": 1777733871.0,
+    "ast_hash": "f3d5be97139d6ff8b2c41c523f10619a",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci-orchestrator.yml": {
+    "mtime": 1777739357.0,
+    "ast_hash": "3c0c4ca381ae05d0a12fc052e2cffcd4",
+    "semantic_hash": ""
+  },
+  ".github/workflows/docs-sync.yml": {
+    "mtime": 1777733871.0,
+    "ast_hash": "23cdfc81b0acfecc84ee5756f1894f60",
+    "semantic_hash": ""
+  },
+  ".github/workflows/linting.yml": {
+    "mtime": 1778053737.0,
+    "ast_hash": "d14af64cb231499c8fd67e94be6309ff",
+    "semantic_hash": ""
+  },
+  ".github/workflows/release.yml": {
+    "mtime": 1777733871.0,
+    "ast_hash": "67e009d7747d06bcfae4ab019cd915dd",
+    "semantic_hash": ""
+  },
+  ".pre-commit-config.yaml": {
+    "mtime": 1777739357.0,
+    "ast_hash": "b5f867ca3669fe66632bfca0c7f24331",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1777733871.0,
+    "ast_hash": "06e9c057b620acbaaf804b2e502e7c5c",
+    "semantic_hash": ""
+  },
+  "docs/en/database.md": {
+    "mtime": 1779201971.0,
+    "ast_hash": "467c32a48f32a71440d5000b5d7f901b",
+    "semantic_hash": ""
+  },
+  "docs/en/llm-payloads.md": {
+    "mtime": 1777733871.0,
+    "ast_hash": "bcbb3361365ebc698fc6d4d24b5e9c82",
+    "semantic_hash": ""
+  },
+  "docs/en/neo4j-graph.md": {
+    "mtime": 1777733871.0,
+    "ast_hash": "c070a8526673f6120790c683874a6b08",
+    "semantic_hash": ""
+  },
+  "docs/en/workflows.md": {
+    "mtime": 1780474313.0,
+    "ast_hash": "bd8eb6b2d8db6116f005762974070695",
+    "semantic_hash": ""
+  },
+  "docs/fr/database.md": {
+    "mtime": 1779201971.0,
+    "ast_hash": "f6aab5b708645025704b36ce22cfda51",
+    "semantic_hash": ""
+  },
+  "docs/fr/llm-payloads.md": {
+    "mtime": 1777733871.0,
+    "ast_hash": "bcbb3361365ebc698fc6d4d24b5e9c82",
+    "semantic_hash": ""
+  },
+  "docs/fr/neo4j-graph.md": {
+    "mtime": 1777733871.0,
+    "ast_hash": "c070a8526673f6120790c683874a6b08",
+    "semantic_hash": ""
+  },
+  "docs/fr/workflows.md": {
+    "mtime": 1783434991.1940992,
+    "ast_hash": "c8d669a3d5c74cb6e054f9acac481da8",
+    "semantic_hash": ""
+  },
+  "walkthrough.md": {
+    "mtime": 1777733871.0,
+    "ast_hash": "25c317cc6167d89ab67be7505f72dc88",
+    "semantic_hash": ""
+  },
+  "logo/logo.svg": {
+    "mtime": 1780088501.0,
+    "ast_hash": "de68ce25d15376e2405d8b68309dea4b",
+    "semantic_hash": ""
+  },
+  "migrations/v6_scan_debug_bundle.sql": {
+    "mtime": 1784297897.9006023,
+    "ast_hash": "df5c703a908382390ebf0a9f00a1ca88",
+    "semantic_hash": ""
+  }
+}

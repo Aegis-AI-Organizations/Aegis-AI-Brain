@@ -9,6 +9,7 @@ from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 
 
 CREATED_SANDBOX_REQUESTS = []
+CREWAI_REQUESTS = []
 
 
 @activity.defn(name="update_scan_status")
@@ -155,6 +156,12 @@ async def mock_run_targeted_pentest(
     }
 
 
+@activity.defn(name="run_crew_pentest")
+async def mock_run_crew_pentest(payload: dict) -> dict:
+    CREWAI_REQUESTS.append(payload)
+    return {"status": "COMPLETED", "summary": "CrewAI mock completed"}
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""
@@ -251,6 +258,7 @@ async def test_pentest_workflow_failure():
 
 @pytest.mark.asyncio
 async def test_graph_driven_pentest_workflow_success():
+    CREWAI_REQUESTS.clear()
     async with await WorkflowEnvironment.start_time_skipping() as env:
         async with Worker(
             env.client,
@@ -280,22 +288,79 @@ async def test_graph_driven_pentest_workflow_success():
                     task_queue="PENTEST_TASK_QUEUE",
                     activities=[mock_run_targeted_pentest],
                 ):
-                    scan_id = str(uuid.uuid4())
-                    result = await env.client.execute_workflow(
-                        GraphDrivenPentestWorkflow.run,
-                        args=[scan_id, "nginx:latest", "company-1"],
-                        id=f"test-graph-pentest-{scan_id}",
-                        task_queue="TEST_QUEUE_GRAPH",
-                    )
-                    assert (
-                        f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
-                        in result
-                    )
+                    async with Worker(
+                        env.client,
+                        task_queue="CREWAI_TASK_QUEUE",
+                        activities=[mock_run_crew_pentest],
+                    ):
+                        scan_id = str(uuid.uuid4())
+                        result = await env.client.execute_workflow(
+                            GraphDrivenPentestWorkflow.run,
+                            args=[scan_id, "nginx:latest", "company-1"],
+                            id=f"test-graph-pentest-{scan_id}",
+                            task_queue="TEST_QUEUE_GRAPH",
+                        )
+                        assert (
+                            f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
+                            in result
+                        )
+                        assert CREWAI_REQUESTS[-1]["scan_id"] == scan_id
+                        assert CREWAI_REQUESTS[-1]["constraints"] == {
+                            "mode": "non_destructive",
+                            "allow_patch_apply": False,
+                            "allow_pr_create": False,
+                        }
+
+
+def test_graph_driven_workflow_builds_crewai_activity_payload():
+    payload = GraphDrivenPentestWorkflow._build_crew_pentest_request(
+        scan_id="scan-1",
+        sandbox_host="aegis-target.aegis-war-room-scan-1.svc.cluster.local",
+        sandbox_port=8080,
+        attack_targets=[{"path": "/search", "label": "default-search", "target_name": "aegis-target", "criticality": 5, "score": 9}],
+        sandbox_request={
+            "preferred_endpoint_workload": "aegis-target",
+            "topology": {"containers": [{"name": "aegis-target", "image": "python:3.12-alpine"}]},
+        },
+        pentest_report={"status": "COMPLETED", "target_count": 1},
+        seed_contract={"seed_flag": "aegis-flag-1234", "seeded_count": 0},
+    )
+
+    assert payload == {
+        "scan_id": "scan-1",
+        "sandbox_endpoint": {
+            "host": "aegis-target.aegis-war-room-scan-1.svc.cluster.local",
+            "port": 8080,
+            "scheme": "http",
+        },
+        "targets": [
+            {
+                "path": "/search",
+                "label": "default-search",
+                "target_name": "aegis-target",
+                "criticality": 5,
+                "score": 9,
+            }
+        ],
+        "topology_summary": {
+            "preferred_endpoint_workload": "aegis-target",
+            "container_count": 1,
+            "pentest_status": "COMPLETED",
+            "pentest_target_count": 1,
+        },
+        "seed_contract": {"seed_flag": "aegis-flag-1234", "seeded_count": 0},
+        "constraints": {
+            "mode": "non_destructive",
+            "allow_patch_apply": False,
+            "allow_pr_create": False,
+        },
+    }
 
 
 @pytest.mark.asyncio
 async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying():
     CREATED_SANDBOX_REQUESTS.clear()
+    CREWAI_REQUESTS.clear()
     async with await WorkflowEnvironment.start_time_skipping() as env:
         async with Worker(
             env.client,
@@ -325,22 +390,28 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
                     task_queue="PENTEST_TASK_QUEUE",
                     activities=[mock_run_targeted_pentest],
                 ):
-                    scan_id = str(uuid.uuid4())
-                    result = await env.client.execute_workflow(
-                        GraphDrivenPentestWorkflow.run,
-                        args=[
-                            scan_id,
-                            "minio://aegis-ingest/targets/sandbox.json",
-                            "company-1",
-                        ],
-                        id=f"test-graph-pentest-minio-{scan_id}",
-                        task_queue="TEST_QUEUE_GRAPH_MINIO",
-                    )
+                    async with Worker(
+                        env.client,
+                        task_queue="CREWAI_TASK_QUEUE",
+                        activities=[mock_run_crew_pentest],
+                    ):
+                        scan_id = str(uuid.uuid4())
+                        result = await env.client.execute_workflow(
+                            GraphDrivenPentestWorkflow.run,
+                            args=[
+                                scan_id,
+                                "minio://aegis-ingest/targets/sandbox.json",
+                                "company-1",
+                            ],
+                            id=f"test-graph-pentest-minio-{scan_id}",
+                            task_queue="TEST_QUEUE_GRAPH_MINIO",
+                        )
 
     assert "topology:minio" in result
     assert CREATED_SANDBOX_REQUESTS[-1]["scan_id"] == scan_id
     assert CREATED_SANDBOX_REQUESTS[-1]["preferred_endpoint_workload"] == "web"
     assert "topology_json" in CREATED_SANDBOX_REQUESTS[-1]
+    assert CREWAI_REQUESTS[-1]["topology_summary"]["preferred_endpoint_workload"] == "web"
 
 
 @pytest.mark.asyncio

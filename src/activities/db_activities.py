@@ -167,7 +167,9 @@ async def save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
     )
 
 
-def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
+def _execute_generate_and_store_pdf_report(
+    scan_id: str, vulnerabilities: list, final_report_markdown: str = ""
+):
     """Generates PDF bytes in memory and stores them in scans.report_pdf."""
     logger.info(
         f"Generating PDF report for scan {scan_id} with {len(vulnerabilities)} vulnerabilities..."
@@ -176,7 +178,7 @@ def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
     if not conn:
         raise Exception("Database connection failed")
 
-    report_pdf = build_report(scan_id, vulnerabilities)
+    report_pdf = build_report(scan_id, vulnerabilities, final_report_markdown)
 
     try:
         cur = conn.cursor()
@@ -199,10 +201,14 @@ def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
 
 
 @activity.defn
-async def generate_and_store_pdf_report(scan_id: str, vulnerabilities: list) -> str:
+async def generate_and_store_pdf_report(
+    scan_id: str, vulnerabilities: list, final_report_markdown: str = ""
+) -> str:
     """
     Generates a structured PDF report in memory and stores it in scans.report_pdf.
     """
     logger.info(f"Activity generate_and_store_pdf_report started for scan {scan_id}")
-    _execute_generate_and_store_pdf_report(scan_id, vulnerabilities)
+    _execute_generate_and_store_pdf_report(
+        scan_id, vulnerabilities, final_report_markdown
+    )
     return f"Successfully generated and stored PDF report for scan {scan_id}"

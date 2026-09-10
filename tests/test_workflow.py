@@ -14,6 +14,7 @@ DEFAULT_CREWAI_RESULT = {"status": "COMPLETED", "summary": "CrewAI mock complete
 CREWAI_RESULT = DEFAULT_CREWAI_RESULT
 ACTIVITY_CALLS = []
 SAVED_VULNERABILITIES = []
+REPORT_MARKDOWNS = []
 
 
 @pytest.fixture(autouse=True)
@@ -22,6 +23,7 @@ def reset_activity_state():
     CREWAI_RESULT = DEFAULT_CREWAI_RESULT
     ACTIVITY_CALLS.clear()
     SAVED_VULNERABILITIES.clear()
+    REPORT_MARKDOWNS.clear()
 
 
 @activity.defn(name="update_scan_status")
@@ -55,8 +57,9 @@ async def mock_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
 
 @activity.defn(name="generate_and_store_pdf_report")
 async def mock_generate_and_store_pdf_report(
-    scan_id: str, vulnerabilities: list
+    scan_id: str, vulnerabilities: list, final_report_markdown: str = ""
 ) -> str:
+    REPORT_MARKDOWNS.append(final_report_markdown)
     return f"Stored PDF report for {scan_id}"
 
 
@@ -238,6 +241,7 @@ async def test_workflow_uses_crewai_without_scripted_pentest():
     assert "run_targeted_pentest" not in ACTIVITY_CALLS
     assert "run_crew_pentest" in ACTIVITY_CALLS
     assert SAVED_VULNERABILITIES[0]["severity"] == "CRITICAL"
+    assert REPORT_MARKDOWNS[-1] == "# Report"
 
 
 @pytest.mark.asyncio

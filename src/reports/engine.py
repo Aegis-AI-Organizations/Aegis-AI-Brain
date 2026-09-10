@@ -302,6 +302,17 @@ def _render_vulnerability_table(pdf: FPDF, vulnerabilities: list):
             row.cell(_truncate_text(vulnerability.get("description"), max_len=110))
 
 
+def _render_crewai_report_content(pdf: FPDF, final_report_markdown: str):
+    content = _safe_text(final_report_markdown, default="")
+    if not content:
+        return
+
+    pdf.add_page()
+    _render_section_header(pdf, "CrewAI Report Content")
+    pdf.set_font("Helvetica", size=10)
+    pdf.multi_cell(0, 6, content, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+
 def _render_boxed_block(pdf: FPDF, title: str, content: str):
     _ensure_space(pdf, required_space=22)
     pdf.set_fill_color(*SECTION_FILL_COLOR)
@@ -405,7 +416,9 @@ def _render_vulnerability_detail(pdf: FPDF, index: int, vulnerability: dict):
     pdf.ln(2)
 
 
-def build_report(scan_id: str, vulnerabilities: list) -> bytes:
+def build_report(
+    scan_id: str, vulnerabilities: list, final_report_markdown: str = ""
+) -> bytes:
     """Builds a pentest-style PDF report and returns it as bytes."""
     vulnerabilities = vulnerabilities or []
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -415,6 +428,7 @@ def build_report(scan_id: str, vulnerabilities: list) -> bytes:
 
     _render_cover_page(pdf, scan_id, vulnerabilities, generated_at)
     _render_summary(pdf, vulnerabilities)
+    _render_crewai_report_content(pdf, final_report_markdown)
     _render_vulnerability_table(pdf, vulnerabilities)
 
     pdf.add_page()

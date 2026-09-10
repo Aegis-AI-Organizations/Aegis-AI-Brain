@@ -191,6 +191,28 @@ async def test_generate_and_store_pdf_report_success():
 
 
 @pytest.mark.asyncio
+async def test_generate_and_store_pdf_report_passes_crewai_markdown_to_builder():
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value.rowcount = 1
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        with patch(
+            "activities.db_activities.build_report", return_value=b"%PDF-crew"
+        ) as mock_build_report:
+            activity_env = ActivityEnvironment()
+            await activity_env.run(
+                generate_and_store_pdf_report,
+                "scan-123",
+                [],
+                "# CrewAI Report\n\nUse parameterized queries.",
+            )
+
+    mock_build_report.assert_called_once_with(
+        "scan-123", [], "# CrewAI Report\n\nUse parameterized queries."
+    )
+
+
+@pytest.mark.asyncio
 async def test_generate_and_store_pdf_report_not_found():
     """Test exception when storing PDF for a missing scan."""
     mock_conn = MagicMock()

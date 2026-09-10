@@ -10,6 +10,18 @@ from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 
 CREATED_SANDBOX_REQUESTS = []
 CREWAI_REQUESTS = []
+DEFAULT_CREWAI_RESULT = {"status": "COMPLETED", "summary": "CrewAI mock completed"}
+CREWAI_RESULT = DEFAULT_CREWAI_RESULT
+ACTIVITY_CALLS = []
+SAVED_VULNERABILITIES = []
+
+
+@pytest.fixture(autouse=True)
+def reset_activity_state():
+    global CREWAI_RESULT
+    CREWAI_RESULT = DEFAULT_CREWAI_RESULT
+    ACTIVITY_CALLS.clear()
+    SAVED_VULNERABILITIES.clear()
 
 
 @activity.defn(name="update_scan_status")
@@ -36,6 +48,8 @@ async def mock_destroy_sandbox(scan_id: str) -> str:
 
 @activity.defn(name="save_vulnerabilities")
 async def mock_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
+    ACTIVITY_CALLS.append("save_vulnerabilities")
+    SAVED_VULNERABILITIES.extend(vulnerabilities)
     return f"Saved {len(vulnerabilities)} vulnerabilities for {scan_id}"
 
 
@@ -143,6 +157,7 @@ async def mock_build_sandbox_topology(
 async def mock_run_targeted_pentest(
     target_host: str, port: int, targets: list[dict]
 ) -> dict:
+    ACTIVITY_CALLS.append("run_targeted_pentest")
     return {
         "status": "COMPLETED",
         "vulnerabilities": [
@@ -158,8 +173,71 @@ async def mock_run_targeted_pentest(
 
 @activity.defn(name="run_crew_pentest")
 async def mock_run_crew_pentest(payload: dict) -> dict:
+    ACTIVITY_CALLS.append("run_crew_pentest")
     CREWAI_REQUESTS.append(payload)
-    return {"status": "COMPLETED", "summary": "CrewAI mock completed"}
+    return CREWAI_RESULT
+
+
+@pytest.mark.asyncio
+async def test_workflow_uses_crewai_without_scripted_pentest():
+    ACTIVITY_CALLS.clear()
+    SAVED_VULNERABILITIES.clear()
+    CREWAI_REQUESTS.clear()
+    global CREWAI_RESULT
+    CREWAI_RESULT = {
+        "status": "COMPLETED",
+        "findings": [
+            {
+                "title": "SQL Injection",
+                "severity": "CRITICAL",
+                "evidence": "aegis-flag-1234",
+                "remediation": "Use parameterized queries.",
+            }
+        ],
+        "final_report_markdown": "# Report",
+    }
+
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_CREWAI_PRIMARY",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
+                mock_identify_attack_targets,
+                mock_build_sandbox_topology,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="CREWAI_TASK_QUEUE",
+                    activities=[mock_run_crew_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    result = await env.client.execute_workflow(
+                        GraphDrivenPentestWorkflow.run,
+                        args=[scan_id, "nginx:latest", "company-1"],
+                        id=f"test-crewai-primary-{scan_id}",
+                        task_queue="TEST_QUEUE_CREWAI_PRIMARY",
+                    )
+
+    assert "successfully completed" in result
+    assert "run_targeted_pentest" not in ACTIVITY_CALLS
+    assert "run_crew_pentest" in ACTIVITY_CALLS
+    assert SAVED_VULNERABILITIES[0]["severity"] == "CRITICAL"
 
 
 @pytest.mark.asyncio
@@ -332,7 +410,7 @@ def test_graph_driven_workflow_builds_crewai_activity_payload():
                 "containers": [{"name": "aegis-target", "image": "python:3.12-alpine"}]
             },
         },
-        pentest_report={"status": "COMPLETED", "target_count": 1},
+        pentest_report={},
         seed_contract={"seed_flag": "aegis-flag-1234", "seeded_count": 0},
     )
 
@@ -355,11 +433,11 @@ def test_graph_driven_workflow_builds_crewai_activity_payload():
         "topology_summary": {
             "preferred_endpoint_workload": "aegis-target",
             "container_count": 1,
-            "pentest_status": "COMPLETED",
-            "pentest_target_count": 1,
+            "pentest_status": "UNKNOWN",
+            "pentest_target_count": 0,
         },
         "seed_contract": {"seed_flag": "aegis-flag-1234", "seeded_count": 0},
-        "pentest_report": {"status": "COMPLETED", "target_count": 1},
+        "pentest_report": {},
         "constraints": {
             "mode": "non_destructive",
             "allow_patch_apply": False,
@@ -425,7 +503,7 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
     assert (
         CREWAI_REQUESTS[-1]["topology_summary"]["preferred_endpoint_workload"] == "web"
     )
-    assert CREWAI_REQUESTS[-1]["pentest_report"]["status"] == "COMPLETED"
+    assert CREWAI_REQUESTS[-1]["pentest_report"] == {}
 
 
 @pytest.mark.asyncio

@@ -241,6 +241,9 @@ async def test_workflow_uses_crewai_without_scripted_pentest():
     assert "run_targeted_pentest" not in ACTIVITY_CALLS
     assert "run_crew_pentest" in ACTIVITY_CALLS
     assert SAVED_VULNERABILITIES[0]["severity"] == "CRITICAL"
+    assert SAVED_VULNERABILITIES[0]["evidences"][0]["loot_data"] == {
+        "loot_proof": "aegis-flag-1234"
+    }
     assert REPORT_MARKDOWNS[-1] == "# Report"
 
 

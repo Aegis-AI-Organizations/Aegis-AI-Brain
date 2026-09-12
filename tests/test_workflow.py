@@ -247,6 +247,37 @@ async def test_workflow_uses_crewai_without_scripted_pentest():
     assert REPORT_MARKDOWNS[-1] == "# Report"
 
 
+def test_crew_findings_to_vulnerabilities_preserves_top_level_evidence():
+    vulnerabilities = GraphDrivenPentestWorkflow._crew_findings_to_vulnerabilities(
+        [
+            {
+                "title": "SQL Injection",
+                "severity": "CRITICAL",
+                "evidence": "aegis-flag-1234",
+                "evidences": [
+                    {
+                        "payload_used": "/health",
+                        "loot_data": {"status_code": 200},
+                    }
+                ],
+            },
+            {
+                "title": "Reflected XSS",
+                "severity": "HIGH",
+                "evidence": "xss-proof",
+                "evidences": None,
+            },
+        ]
+    )
+
+    assert vulnerabilities[0]["evidences"][-1]["loot_data"] == {
+        "loot_proof": "aegis-flag-1234"
+    }
+    assert vulnerabilities[1]["evidences"] == [
+        {"payload_used": "", "loot_data": {"loot_proof": "xss-proof"}}
+    ]
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""

@@ -278,6 +278,29 @@ def test_crew_findings_to_vulnerabilities_preserves_top_level_evidence():
     ]
 
 
+def test_crew_findings_to_vulnerabilities_deduplicates_evidence_text():
+    findings = [
+        {
+            "title": "SQL Injection",
+            "severity": "CRITICAL",
+            "target_endpoint": "/search?q=",
+            "evidence": "aegis-flag-123",
+            "evidences": [
+                {
+                    "payload_used": "/search?q=",
+                    "loot_data": {"loot_proof": "aegis-flag-123"},
+                }
+            ],
+        }
+    ]
+
+    vulnerabilities = GraphDrivenPentestWorkflow._crew_findings_to_vulnerabilities(
+        findings
+    )
+
+    assert len(vulnerabilities[0]["evidences"]) == 1
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""

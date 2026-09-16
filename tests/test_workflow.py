@@ -10,6 +10,7 @@ from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 
 CREATED_SANDBOX_REQUESTS = []
 CREWAI_REQUESTS = []
+TARGETED_PENTEST_CALLS = []
 
 
 @activity.defn(name="update_scan_status")
@@ -122,6 +123,27 @@ async def mock_identify_attack_targets(
     ]
 
 
+@activity.defn(name="identify_attack_targets")
+async def mock_identify_attack_targets_with_external_url(
+    company_id: str,
+    agent_id: str | None = None,
+    target_ids: list[str] | None = None,
+):
+    return [
+        {
+            "entry_id": "entry-web",
+            "target_id": "target-admin",
+            "target_name": "admin-panel",
+            "target_kind": "service",
+            "path": "http://source.example.test/admin?debug=true",
+            "label": "admin-panel",
+            "path_length": 1,
+            "criticality": 90,
+            "score": 900,
+        }
+    ]
+
+
 @activity.defn(name="build_sandbox_topology")
 async def mock_build_sandbox_topology(
     company_id: str, target_ids: list[str] | None = None
@@ -154,6 +176,16 @@ async def mock_run_targeted_pentest(
         "targets": targets,
         "target_count": len(targets),
     }
+
+
+@activity.defn(name="run_targeted_pentest")
+async def mock_capture_run_targeted_pentest(
+    target_host: str, port: int, targets: list[dict]
+) -> dict:
+    TARGETED_PENTEST_CALLS.append(
+        {"target_host": target_host, "port": port, "targets": targets}
+    )
+    return {"status": "COMPLETED", "vulnerabilities": [], "targets": targets}
 
 
 @activity.defn(name="run_crew_pentest")
@@ -310,6 +342,68 @@ async def test_graph_driven_pentest_workflow_success():
                             "allow_patch_apply": False,
                             "allow_pr_create": False,
                         }
+
+
+@pytest.mark.asyncio
+async def test_graph_workflow_pentests_deployer_endpoint_not_graph_host():
+    TARGETED_PENTEST_CALLS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_GRAPH_ENDPOINT_AUTHORITY",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_identify_attack_targets_with_external_url,
+                mock_build_sandbox_topology,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_capture_run_targeted_pentest],
+                ):
+                    async with Worker(
+                        env.client,
+                        task_queue="CREWAI_TASK_QUEUE",
+                        activities=[mock_run_crew_pentest],
+                    ):
+                        scan_id = str(uuid.uuid4())
+                        await env.client.execute_workflow(
+                            GraphDrivenPentestWorkflow.run,
+                            args=[
+                                scan_id,
+                                "topology:target-admin",
+                                "company-1",
+                                "agent-1",
+                            ],
+                            id=f"test-graph-endpoint-authority-{scan_id}",
+                            task_queue="TEST_GRAPH_ENDPOINT_AUTHORITY",
+                        )
+
+    assert TARGETED_PENTEST_CALLS == [
+        {
+            "target_host": f"svc-{scan_id}.aegis-war-room-{scan_id}.svc.cluster.local",
+            "port": 80,
+            "targets": TARGETED_PENTEST_CALLS[0]["targets"],
+        }
+    ]
+    assert (
+        TARGETED_PENTEST_CALLS[0]["targets"][0]["path"]
+        == "http://source.example.test/admin?debug=true"
+    )
 
 
 def test_graph_driven_workflow_builds_crewai_activity_payload():

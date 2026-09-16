@@ -8,6 +8,68 @@ from activities.db_activities import (
 )
 
 
+def test_build_sandbox_topology_includes_database_schemas(monkeypatch):
+    from services.neo4j_sandbox_topology import Neo4jSandboxTopologyService
+
+    service = Neo4jSandboxTopologyService(
+        url="http://neo4j", user="neo4j", password="pw"
+    )
+    calls = []
+
+    def fake_execute_query(cypher, parameters):
+        calls.append(cypher)
+        if "MATCH (c:Container)" in cypher:
+            return [
+                [
+                    "company-1:agent-1:web",
+                    "portfolio-web",
+                    "portfolio-web:local",
+                    ["DB_HOST=portfolio-db"],
+                    [],
+                    ["portfolio-net"],
+                    ["8080:tcp:LISTEN::18080:docker"],
+                    [],
+                    "minio:archives/portfolio-web.tar",
+                    "archives/portfolio-web.tar",
+                ]
+            ]
+        if "MATCH (r:Route)" in cypher:
+            return []
+        if "MATCH (d:DatabaseSchema)" in cypher:
+            return [
+                [
+                    "postgres",
+                    "portfolio-db",
+                    5432,
+                    "portfolio",
+                    "portfolio",
+                    "company-1:agent-1:web",
+                    "portfolio-web",
+                ]
+            ]
+        raise AssertionError(cypher)
+
+    monkeypatch.setattr(service, "_execute_query", fake_execute_query)
+
+    topology = service.build_sandbox_topology("company-1", [])
+
+    assert (
+        topology["containers"][0]["image_archive_ref"]
+        == "minio:archives/portfolio-web.tar"
+    )
+    assert topology["databaseSchemas"] == [
+        {
+            "engine": "postgres",
+            "host": "portfolio-db",
+            "port": 5432,
+            "databaseName": "portfolio",
+            "username": "portfolio",
+            "sourceContainerId": "company-1:agent-1:web",
+            "sourceContainerName": "portfolio-web",
+        }
+    ]
+
+
 @pytest.mark.asyncio
 async def test_update_scan_status_success():
     """Test updating the status of a scan successfully."""

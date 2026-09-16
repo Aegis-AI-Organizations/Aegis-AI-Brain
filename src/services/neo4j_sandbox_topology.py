@@ -76,7 +76,9 @@ class Neo4jSandboxTopologyService:
           coalesce(c.ports, []) AS ports,
           coalesce(c.exposedPorts, []) AS exposed_ports,
           coalesce(c.imageArchiveRef, "") AS image_archive_ref,
-          coalesce(c.imageArchiveObject, "") AS image_archive_object
+          coalesce(c.imageArchiveObject, "") AS image_archive_object,
+          coalesce(c.rawId, "") AS raw_id,
+          coalesce(c.name, "") AS raw_name
         ORDER BY name ASC
         LIMIT 30
         """.format(target_filter=target_filter)
@@ -90,16 +92,18 @@ class Neo4jSandboxTopologyService:
         containers = [self._row_to_container(row) for row in rows if len(row) >= 8]
         containers = [container for container in containers if container.get("image")]
         routes = self._load_routes(company_id, containers, normalized_ids)
+        database_schemas = self._load_database_schemas(company_id, containers)
 
         logger.info(
-            "Neo4j sandbox topology contains %d container workload(s) and %d route(s)",
+            "Neo4j sandbox topology contains %d container workload(s), %d route(s), and %d database schema(s)",
             len(containers),
             len(routes),
+            len(database_schemas),
         )
         return {
-            "containers": containers,
+            "containers": [self._strip_container_metadata(item) for item in containers],
             "routes": routes,
-            "databaseSchemas": [],
+            "databaseSchemas": database_schemas,
             "externalMocks": [],
         }
 
@@ -175,6 +179,91 @@ class Neo4jSandboxTopologyService:
             routes.append({"source": source, "target": target})
         return routes
 
+    def _load_database_schemas(
+        self,
+        company_id: str,
+        containers: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        source_container_names = sorted(
+            {
+                str(name).strip()
+                for container in containers
+                for name in (container.get("name"), container.get("_raw_name"))
+                if str(name or "").strip()
+            }
+        )
+        source_container_ids = sorted(
+            {
+                str(identifier).strip()
+                for container in containers
+                for identifier in (container.get("id"), container.get("_raw_id"))
+                if str(identifier or "").strip()
+            }
+        )
+        if not source_container_names and not source_container_ids:
+            return []
+
+        parameters: dict[str, Any] = {
+            "company_id": company_id,
+            "source_container_names": source_container_names,
+            "source_container_ids": source_container_ids,
+        }
+
+        cypher = """
+        MATCH (d:DatabaseSchema)
+        WHERE d.companyId = $company_id
+          AND (
+            d.sourceContainerId IN $source_container_ids
+            OR d.sourceContainerName IN $source_container_names
+          )
+        RETURN
+          coalesce(d.engine, "") AS engine,
+          coalesce(d.host, "") AS host,
+          d.port AS port,
+          coalesce(d.databaseName, "") AS database_name,
+          coalesce(d.username, "") AS username,
+          coalesce(d.sourceContainerId, "") AS source_container_id,
+          coalesce(d.sourceContainerName, "") AS source_container_name
+        ORDER BY source_container_name ASC, database_name ASC, host ASC
+        LIMIT 100
+        """
+
+        rows = self._execute_query(cypher, parameters)
+        database_schemas: list[dict[str, Any]] = []
+        seen: set[tuple[Any, ...]] = set()
+        for row in rows:
+            if len(row) < 7:
+                continue
+            port: int | None
+            try:
+                port = int(row[2])
+            except (TypeError, ValueError):
+                port = None
+
+            schema = {
+                "engine": str(row[0] or ""),
+                "host": str(row[1] or ""),
+                "port": port,
+                "databaseName": str(row[3] or ""),
+                "username": str(row[4] or ""),
+                "sourceContainerId": str(row[5] or ""),
+                "sourceContainerName": str(row[6] or ""),
+            }
+            if not schema["engine"] or not schema["host"]:
+                continue
+            key = tuple(schema.values())
+            if key in seen:
+                continue
+            seen.add(key)
+            database_schemas.append(schema)
+        return database_schemas
+
+    @staticmethod
+    def _strip_container_metadata(container: dict[str, Any]) -> dict[str, Any]:
+        return {
+            key: value for key, value in container.items() if not key.startswith("_")
+        }
+
     def _auth_header(self) -> str:
         raw = f"{self.user}:{self.password}".encode("utf-8")
         return "Basic " + base64.b64encode(raw).decode("ascii")
@@ -240,6 +329,10 @@ class Neo4jSandboxTopologyService:
             container["image_archive_ref"] = image_archive_ref
         if image_archive_object:
             container["image_archive_object"] = image_archive_object
+        if len(row) > 10 and row[10]:
+            container["_raw_id"] = str(row[10])
+        if len(row) > 11 and row[11]:
+            container["_raw_name"] = str(row[11])
         return container
 
     @staticmethod

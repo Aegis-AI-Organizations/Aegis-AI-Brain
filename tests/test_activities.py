@@ -295,7 +295,9 @@ async def test_generate_and_store_pdf_report_passes_crew_markdown_to_report_engi
 
     with (
         patch("activities.db_activities.get_db_connection", return_value=mock_conn),
-        patch("activities.db_activities.build_report", return_value=b"%PDF crew") as mock_build_report,
+        patch(
+            "activities.db_activities.build_report", return_value=b"%PDF crew"
+        ) as mock_build_report,
     ):
         activity_env = ActivityEnvironment()
         await activity_env.run(

@@ -19,7 +19,10 @@ def _dedupe_evidences(evidences: list) -> list:
     for evidence in evidences or []:
         if not isinstance(evidence, dict):
             continue
-        key = (evidence.get("payload_used") or "", _stable_json(evidence.get("loot_data")))
+        key = (
+            evidence.get("payload_used") or "",
+            _stable_json(evidence.get("loot_data")),
+        )
         if key in seen:
             continue
         seen.add(key)

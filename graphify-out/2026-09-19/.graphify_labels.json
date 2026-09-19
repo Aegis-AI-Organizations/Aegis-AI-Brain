@@ -96,5 +96,22 @@
   "94": "aegis-ai-brain",
   "95": "agent_pb2.py",
   "96": "auth_pb2.py",
-  "97": "billing_pb2.py"
+  "97": "billing_pb2.py",
+  "98": "company_pb2.py",
+  "99": "internal_auth_pb2.py",
+  "100": "ping_pb2.py",
+  "101": "scan_pb2.py",
+  "102": "topology_pb2.py",
+  "103": "topology_pb2_grpc.py",
+  "104": "vulnerability_pb2.py",
+  "105": "__init__.py",
+  "106": "__init__.py",
+  "107": "workloads",
+  "108": "databaseSchema",
+  "109": "containers",
+  "110": "workloads",
+  "111": ".ListAuditLogs",
+  "112": ".ListCompanies",
+  "113": "password",
+  "115": ".WatchCompanyUpdates"
 }

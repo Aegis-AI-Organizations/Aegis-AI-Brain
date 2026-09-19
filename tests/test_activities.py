@@ -4,6 +4,7 @@ from temporalio.testing import ActivityEnvironment
 from activities.db_activities import (
     update_scan_status,
     update_scan_debug_bundle,
+    save_vulnerabilities,
     generate_and_store_pdf_report,
 )
 
@@ -203,6 +204,40 @@ async def test_save_vulnerabilities_success():
 
 
 @pytest.mark.asyncio
+async def test_save_vulnerabilities_deduplicates_findings_and_evidences():
+    """Duplicate findings/evidences in a single run are stored once."""
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = ["mock-vuln-uuid-1234"]
+
+    duplicate_vulnerability = {
+        "vuln_type": "SQLi",
+        "severity": "HIGH",
+        "target_endpoint": "http://target/search",
+        "description": "Boolean SQL injection",
+        "evidences": [
+            {"payload_used": "' OR 1=1 --", "loot_data": {"matched": True}},
+            {"payload_used": "' OR 1=1 --", "loot_data": {"matched": True}},
+        ],
+    }
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        activity_env = ActivityEnvironment()
+        result = await activity_env.run(
+            save_vulnerabilities,
+            "scan-123",
+            [duplicate_vulnerability, dict(duplicate_vulnerability)],
+        )
+
+    assert "Successfully saved 1 vulnerabilities for scan scan-123" in result
+    assert mock_cursor.execute.call_count == 2
+    vulnerability_insert = mock_cursor.execute.call_args_list[0].args
+    evidence_insert = mock_cursor.execute.call_args_list[1].args
+    assert "INSERT INTO vulnerabilities" in vulnerability_insert[0]
+    assert "INSERT INTO evidences" in evidence_insert[0]
+
+
+@pytest.mark.asyncio
 async def test_save_vulnerabilities_empty():
     """Test saving empty vulnerabilities list."""
     with patch("activities.db_activities.get_db_connection") as mock_get_conn:
@@ -250,6 +285,31 @@ async def test_generate_and_store_pdf_report_success():
         mock_conn.commit.assert_called_once()
         mock_cursor.close.assert_called_once()
         mock_conn.close.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_generate_and_store_pdf_report_passes_crew_markdown_to_report_engine():
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.rowcount = 1
+
+    with (
+        patch("activities.db_activities.get_db_connection", return_value=mock_conn),
+        patch("activities.db_activities.build_report", return_value=b"%PDF crew") as mock_build_report,
+    ):
+        activity_env = ActivityEnvironment()
+        await activity_env.run(
+            generate_and_store_pdf_report,
+            "scan-123",
+            [],
+            "# CrewAI Evidence\n\n- SQLi confirmed by agent trace",
+        )
+
+    mock_build_report.assert_called_once_with(
+        "scan-123",
+        [],
+        crew_report_markdown="# CrewAI Evidence\n\n- SQLi confirmed by agent trace",
+    )
 
 
 @pytest.mark.asyncio

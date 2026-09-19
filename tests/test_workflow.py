@@ -11,6 +11,7 @@ from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
 CREATED_SANDBOX_REQUESTS = []
 CREWAI_REQUESTS = []
 TARGETED_PENTEST_CALLS = []
+REPORT_REQUESTS = []
 
 
 @activity.defn(name="update_scan_status")
@@ -42,8 +43,15 @@ async def mock_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
 
 @activity.defn(name="generate_and_store_pdf_report")
 async def mock_generate_and_store_pdf_report(
-    scan_id: str, vulnerabilities: list
+    scan_id: str, vulnerabilities: list, crew_report_markdown: str = ""
 ) -> str:
+    REPORT_REQUESTS.append(
+        {
+            "scan_id": scan_id,
+            "vulnerabilities": vulnerabilities,
+            "crew_report_markdown": crew_report_markdown,
+        }
+    )
     return f"Stored PDF report for {scan_id}"
 
 
@@ -194,6 +202,21 @@ async def mock_run_crew_pentest(payload: dict) -> dict:
     return {"status": "COMPLETED", "summary": "CrewAI mock completed"}
 
 
+@activity.defn(name="run_crew_pentest")
+async def mock_run_crew_pentest_with_markdown(payload: dict) -> dict:
+    CREWAI_REQUESTS.append(payload)
+    return {
+        "status": "COMPLETED",
+        "summary": "CrewAI mock completed",
+        "final_report_markdown": "# CrewAI Evidence\n\n- SQLi confirmed by agent trace",
+    }
+
+
+@activity.defn(name="check_task_queue_pollers")
+async def mock_check_task_queue_pollers(task_queue: str) -> bool:
+    return True
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""
@@ -342,6 +365,19 @@ async def test_graph_driven_pentest_workflow_success():
                             "allow_patch_apply": False,
                             "allow_pr_create": False,
                         }
+
+
+def test_graph_driven_workflow_extracts_crewai_markdown_for_report_generation():
+    crew_report = {
+        "status": "COMPLETED",
+        "summary": "CrewAI mock completed",
+        "final_report_markdown": "# CrewAI Evidence\n\n- SQLi confirmed by agent trace",
+    }
+
+    assert (
+        GraphDrivenPentestWorkflow._extract_crew_report_markdown(crew_report)
+        == "# CrewAI Evidence\n\n- SQLi confirmed by agent trace"
+    )
 
 
 @pytest.mark.asyncio

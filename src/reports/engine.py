@@ -405,7 +405,24 @@ def _render_vulnerability_detail(pdf: FPDF, index: int, vulnerability: dict):
     pdf.ln(2)
 
 
-def build_report(scan_id: str, vulnerabilities: list) -> bytes:
+def _render_crew_report_markdown(pdf: FPDF, crew_report_markdown: str):
+    if not crew_report_markdown:
+        return
+    pdf.add_page()
+    _render_section_header(pdf, "CrewAI Evidence Report")
+    pdf.set_font("Courier", size=9)
+    pdf.multi_cell(
+        0,
+        5.5,
+        _safe_text(crew_report_markdown),
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+
+
+def build_report(
+    scan_id: str, vulnerabilities: list, crew_report_markdown: str = ""
+) -> bytes:
     """Builds a pentest-style PDF report and returns it as bytes."""
     vulnerabilities = vulnerabilities or []
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -425,6 +442,8 @@ def build_report(scan_id: str, vulnerabilities: list) -> bytes:
     else:
         for idx, vulnerability in enumerate(vulnerabilities, start=1):
             _render_vulnerability_detail(pdf, idx, vulnerability)
+
+    _render_crew_report_markdown(pdf, crew_report_markdown)
 
     buffer = BytesIO()
     pdf.output(buffer)

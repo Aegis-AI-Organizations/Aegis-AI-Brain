@@ -9,6 +9,45 @@ logger = logging.getLogger(__name__)
 TERMINAL_SCAN_STATUSES = {"COMPLETED", "FAILED", "CANCELLED"}
 
 
+def _stable_json(value) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
+
+
+def _dedupe_evidences(evidences: list) -> list:
+    deduped = []
+    seen = set()
+    for evidence in evidences or []:
+        if not isinstance(evidence, dict):
+            continue
+        key = (evidence.get("payload_used") or "", _stable_json(evidence.get("loot_data")))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(evidence)
+    return deduped
+
+
+def _dedupe_vulnerabilities(vulnerabilities: list) -> list:
+    deduped = []
+    seen = set()
+    for vulnerability in vulnerabilities or []:
+        if not isinstance(vulnerability, dict):
+            continue
+        normalized = dict(vulnerability)
+        normalized["evidences"] = _dedupe_evidences(normalized.get("evidences", []))
+        key = (
+            normalized.get("vuln_type") or "",
+            normalized.get("severity") or "",
+            normalized.get("target_endpoint") or "",
+            normalized.get("description") or "",
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(normalized)
+    return deduped
+
+
 def _execute_status_update(scan_id: str, new_status: str):
     """Internal helper to execute the SQL update."""
     logger.info(f"Updating scan {scan_id} status to {new_status}...")
@@ -98,9 +137,10 @@ async def update_scan_debug_bundle(scan_id: str, debug_bundle: str) -> str:
     return f"Successfully updated scan {scan_id} debug bundle"
 
 
-def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list):
+def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
     """Internal helper to insert vulnerabilities and their evidences."""
 
+    vulnerabilities = _dedupe_vulnerabilities(vulnerabilities)
     logger.info(f"Saving {len(vulnerabilities)} vulnerabilities for scan {scan_id}...")
     conn = get_db_connection()
     if not conn:
@@ -143,6 +183,7 @@ def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list):
         conn.commit()
         cur.close()
         logger.info(f"Saved {len(vulnerabilities)} vulnerabilities for scan {scan_id}")
+        return len(vulnerabilities)
     except Exception as e:
         conn.rollback()
         logger.error(f"Error saving vulnerabilities for scan {scan_id}: {e}")
@@ -161,13 +202,13 @@ async def save_vulnerabilities(scan_id: str, vulnerabilities: list) -> str:
         return f"No vulnerabilities to save for scan {scan_id}"
 
     logger.info(f"Activity save_vulnerabilities started for scan {scan_id}")
-    _execute_save_vulnerabilities(scan_id, vulnerabilities)
-    return (
-        f"Successfully saved {len(vulnerabilities)} vulnerabilities for scan {scan_id}"
-    )
+    saved_count = _execute_save_vulnerabilities(scan_id, vulnerabilities)
+    return f"Successfully saved {saved_count} vulnerabilities for scan {scan_id}"
 
 
-def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
+def _execute_generate_and_store_pdf_report(
+    scan_id: str, vulnerabilities: list, crew_report_markdown: str = ""
+):
     """Generates PDF bytes in memory and stores them in scans.report_pdf."""
     logger.info(
         f"Generating PDF report for scan {scan_id} with {len(vulnerabilities)} vulnerabilities..."
@@ -176,7 +217,9 @@ def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
     if not conn:
         raise Exception("Database connection failed")
 
-    report_pdf = build_report(scan_id, vulnerabilities)
+    report_pdf = build_report(
+        scan_id, vulnerabilities, crew_report_markdown=crew_report_markdown
+    )
 
     try:
         cur = conn.cursor()
@@ -199,10 +242,14 @@ def _execute_generate_and_store_pdf_report(scan_id: str, vulnerabilities: list):
 
 
 @activity.defn
-async def generate_and_store_pdf_report(scan_id: str, vulnerabilities: list) -> str:
+async def generate_and_store_pdf_report(
+    scan_id: str, vulnerabilities: list, crew_report_markdown: str = ""
+) -> str:
     """
     Generates a structured PDF report in memory and stores it in scans.report_pdf.
     """
     logger.info(f"Activity generate_and_store_pdf_report started for scan {scan_id}")
-    _execute_generate_and_store_pdf_report(scan_id, vulnerabilities)
+    _execute_generate_and_store_pdf_report(
+        scan_id, vulnerabilities, crew_report_markdown
+    )
     return f"Successfully generated and stored PDF report for scan {scan_id}"

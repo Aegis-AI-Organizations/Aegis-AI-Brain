@@ -15,9 +15,7 @@ def test_base_schema_creates_scan_crew_report_columns():
 
 
 def test_scan_proto_exposes_crewai_fields_on_get_scan_status():
-    proto = Path(
-        "/Users/enzogaggiotti/Library/CloudStorage/SynologyDrive-Projets/Epitech/EIP/Aegis AI/Repository/Aegis-AI-Proto/aegis/v2/scan.proto"
-    ).read_text()
+    proto = Path("src/aegis/v2/scan.proto").read_text()
 
     assert "string crew_report_json = 8;" in proto
     assert "string crew_report_markdown = 9;" in proto

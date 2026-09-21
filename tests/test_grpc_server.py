@@ -124,6 +124,8 @@ async def test_scan_service_status(mock_get_db):
         "nginx:latest",
         "wf-1",
         "s3://aegis-debug/debug-bundles/test-id/bundle.tar.gz",
+        '{"status":"FAILED","summary":"CrewAI pentest failed."}',
+        "# CrewAI Pentest Report",
     )
 
     temporal_client = AsyncMock()
@@ -135,6 +137,11 @@ async def test_scan_service_status(mock_get_db):
     assert (
         response.debug_bundle == "s3://aegis-debug/debug-bundles/test-id/bundle.tar.gz"
     )
+    assert (
+        response.crew_report_json
+        == '{"status":"FAILED","summary":"CrewAI pentest failed."}'
+    )
+    assert response.crew_report_markdown == "# CrewAI Pentest Report"
 
 
 @pytest.mark.asyncio

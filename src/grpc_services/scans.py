@@ -126,12 +126,12 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
             cur = conn.cursor()
             if company_id:
                 cur.execute(
-                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id, debug_bundle FROM scans WHERE id = %s AND company_id = %s",
+                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id, debug_bundle, crew_report_json, crew_report_markdown FROM scans WHERE id = %s AND company_id = %s",
                     (scan_id, company_id),
                 )
             else:
                 cur.execute(
-                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id, debug_bundle FROM scans WHERE id = %s",
+                    "SELECT status, started_at, completed_at, target_image, temporal_workflow_id, debug_bundle, crew_report_json, crew_report_markdown FROM scans WHERE id = %s",
                     (scan_id,),
                 )
             row = cur.fetchone()
@@ -161,13 +161,26 @@ class ScanService(scan_pb2_grpc.ScanServiceServicer):
                 grpc.StatusCode.NOT_FOUND, "Scan not found or access denied"
             )
 
-        status, started_at, completed_at, target_image, wf_id, debug_bundle = row
+        (
+            status,
+            started_at,
+            completed_at,
+            target_image,
+            wf_id,
+            debug_bundle,
+            crew_report_json,
+            crew_report_markdown,
+        ) = row
         resp = scan_pb2.GetScanStatusResponse(
             scan_id=str(request.scan_id),
             status=str(status) if status else "",
             temporal_workflow_id=str(wf_id) if wf_id else "",
             target_image=str(target_image) if target_image else "",
             debug_bundle=str(debug_bundle) if debug_bundle else "",
+            crew_report_json=str(crew_report_json) if crew_report_json else "",
+            crew_report_markdown=str(crew_report_markdown)
+            if crew_report_markdown
+            else "",
         )
         if started_at:
             resp.started_at.CopyFrom(to_pb_timestamp(started_at))

@@ -32,6 +32,8 @@ class Scan(Base):
         DateTime(timezone=True), nullable=True
     )
     debug_bundle: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    crew_report_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    crew_report_markdown: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     report_pdf: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
 
     vulnerabilities: Mapped[List[Vulnerability]] = relationship(

@@ -2,6 +2,7 @@ import pytest
 from temporalio.testing import WorkflowEnvironment
 from temporalio.worker import Worker
 from temporalio import activity
+from temporalio.exceptions import ApplicationError
 import uuid
 
 from workflows.pentest_workflow import PentestWorkflow
@@ -12,6 +13,8 @@ CREATED_SANDBOX_REQUESTS = []
 CREWAI_REQUESTS = []
 TARGETED_PENTEST_CALLS = []
 REPORT_REQUESTS = []
+CREWAI_REPORT_UPDATES = []
+TASK_QUEUE_POLLER_CHECKS = []
 
 
 @activity.defn(name="update_scan_status")
@@ -199,7 +202,39 @@ async def mock_capture_run_targeted_pentest(
 @activity.defn(name="run_crew_pentest")
 async def mock_run_crew_pentest(payload: dict) -> dict:
     CREWAI_REQUESTS.append(payload)
-    return {"status": "COMPLETED", "summary": "CrewAI mock completed"}
+    return {
+        "status": "COMPLETED",
+        "summary": "CrewAI mock completed",
+        "findings": [{"title": "SQLi confirmed", "severity": "HIGH"}],
+        "agent_trace": {"planner": "plan", "guider": "guide", "executor": "exec"},
+        "final_report_markdown": "# CrewAI Pentest Report\n\n- SQLi confirmed",
+    }
+
+
+@activity.defn(name="update_scan_crew_report")
+async def mock_update_scan_crew_report(
+    scan_id: str, crew_report_json: str, crew_report_markdown: str
+) -> str:
+    CREWAI_REPORT_UPDATES.append(
+        {
+            "scan_id": scan_id,
+            "crew_report_json": crew_report_json,
+            "crew_report_markdown": crew_report_markdown,
+        }
+    )
+    return f"Successfully updated CrewAI report for scan {scan_id}"
+
+
+@activity.defn(name="check_task_queue_pollers")
+async def mock_check_task_queue_pollers(task_queue: str) -> bool:
+    TASK_QUEUE_POLLER_CHECKS.append(task_queue)
+    return True
+
+
+@activity.defn(name="check_task_queue_pollers")
+async def mock_check_task_queue_pollers_unavailable(task_queue: str) -> bool:
+    TASK_QUEUE_POLLER_CHECKS.append(task_queue)
+    return False
 
 
 @activity.defn(name="run_crew_pentest")
@@ -210,11 +245,6 @@ async def mock_run_crew_pentest_with_markdown(payload: dict) -> dict:
         "summary": "CrewAI mock completed",
         "final_report_markdown": "# CrewAI Evidence\n\n- SQLi confirmed by agent trace",
     }
-
-
-@activity.defn(name="check_task_queue_pollers")
-async def mock_check_task_queue_pollers(task_queue: str) -> bool:
-    return True
 
 
 @pytest.mark.asyncio
@@ -229,6 +259,7 @@ async def test_pentest_workflow_success():
             activities=[
                 mock_update_scan_status,
                 mock_save_vulnerabilities,
+                mock_update_scan_crew_report,
                 mock_generate_and_store_pdf_report,
                 mock_seed_target_databases,
                 mock_download_minio_artifact,
@@ -281,6 +312,7 @@ async def test_pentest_workflow_failure():
             activities=[
                 failing_update_scan_status,
                 mock_save_vulnerabilities,
+                mock_update_scan_crew_report,
                 mock_generate_and_store_pdf_report,
                 mock_seed_target_databases,
                 mock_download_minio_artifact,
@@ -314,6 +346,8 @@ async def test_pentest_workflow_failure():
 @pytest.mark.asyncio
 async def test_graph_driven_pentest_workflow_success():
     CREWAI_REQUESTS.clear()
+    CREWAI_REPORT_UPDATES.clear()
+    TASK_QUEUE_POLLER_CHECKS.clear()
     async with await WorkflowEnvironment.start_time_skipping() as env:
         async with Worker(
             env.client,
@@ -321,6 +355,8 @@ async def test_graph_driven_pentest_workflow_success():
             workflows=[GraphDrivenPentestWorkflow],
             activities=[
                 mock_update_scan_status,
+                mock_check_task_queue_pollers,
+                mock_update_scan_crew_report,
                 mock_save_vulnerabilities,
                 mock_generate_and_store_pdf_report,
                 mock_seed_target_databases,
@@ -365,6 +401,70 @@ async def test_graph_driven_pentest_workflow_success():
                             "allow_patch_apply": False,
                             "allow_pr_create": False,
                         }
+                        assert TASK_QUEUE_POLLER_CHECKS[-1] == "CREWAI_TASK_QUEUE"
+                        assert CREWAI_REPORT_UPDATES[-1]["scan_id"] == scan_id
+                        assert (
+                            '"status":"COMPLETED"'
+                            in CREWAI_REPORT_UPDATES[-1]["crew_report_json"]
+                        )
+                        assert CREWAI_REPORT_UPDATES[-1][
+                            "crew_report_markdown"
+                        ].startswith("# CrewAI Pentest Report")
+
+
+@pytest.mark.asyncio
+async def test_graph_driven_pentest_workflow_skips_crewai_when_queue_has_no_pollers():
+    CREWAI_REQUESTS.clear()
+    CREWAI_REPORT_UPDATES.clear()
+    TASK_QUEUE_POLLER_CHECKS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_GRAPH_NO_CREW",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_check_task_queue_pollers_unavailable,
+                mock_update_scan_crew_report,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
+                mock_identify_attack_targets,
+                mock_build_sandbox_topology,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_targeted_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    result = await env.client.execute_workflow(
+                        GraphDrivenPentestWorkflow.run,
+                        args=[scan_id, "nginx:latest", "company-1"],
+                        id=f"test-graph-pentest-no-crew-{scan_id}",
+                        task_queue="TEST_QUEUE_GRAPH_NO_CREW",
+                    )
+
+    assert (
+        f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
+        in result
+    )
+    assert TASK_QUEUE_POLLER_CHECKS[-1] == "CREWAI_TASK_QUEUE"
+    assert CREWAI_REQUESTS == []
+    assert CREWAI_REPORT_UPDATES[-1]["scan_id"] == scan_id
+    assert '"status":"FAILED"' in CREWAI_REPORT_UPDATES[-1]["crew_report_json"]
+    assert CREWAI_REPORT_UPDATES[-1]["crew_report_markdown"] == ""
 
 
 def test_graph_driven_workflow_extracts_crewai_markdown_for_report_generation():
@@ -393,6 +493,7 @@ async def test_graph_workflow_pentests_deployer_endpoint_not_graph_host():
                 mock_identify_attack_targets_with_external_url,
                 mock_build_sandbox_topology,
                 mock_save_vulnerabilities,
+                mock_update_scan_crew_report,
                 mock_generate_and_store_pdf_report,
                 mock_seed_target_databases,
             ],
@@ -498,6 +599,22 @@ def test_graph_driven_workflow_builds_crewai_activity_payload():
     }
 
 
+def test_graph_driven_workflow_builds_failed_crew_report_from_error():
+    report = GraphDrivenPentestWorkflow._build_failed_crew_report(
+        ApplicationError("ollama unreachable"),
+    )
+
+    assert report == {
+        "status": "FAILED",
+        "summary": "CrewAI pentest failed.",
+        "error": "ollama unreachable",
+    }
+
+
+def test_graph_driven_workflow_crewai_schedule_to_start_timeout_is_short():
+    assert GraphDrivenPentestWorkflow.CREWAI_SCHEDULE_TO_START_TIMEOUT == 30
+
+
 @pytest.mark.asyncio
 async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying():
     CREATED_SANDBOX_REQUESTS.clear()
@@ -510,11 +627,13 @@ async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying()
             activities=[
                 mock_update_scan_status,
                 mock_save_vulnerabilities,
+                mock_update_scan_crew_report,
                 mock_generate_and_store_pdf_report,
                 mock_seed_target_databases,
                 mock_download_minio_artifact,
                 mock_identify_attack_targets,
                 mock_build_sandbox_topology,
+                mock_check_task_queue_pollers,
             ],
         ):
             async with Worker(

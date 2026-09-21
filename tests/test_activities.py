@@ -5,6 +5,7 @@ from activities.db_activities import (
     update_scan_status,
     update_scan_debug_bundle,
     save_vulnerabilities,
+    update_scan_crew_report,
     generate_and_store_pdf_report,
 )
 
@@ -166,6 +167,39 @@ async def test_update_scan_debug_bundle_skips_empty_reference():
         result = await activity_env.run(update_scan_debug_bundle, "scan-123", "")
 
         assert "No debug bundle reference to update for scan scan-123" in result
+        mock_get_conn.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_update_scan_crew_report_success():
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.rowcount = 1
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        activity_env = ActivityEnvironment()
+        result = await activity_env.run(
+            update_scan_crew_report,
+            "scan-123",
+            '{"status":"COMPLETED"}',
+            "# CrewAI Pentest Report",
+        )
+
+        assert "Successfully updated CrewAI report for scan scan-123" in result
+        mock_cursor.execute.assert_called_once_with(
+            "UPDATE scans SET crew_report_json = %s, crew_report_markdown = %s WHERE id = %s",
+            ('{"status":"COMPLETED"}', "# CrewAI Pentest Report", "scan-123"),
+        )
+        mock_conn.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_update_scan_crew_report_skips_empty_payloads():
+    with patch("activities.db_activities.get_db_connection") as mock_get_conn:
+        activity_env = ActivityEnvironment()
+        result = await activity_env.run(update_scan_crew_report, "scan-123", "", "")
+
+        assert "No CrewAI report to update for scan scan-123" in result
         mock_get_conn.assert_not_called()
 
 

@@ -140,6 +140,49 @@ async def update_scan_debug_bundle(scan_id: str, debug_bundle: str) -> str:
     return f"Successfully updated scan {scan_id} debug bundle"
 
 
+def _execute_update_scan_crew_report(
+    scan_id: str, crew_report_json: str, crew_report_markdown: str
+):
+    """Internal helper to persist the latest CrewAI JSON and markdown output."""
+    logger.info(f"Updating scan {scan_id} CrewAI report artifacts...")
+    conn = get_db_connection()
+    if not conn:
+        raise Exception("Database connection failed")
+
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE scans SET crew_report_json = %s, crew_report_markdown = %s WHERE id = %s",
+            (crew_report_json, crew_report_markdown, scan_id),
+        )
+
+        if cur.rowcount == 0:
+            raise Exception(f"Scan ID {scan_id} not found to update CrewAI report")
+
+        conn.commit()
+        cur.close()
+        logger.info(f"Scan {scan_id} CrewAI report artifacts updated")
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Error updating scan {scan_id} CrewAI report artifacts: {e}")
+        raise e
+    finally:
+        conn.close()
+
+
+@activity.defn
+async def update_scan_crew_report(
+    scan_id: str, crew_report_json: str, crew_report_markdown: str
+) -> str:
+    """Stores the latest CrewAI report artifacts for a scan."""
+    if not crew_report_json and not crew_report_markdown:
+        return f"No CrewAI report to update for scan {scan_id}"
+
+    logger.info(f"Activity update_scan_crew_report started for scan {scan_id}")
+    _execute_update_scan_crew_report(scan_id, crew_report_json, crew_report_markdown)
+    return f"Successfully updated CrewAI report for scan {scan_id}"
+
+
 def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
     """Internal helper to insert vulnerabilities and their evidences."""
 

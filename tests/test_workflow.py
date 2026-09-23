@@ -247,6 +247,16 @@ async def mock_run_crew_pentest_with_markdown(payload: dict) -> dict:
     }
 
 
+@activity.defn(name="run_crew_pentest")
+async def mock_run_crew_pentest_failed(payload: dict) -> dict:
+    CREWAI_REQUESTS.append(payload)
+    return {
+        "status": "FAILED",
+        "summary": "CrewAI mock failed",
+        "error": "LLM provider unavailable",
+    }
+
+
 @pytest.mark.asyncio
 async def test_pentest_workflow_success():
     """Test full workflow utilizing mock database activity."""
@@ -464,6 +474,66 @@ async def test_graph_driven_pentest_workflow_skips_crewai_when_queue_has_no_poll
     assert CREWAI_REQUESTS == []
     assert CREWAI_REPORT_UPDATES[-1]["scan_id"] == scan_id
     assert '"status":"FAILED"' in CREWAI_REPORT_UPDATES[-1]["crew_report_json"]
+    assert CREWAI_REPORT_UPDATES[-1]["crew_report_markdown"] == ""
+
+
+@pytest.mark.asyncio
+async def test_graph_driven_pentest_workflow_continues_when_crewai_returns_failed():
+    CREWAI_REQUESTS.clear()
+    CREWAI_REPORT_UPDATES.clear()
+    TASK_QUEUE_POLLER_CHECKS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_GRAPH_CREW_FAILED",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_check_task_queue_pollers,
+                mock_update_scan_crew_report,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
+                mock_identify_attack_targets,
+                mock_build_sandbox_topology,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_targeted_pentest],
+                ):
+                    async with Worker(
+                        env.client,
+                        task_queue="CREWAI_TASK_QUEUE",
+                        activities=[mock_run_crew_pentest_failed],
+                    ):
+                        scan_id = str(uuid.uuid4())
+                        result = await env.client.execute_workflow(
+                            GraphDrivenPentestWorkflow.run,
+                            args=[scan_id, "nginx:latest", "company-1"],
+                            id=f"test-graph-pentest-crew-failed-{scan_id}",
+                            task_queue="TEST_QUEUE_GRAPH_CREW_FAILED",
+                        )
+
+    assert (
+        f"Graph-driven scan {scan_id} on target nginx:latest successfully completed"
+        in result
+    )
+    assert CREWAI_REQUESTS[-1]["scan_id"] == scan_id
+    assert CREWAI_REPORT_UPDATES[-1]["scan_id"] == scan_id
+    assert '"status":"FAILED"' in CREWAI_REPORT_UPDATES[-1]["crew_report_json"]
+    assert "LLM provider unavailable" in CREWAI_REPORT_UPDATES[-1]["crew_report_json"]
     assert CREWAI_REPORT_UPDATES[-1]["crew_report_markdown"] == ""
 
 

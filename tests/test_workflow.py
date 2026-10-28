@@ -435,10 +435,18 @@ async def test_graph_driven_pentest_workflow_success():
                             and v["evidences"][0].get("payload_used") == "crewai"
                         ]
                         assert len(crew_vulnerabilities) == 1
-                        assert crew_vulnerabilities[0]["vuln_type"] == "SQL Injection (SQLi)"
-                        assert crew_vulnerabilities[0]["target_endpoint"] == "http://sandbox/login"
                         assert (
-                            crew_vulnerabilities[0]["evidences"][0]["loot_data"]["confidence"]
+                            crew_vulnerabilities[0]["vuln_type"]
+                            == "SQL Injection (SQLi)"
+                        )
+                        assert (
+                            crew_vulnerabilities[0]["target_endpoint"]
+                            == "http://sandbox/login"
+                        )
+                        assert (
+                            crew_vulnerabilities[0]["evidences"][0]["loot_data"][
+                                "confidence"
+                            ]
                             == "LIKELY"
                         )
 
@@ -586,8 +594,10 @@ def test_extract_crew_findings_as_vulnerabilities_reshapes_to_vulnerability_cont
         ],
     }
 
-    vulnerabilities = GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
-        crew_report
+    vulnerabilities = (
+        GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
+            crew_report
+        )
     )
 
     assert vulnerabilities == [
@@ -620,14 +630,23 @@ def test_extract_crew_findings_as_vulnerabilities_reshapes_to_vulnerability_cont
 
 @pytest.mark.parametrize(
     "crew_report",
-    [None, {}, {"findings": None}, {"findings": "not-a-list"}, {"findings": ["not-a-dict"]}],
+    [
+        None,
+        {},
+        {"findings": None},
+        {"findings": "not-a-list"},
+        {"findings": ["not-a-dict"]},
+    ],
 )
 def test_extract_crew_findings_as_vulnerabilities_handles_missing_or_malformed_input(
     crew_report,
 ):
-    assert GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
-        crew_report
-    ) == []
+    assert (
+        GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
+            crew_report
+        )
+        == []
+    )
 
 
 @pytest.mark.asyncio

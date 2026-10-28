@@ -205,7 +205,15 @@ async def mock_run_crew_pentest(payload: dict) -> dict:
     return {
         "status": "COMPLETED",
         "summary": "CrewAI mock completed",
-        "findings": [{"title": "SQLi confirmed", "severity": "HIGH"}],
+        "findings": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "HIGH",
+                "target_endpoint": "http://sandbox/login",
+                "description": "Boolean-based blind SQLi confirmed by the crew.",
+                "confidence": "LIKELY",
+            }
+        ],
         "agent_trace": {"planner": "plan", "guider": "guide", "executor": "exec"},
         "final_report_markdown": "# CrewAI Pentest Report\n\n- SQLi confirmed",
     }
@@ -420,6 +428,27 @@ async def test_graph_driven_pentest_workflow_success():
                         assert CREWAI_REPORT_UPDATES[-1][
                             "crew_report_markdown"
                         ].startswith("# CrewAI Pentest Report")
+                        crew_vulnerabilities = [
+                            v
+                            for v in REPORT_REQUESTS[-1]["vulnerabilities"]
+                            if v.get("evidences")
+                            and v["evidences"][0].get("payload_used") == "crewai"
+                        ]
+                        assert len(crew_vulnerabilities) == 1
+                        assert (
+                            crew_vulnerabilities[0]["vuln_type"]
+                            == "SQL Injection (SQLi)"
+                        )
+                        assert (
+                            crew_vulnerabilities[0]["target_endpoint"]
+                            == "http://sandbox/login"
+                        )
+                        assert (
+                            crew_vulnerabilities[0]["evidences"][0]["loot_data"][
+                                "confidence"
+                            ]
+                            == "LIKELY"
+                        )
 
 
 @pytest.mark.asyncio
@@ -547,6 +576,76 @@ def test_graph_driven_workflow_extracts_crewai_markdown_for_report_generation():
     assert (
         GraphDrivenPentestWorkflow._extract_crew_report_markdown(crew_report)
         == "# CrewAI Evidence\n\n- SQLi confirmed by agent trace"
+    )
+
+
+def test_extract_crew_findings_as_vulnerabilities_reshapes_to_vulnerability_contract():
+    crew_report = {
+        "status": "COMPLETED",
+        "findings": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "CRITICAL",
+                "target_endpoint": "http://sandbox/login",
+                "description": "Confirmed via error-based injection.",
+                "confidence": "CONFIRMED",
+            },
+            {"description": "Missing fields fall back to safe defaults."},
+        ],
+    }
+
+    vulnerabilities = (
+        GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
+            crew_report
+        )
+    )
+
+    assert vulnerabilities == [
+        {
+            "vuln_type": "SQL Injection (SQLi)",
+            "severity": "CRITICAL",
+            "target_endpoint": "http://sandbox/login",
+            "description": "Confirmed via error-based injection.",
+            "evidences": [
+                {
+                    "payload_used": "crewai",
+                    "loot_data": {"tool": "crewai", "confidence": "CONFIRMED"},
+                }
+            ],
+        },
+        {
+            "vuln_type": "Unknown",
+            "severity": "INFO",
+            "target_endpoint": "",
+            "description": "Missing fields fall back to safe defaults.",
+            "evidences": [
+                {
+                    "payload_used": "crewai",
+                    "loot_data": {"tool": "crewai", "confidence": "SUSPECTED"},
+                }
+            ],
+        },
+    ]
+
+
+@pytest.mark.parametrize(
+    "crew_report",
+    [
+        None,
+        {},
+        {"findings": None},
+        {"findings": "not-a-list"},
+        {"findings": ["not-a-dict"]},
+    ],
+)
+def test_extract_crew_findings_as_vulnerabilities_handles_missing_or_malformed_input(
+    crew_report,
+):
+    assert (
+        GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
+            crew_report
+        )
+        == []
     )
 
 

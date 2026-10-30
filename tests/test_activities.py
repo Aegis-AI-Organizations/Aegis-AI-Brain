@@ -232,6 +232,8 @@ async def test_save_vulnerabilities_success():
 
         assert "Successfully saved 1 vulnerabilities for scan scan-123" in result
         assert mock_cursor.execute.call_count == 2
+        vulnerability_params = mock_cursor.execute.call_args_list[0].args[1]
+        assert vulnerability_params[-2:] == (None, None)
         mock_conn.commit.assert_called_once()
         mock_cursor.close.assert_called_once()
         mock_conn.close.assert_called_once()
@@ -371,3 +373,28 @@ async def test_generate_and_store_pdf_report_db_fail():
         activity_env = ActivityEnvironment()
         with pytest.raises(Exception, match="Database connection failed"):
             await activity_env.run(generate_and_store_pdf_report, "scan-123", [])
+
+
+@pytest.mark.asyncio
+async def test_save_vulnerabilities_persists_source_and_proof_level():
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = ["mock-vuln-uuid-1234"]
+
+    vulnerability = {
+        "vuln_type": "SQLi",
+        "severity": "CRITICAL",
+        "target_endpoint": "http://target/search",
+        "description": "Flag extracted",
+        "source": "worker-pentest",
+        "proof_level": "exploited",
+        "evidences": [],
+    }
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        activity_env = ActivityEnvironment()
+        await activity_env.run(save_vulnerabilities, "scan-123", [vulnerability])
+
+    sql, params = mock_cursor.execute.call_args_list[0].args
+    assert "source, proof_level" in sql
+    assert params[-2:] == ("worker-pentest", "exploited")

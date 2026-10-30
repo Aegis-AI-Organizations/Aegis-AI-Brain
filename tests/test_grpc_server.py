@@ -205,18 +205,29 @@ async def test_vulnerability_service_get(mock_get_db):
                 "exfiltration": {"proof_marker": "aegis-flag-1234"},
                 "sample_records": [{"email": "admin@example.test"}],
             },
-        )
+            "worker-pentest",
+            "exploited",
+        ),
+        ("v-2", "SQLi", "CRITICAL", "/", "desc", None, None, None, None),
     ]
 
     servicer = VulnerabilityService()
     request = vulnerability_pb2.GetVulnerabilitiesRequest(scan_id="test-id")
     response = await servicer.GetVulnerabilities(request, MockContext())
-    assert len(response.vulnerabilities) == 1
+    assert len(response.vulnerabilities) == 2
     assert response.vulnerabilities[0].id == "v-1"
     assert response.vulnerabilities[0].loot_proof == "aegis-flag-1234"
     assert response.vulnerabilities[0].exfiltrated_data == (
         '[{"email": "admin@example.test"}]'
     )
+    assert response.vulnerabilities[0].source == "worker-pentest"
+    assert response.vulnerabilities[0].proof_level == "exploited"
+    # Rows written before the proof contract have no source/proof_level.
+    assert response.vulnerabilities[1].source == ""
+    assert response.vulnerabilities[1].proof_level == ""
+
+    query = mock_cursor.execute.call_args.args[0]
+    assert "seed_flag_extracted" in query.split("ORDER BY")[1]
 
 
 @pytest.mark.asyncio

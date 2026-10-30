@@ -4,6 +4,7 @@ from temporalio.worker import Worker
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
 import uuid
+from unittest.mock import patch
 
 from workflows.pentest_workflow import PentestWorkflow
 from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
@@ -181,7 +182,15 @@ async def mock_run_targeted_pentest(
         "vulnerabilities": [
             {
                 "vuln_type": "SQLi",
+                "severity": "HIGH",
                 "target_endpoint": f"http://{target_host}:{port}{targets[0]['path']}",
+                "description": "Boolean-based SQLi.",
+                "evidences": [
+                    {
+                        "payload_used": "' OR '1'='1",
+                        "loot_data": {"tool": "sqli-probe", "status": "SUCCESS"},
+                    }
+                ],
             }
         ],
         "targets": targets,
@@ -428,11 +437,12 @@ async def test_graph_driven_pentest_workflow_success():
                         assert CREWAI_REPORT_UPDATES[-1][
                             "crew_report_markdown"
                         ].startswith("# CrewAI Pentest Report")
+                        reported = REPORT_REQUESTS[-1]["vulnerabilities"]
                         crew_vulnerabilities = [
-                            v
-                            for v in REPORT_REQUESTS[-1]["vulnerabilities"]
-                            if v.get("evidences")
-                            and v["evidences"][0].get("payload_used") == "crewai"
+                            v for v in reported if v["source"] == "agent-crew"
+                        ]
+                        worker_vulnerabilities = [
+                            v for v in reported if v["source"] == "worker-pentest"
                         ]
                         assert len(crew_vulnerabilities) == 1
                         assert (
@@ -443,12 +453,12 @@ async def test_graph_driven_pentest_workflow_success():
                             crew_vulnerabilities[0]["target_endpoint"]
                             == "http://sandbox/login"
                         )
-                        assert (
-                            crew_vulnerabilities[0]["evidences"][0]["loot_data"][
-                                "confidence"
-                            ]
-                            == "LIKELY"
-                        )
+                        # No tool evidence: the crew's claim stays unverified.
+                        assert crew_vulnerabilities[0]["proof_level"] == "unverified"
+                        assert crew_vulnerabilities[0]["evidences"] == []
+                        assert crew_vulnerabilities[0]["confidence"] == "LIKELY"
+                        assert len(worker_vulnerabilities) == 1
+                        assert worker_vulnerabilities[0]["proof_level"] == "detected"
 
 
 @pytest.mark.asyncio
@@ -579,53 +589,96 @@ def test_graph_driven_workflow_extracts_crewai_markdown_for_report_generation():
     )
 
 
-def test_extract_crew_findings_as_vulnerabilities_reshapes_to_vulnerability_contract():
-    crew_report = {
-        "status": "COMPLETED",
-        "findings": [
+def _ingest(report, crew_report):
+    with patch("workflows.graph_pentest_workflow.workflow.logger") as logger:
+        findings = GraphDrivenPentestWorkflow._ingest_findings(
+            "scan-1", report, crew_report
+        )
+    return findings, logger
+
+
+def test_ingest_findings_validates_and_merges_both_producers():
+    report = {
+        "vulnerabilities": [
             {
                 "vuln_type": "SQL Injection (SQLi)",
                 "severity": "CRITICAL",
                 "target_endpoint": "http://sandbox/login",
-                "description": "Confirmed via error-based injection.",
-                "confidence": "CONFIRMED",
+                "description": "Flag extracted.",
+                "evidences": [
+                    {
+                        "payload_used": "' UNION SELECT secret FROM users--",
+                        "loot_data": {
+                            "status": "SUCCESS",
+                            "seed_flag_extracted": True,
+                            "exfiltration": {"proof_marker": "aegis-flag-1234"},
+                        },
+                    }
+                ],
+            }
+        ]
+    }
+    crew_report = {
+        "findings": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "HIGH",
+                "target_endpoint": "http://sandbox/login",
+                "description": "Crew saw the same injection.",
+                "proof_level": "detected",
+                "evidences": [
+                    {
+                        "payload_used": "GET http://sandbox/login?q='",
+                        "loot_data": {
+                            "tool": "Verify Network Service Endpoint",
+                            "status": "SUCCESS",
+                            "response_excerpt": "syntax error at or near",
+                        },
+                    }
+                ],
             },
-            {"description": "Missing fields fall back to safe defaults."},
-        ],
+            {
+                "vuln_type": "Exposed configuration file",
+                "severity": "MEDIUM",
+                "target_endpoint": "http://sandbox/.env",
+                "description": "Claimed without tool output.",
+                "proof_level": "detected",
+                "evidences": [],
+            },
+        ]
     }
 
-    vulnerabilities = (
-        GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
-            crew_report
-        )
-    )
+    findings, _ = _ingest(report, crew_report)
 
-    assert vulnerabilities == [
-        {
-            "vuln_type": "SQL Injection (SQLi)",
-            "severity": "CRITICAL",
-            "target_endpoint": "http://sandbox/login",
-            "description": "Confirmed via error-based injection.",
-            "evidences": [
-                {
-                    "payload_used": "crewai",
-                    "loot_data": {"tool": "crewai", "confidence": "CONFIRMED"},
-                }
-            ],
-        },
-        {
-            "vuln_type": "Unknown",
-            "severity": "INFO",
-            "target_endpoint": "",
-            "description": "Missing fields fall back to safe defaults.",
-            "evidences": [
-                {
-                    "payload_used": "crewai",
-                    "loot_data": {"tool": "crewai", "confidence": "SUSPECTED"},
-                }
-            ],
-        },
+    assert len(findings) == 2
+    sqli, exposed = findings
+    assert sqli["source"] == "worker-pentest"
+    assert sqli["proof_level"] == "exploited"
+    assert [e["payload_used"] for e in sqli["evidences"]] == [
+        "' UNION SELECT secret FROM users--",
+        "GET http://sandbox/login?q='",
     ]
+    assert exposed["source"] == "agent-crew"
+    assert exposed["proof_level"] == "unverified"
+
+
+def test_ingest_findings_logs_and_drops_non_conforming_findings():
+    crew_report = {
+        "findings": [
+            {
+                "vuln_type": "XSS",
+                "severity": "High",
+                "target_endpoint": "http://sandbox/",
+                "description": "Wrong severity casing.",
+            },
+            "not-a-dict",
+        ]
+    }
+
+    findings, logger = _ingest(None, crew_report)
+
+    assert findings == []
+    assert logger.warning.call_count == 2
 
 
 @pytest.mark.parametrize(
@@ -635,18 +688,13 @@ def test_extract_crew_findings_as_vulnerabilities_reshapes_to_vulnerability_cont
         {},
         {"findings": None},
         {"findings": "not-a-list"},
-        {"findings": ["not-a-dict"]},
     ],
 )
-def test_extract_crew_findings_as_vulnerabilities_handles_missing_or_malformed_input(
-    crew_report,
-):
-    assert (
-        GraphDrivenPentestWorkflow._extract_crew_findings_as_vulnerabilities(
-            crew_report
-        )
-        == []
-    )
+def test_ingest_findings_handles_missing_or_malformed_crew_report(crew_report):
+    findings, logger = _ingest({"vulnerabilities": []}, crew_report)
+
+    assert findings == []
+    logger.warning.assert_not_called()
 
 
 @pytest.mark.asyncio

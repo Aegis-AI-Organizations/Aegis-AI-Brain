@@ -3,52 +3,11 @@ from config.db import get_db_connection
 import logging
 import json
 from reports.engine import build_report
+from services.proof_contract import dedupe_findings
 
 logger = logging.getLogger(__name__)
 
 TERMINAL_SCAN_STATUSES = {"COMPLETED", "FAILED", "CANCELLED"}
-
-
-def _stable_json(value) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
-
-
-def _dedupe_evidences(evidences: list) -> list:
-    deduped = []
-    seen = set()
-    for evidence in evidences or []:
-        if not isinstance(evidence, dict):
-            continue
-        key = (
-            evidence.get("payload_used") or "",
-            _stable_json(evidence.get("loot_data")),
-        )
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(evidence)
-    return deduped
-
-
-def _dedupe_vulnerabilities(vulnerabilities: list) -> list:
-    deduped = []
-    seen = set()
-    for vulnerability in vulnerabilities or []:
-        if not isinstance(vulnerability, dict):
-            continue
-        normalized = dict(vulnerability)
-        normalized["evidences"] = _dedupe_evidences(normalized.get("evidences", []))
-        key = (
-            normalized.get("vuln_type") or "",
-            normalized.get("severity") or "",
-            normalized.get("target_endpoint") or "",
-            normalized.get("description") or "",
-        )
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(normalized)
-    return deduped
 
 
 def _execute_status_update(scan_id: str, new_status: str):
@@ -186,7 +145,7 @@ async def update_scan_crew_report(
 def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
     """Internal helper to insert vulnerabilities and their evidences."""
 
-    vulnerabilities = _dedupe_vulnerabilities(vulnerabilities)
+    vulnerabilities = dedupe_findings(vulnerabilities)
     logger.info(f"Saving {len(vulnerabilities)} vulnerabilities for scan {scan_id}...")
     conn = get_db_connection()
     if not conn:
@@ -197,8 +156,8 @@ def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
         for v in vulnerabilities:
             cur.execute(
                 """
-                INSERT INTO vulnerabilities (scan_id, vuln_type, severity, target_endpoint, description)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO vulnerabilities (scan_id, vuln_type, severity, target_endpoint, description, source, proof_level)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING id;
                 """,
                 (
@@ -207,6 +166,8 @@ def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
                     v.get("severity"),
                     v.get("target_endpoint"),
                     v.get("description"),
+                    v.get("source"),
+                    v.get("proof_level"),
                 ),
             )
             vuln_id = cur.fetchone()[0]

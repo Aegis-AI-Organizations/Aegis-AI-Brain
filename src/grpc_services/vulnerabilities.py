@@ -29,6 +29,7 @@ def _extract_loot_fields(loot):
         loot.get("loot_proof")
         or exfiltration.get("proof_marker")
         or loot.get("sql_error")
+        or loot.get("sql_error_signature")
         or ""
     )
     exfiltrated_data = (
@@ -47,14 +48,15 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur = conn.cursor()
             cur.execute(
                 """
-                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at, latest.loot_data
+                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at, latest.loot_data, v.source, v.proof_level
                 FROM vulnerabilities v
                 JOIN scans s ON v.scan_id = s.id
                 LEFT JOIN LATERAL (
                     SELECT e.loot_data
                     FROM evidences e
                     WHERE e.vulnerability_id = v.id AND e.loot_data IS NOT NULL
-                    ORDER BY e.captured_at DESC
+                    ORDER BY COALESCE((e.loot_data->>'seed_flag_extracted') = 'true', FALSE) DESC,
+                             e.captured_at DESC
                     LIMIT 1
                 ) latest ON TRUE
                 WHERE v.scan_id = %s AND s.company_id = %s
@@ -80,7 +82,9 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
         rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id, company_id)
         vulns = []
         for row in rows:
-            v_id, v_type, severity, endpoint, desc, disco, loot = row
+            v_id, v_type, severity, endpoint, desc, disco, loot, source, proof_level = (
+                row
+            )
             loot_proof, exfiltrated_data = _extract_loot_fields(loot)
             v = vulnerability_pb2.Vulnerability(
                 id=str(v_id),
@@ -90,6 +94,8 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
                 description=desc if desc else "",
                 loot_proof=loot_proof,
                 exfiltrated_data=exfiltrated_data,
+                source=source or "",
+                proof_level=proof_level or "",
             )
             if disco:
                 v.discovered_at.CopyFrom(to_pb_timestamp(disco))

@@ -785,6 +785,36 @@ def test_graph_driven_workflow_crewai_schedule_to_start_timeout_is_short():
 
 
 @pytest.mark.asyncio
+async def test_build_sandbox_request_sets_jvm_resource_profile_for_cve_2017_5638():
+    workflow_instance = GraphDrivenPentestWorkflow()
+
+    sandbox_request = await workflow_instance._build_sandbox_request(
+        scan_id="scan-1",
+        target_image="aegis-cve-2017-5638:latest",
+        company_id="company-1",
+        selected_target_ids=None,
+        attack_targets=[],
+    )
+
+    assert sandbox_request["resource_profile"] == "jvm"
+
+
+@pytest.mark.asyncio
+async def test_build_sandbox_request_omits_resource_profile_for_other_targets():
+    workflow_instance = GraphDrivenPentestWorkflow()
+
+    sandbox_request = await workflow_instance._build_sandbox_request(
+        scan_id="scan-1",
+        target_image="docker-vuln-sqli:latest",
+        company_id="company-1",
+        selected_target_ids=None,
+        attack_targets=[],
+    )
+
+    assert "resource_profile" not in sandbox_request
+
+
+@pytest.mark.asyncio
 async def test_graph_driven_workflow_downloads_minio_artifact_before_deploying():
     CREATED_SANDBOX_REQUESTS.clear()
     CREWAI_REQUESTS.clear()

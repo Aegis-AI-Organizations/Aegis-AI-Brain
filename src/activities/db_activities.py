@@ -217,6 +217,12 @@ def _execute_generate_and_store_pdf_report(
     scan_id: str, vulnerabilities: list, crew_report_markdown: str = ""
 ):
     """Generates PDF bytes in memory and stores them in scans.report_pdf."""
+    # Same dedupe_findings save_vulnerabilities already applies before the DB
+    # insert -- a graph-driven scan re-runs whole-server tools (Nikto/nuclei)
+    # once per attack path, producing genuine duplicate findings for
+    # path-agnostic tools. Without this, the PDF's vulnerability count
+    # diverges from what's actually stored and shown on the Dashboard.
+    vulnerabilities = dedupe_findings(vulnerabilities)
     logger.info(
         f"Generating PDF report for scan {scan_id} with {len(vulnerabilities)} vulnerabilities..."
     )

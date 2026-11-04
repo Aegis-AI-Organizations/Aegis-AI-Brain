@@ -351,6 +351,44 @@ async def test_generate_and_store_pdf_report_passes_crew_markdown_to_report_engi
 
 
 @pytest.mark.asyncio
+async def test_generate_and_store_pdf_report_dedupes_duplicate_vulnerabilities():
+    """A graph-driven scan that re-runs whole-server tools (Nikto/nuclei) per
+    attack path produces genuine duplicate findings; the PDF must collapse
+    them the same way save_vulnerabilities already does before DB insert."""
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.rowcount = 1
+
+    duplicate_vuln = {
+        "vuln_type": "Known CVE (template-matched)",
+        "severity": "CRITICAL",
+        "target_endpoint": "http://target:80",
+        "description": "nuclei confirmed a CVE",
+        "evidences": [{"payload_used": "nuclei", "loot_data": {"executed_at": "t1"}}],
+    }
+    duplicate_vuln_again = {
+        **duplicate_vuln,
+        "evidences": [{"payload_used": "nuclei", "loot_data": {"executed_at": "t2"}}],
+    }
+
+    with (
+        patch("activities.db_activities.get_db_connection", return_value=mock_conn),
+        patch(
+            "activities.db_activities.build_report", return_value=b"%PDF dedup"
+        ) as mock_build_report,
+    ):
+        activity_env = ActivityEnvironment()
+        await activity_env.run(
+            generate_and_store_pdf_report,
+            "scan-123",
+            [duplicate_vuln, duplicate_vuln_again],
+        )
+
+    passed_vulnerabilities = mock_build_report.call_args[0][1]
+    assert len(passed_vulnerabilities) == 1
+
+
+@pytest.mark.asyncio
 async def test_generate_and_store_pdf_report_not_found():
     """Test exception when storing PDF for a missing scan."""
     mock_conn = MagicMock()

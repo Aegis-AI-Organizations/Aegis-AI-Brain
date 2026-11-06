@@ -435,4 +435,28 @@ async def test_save_vulnerabilities_persists_source_and_proof_level():
 
     sql, params = mock_cursor.execute.call_args_list[0].args
     assert "source, proof_level" in sql
-    assert params[-2:] == ("worker-pentest", "exploited")
+    assert params[-3:-1] == ("worker-pentest", "exploited")
+
+
+@pytest.mark.asyncio
+async def test_save_vulnerabilities_persists_remediation():
+    mock_conn = MagicMock()
+    mock_cursor = mock_conn.cursor.return_value
+    mock_cursor.fetchone.return_value = ["mock-vuln-uuid-1234"]
+
+    vulnerability = {
+        "vuln_type": "SQLi",
+        "severity": "CRITICAL",
+        "target_endpoint": "http://target/search",
+        "description": "Flag extracted",
+        "remediation": "Use parameterized queries instead of string-concatenated SQL.",
+        "evidences": [],
+    }
+
+    with patch("activities.db_activities.get_db_connection", return_value=mock_conn):
+        activity_env = ActivityEnvironment()
+        await activity_env.run(save_vulnerabilities, "scan-123", [vulnerability])
+
+    sql, params = mock_cursor.execute.call_args_list[0].args
+    assert "remediation" in sql
+    assert params[-1] == "Use parameterized queries instead of string-concatenated SQL."

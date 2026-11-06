@@ -14,6 +14,14 @@ def test_base_schema_creates_scan_crew_report_columns():
     assert 'sa.Column("crew_report_markdown", sa.Text(), nullable=True)' in migration
 
 
+def test_vulnerabilities_migration_adds_remediation_column():
+    migration = Path(
+        "alembic/versions/20261106_0003_vulnerability_remediation_field.py"
+    ).read_text()
+
+    assert 'sa.Column("remediation", sa.Text(), nullable=True)' in migration
+
+
 def test_scan_proto_exposes_crewai_fields_on_get_scan_status():
     proto = Path("src/aegis/v2/scan.proto").read_text()
 

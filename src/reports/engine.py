@@ -377,6 +377,14 @@ def _render_vulnerability_detail(pdf: FPDF, index: int, vulnerability: dict):
     pdf.multi_cell(0, 6, description, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     pdf.ln(1)
 
+    remediation = _safe_text(vulnerability.get("remediation"))
+    if remediation:
+        pdf.set_font("Helvetica", "B", 10)
+        pdf.cell(0, 6, "Remediation", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.set_font("Helvetica", size=10)
+        pdf.multi_cell(0, 6, remediation, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.ln(1)
+
     payload_blocks = []
     loot_blocks = []
     for evidence_index, evidence in enumerate(evidences, start=1):

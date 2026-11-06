@@ -156,8 +156,8 @@ def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
         for v in vulnerabilities:
             cur.execute(
                 """
-                INSERT INTO vulnerabilities (scan_id, vuln_type, severity, target_endpoint, description, source, proof_level)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO vulnerabilities (scan_id, vuln_type, severity, target_endpoint, description, source, proof_level, remediation)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id;
                 """,
                 (
@@ -168,6 +168,7 @@ def _execute_save_vulnerabilities(scan_id: str, vulnerabilities: list) -> int:
                     v.get("description"),
                     v.get("source"),
                     v.get("proof_level"),
+                    v.get("remediation"),
                 ),
             )
             vuln_id = cur.fetchone()[0]

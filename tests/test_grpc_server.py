@@ -207,8 +207,9 @@ async def test_vulnerability_service_get(mock_get_db):
             },
             "worker-pentest",
             "exploited",
+            "Use parameterized queries.",
         ),
-        ("v-2", "SQLi", "CRITICAL", "/", "desc", None, None, None, None),
+        ("v-2", "SQLi", "CRITICAL", "/", "desc", None, None, None, None, None),
     ]
 
     servicer = VulnerabilityService()
@@ -222,6 +223,8 @@ async def test_vulnerability_service_get(mock_get_db):
     )
     assert response.vulnerabilities[0].source == "worker-pentest"
     assert response.vulnerabilities[0].proof_level == "exploited"
+    assert response.vulnerabilities[0].remediation == "Use parameterized queries."
+    assert response.vulnerabilities[1].remediation == ""
     # Rows written before the proof contract have no source/proof_level.
     assert response.vulnerabilities[1].source == ""
     assert response.vulnerabilities[1].proof_level == ""

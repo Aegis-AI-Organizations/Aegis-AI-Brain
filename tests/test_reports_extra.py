@@ -36,7 +36,12 @@ def test_build_report_renders_more_content_when_remediation_present():
     without = build_report("scan-1", [base])
     with_remediation = build_report(
         "scan-1",
-        [{**base, "remediation": "Use parameterized queries instead of string-concatenated SQL."}],
+        [
+            {
+                **base,
+                "remediation": "Use parameterized queries instead of string-concatenated SQL.",
+            }
+        ],
     )
 
     assert len(with_remediation) > len(without)

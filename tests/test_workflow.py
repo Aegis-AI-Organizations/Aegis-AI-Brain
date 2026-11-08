@@ -682,6 +682,27 @@ def test_ingest_findings_fills_in_remediation_when_producer_omitted_it():
     assert finding["remediation"] != ""
 
 
+def test_ingest_findings_enriches_explicitly_empty_remediation():
+    report = {
+        "vulnerabilities": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "CRITICAL",
+                "target_endpoint": "http://sandbox/login",
+                "description": "desc",
+                "remediation": "",
+                "evidences": [
+                    {"payload_used": "'", "loot_data": {"status": "SUCCESS"}}
+                ],
+            }
+        ]
+    }
+
+    [finding], _ = _ingest(report, None)
+
+    assert finding["remediation"] != ""
+
+
 def test_ingest_findings_keeps_producer_supplied_remediation():
     crew_report = {
         "findings": [

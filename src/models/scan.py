@@ -61,6 +61,7 @@ class Vulnerability(Base):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     source: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
     proof_level: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
+    remediation: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     discovered_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),

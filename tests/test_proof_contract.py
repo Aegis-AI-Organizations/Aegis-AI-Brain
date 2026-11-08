@@ -55,9 +55,7 @@ def test_dedupe_findings_preserves_remediation_from_the_losing_finding():
         evidences=[],
     )
 
-    [deduped] = dedupe_findings(
-        [winner_without_remediation, loser_with_remediation]
-    )
+    [deduped] = dedupe_findings([winner_without_remediation, loser_with_remediation])
 
     assert deduped["remediation"] == "Agent-Crew's specific guidance for this finding."
 

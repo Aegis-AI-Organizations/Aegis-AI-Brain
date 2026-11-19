@@ -9,6 +9,18 @@ DEPLOYER_TASK_QUEUE = os.getenv("DEPLOYER_TASK_QUEUE", "DEPLOYER_TASK_QUEUE")
 GRAPH_PENTEST_TASK_QUEUE = os.getenv("GRAPH_PENTEST_TASK_QUEUE", "PENTEST_TASK_QUEUE")
 CREWAI_TASK_QUEUE = os.getenv("CREWAI_TASK_QUEUE", "CREWAI_TASK_QUEUE")
 
+# CrewAI orchestration policy
+# When CREWAI_REQUIRED is true, a missing/failed CrewAI run makes the whole scan
+# fail instead of degrading to best-effort. Kept false by default so prod/dev
+# tolerate a cold or absent CrewAI worker; the E2E reference scenario sets it to
+# true so a "successful" scan always proves the AI produced something.
+CREWAI_REQUIRED = os.getenv("CREWAI_REQUIRED", "false").lower() == "true"
+# Schedule-to-start budget (seconds) for the CrewAI activity. Must cover a cold
+# Ollama model load, hence a conservative default well above the previous 30s.
+CREWAI_SCHEDULE_TO_START_TIMEOUT_SECONDS = int(
+    os.getenv("CREWAI_SCHEDULE_TO_START_TIMEOUT_SECONDS", "120")
+)
+
 # gRPC TLS Configuration
 TLS_ENABLE = os.getenv("BRAIN_TLS_ENABLE", "false").lower() == "true"
 TLS_CA_CERT = os.getenv("BRAIN_TLS_CA_CERT", "/etc/brain/certs/ca.crt")

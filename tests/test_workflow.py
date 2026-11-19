@@ -1,14 +1,16 @@
-import pytest
-from temporalio.testing import WorkflowEnvironment
-from temporalio.worker import Worker
-from temporalio import activity
-from temporalio.exceptions import ApplicationError
 import uuid
 from unittest.mock import patch
 
-from workflows.pentest_workflow import PentestWorkflow
-from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
+import pytest
+from temporalio import activity
+from temporalio.client import WorkflowFailureError
+from temporalio.exceptions import ApplicationError
+from temporalio.testing import WorkflowEnvironment
+from temporalio.worker import Worker
 
+from config import config as brain_config
+from workflows.graph_pentest_workflow import GraphDrivenPentestWorkflow
+from workflows.pentest_workflow import PentestWorkflow
 
 CREATED_SANDBOX_REQUESTS = []
 CREWAI_REQUESTS = []
@@ -576,6 +578,122 @@ async def test_graph_driven_pentest_workflow_continues_when_crewai_returns_faile
     assert CREWAI_REPORT_UPDATES[-1]["crew_report_markdown"] == ""
 
 
+@pytest.fixture
+def crewai_required():
+    previous = brain_config.CREWAI_REQUIRED
+    brain_config.CREWAI_REQUIRED = True
+    try:
+        yield
+    finally:
+        brain_config.CREWAI_REQUIRED = previous
+
+
+@pytest.mark.asyncio
+async def test_graph_driven_workflow_fails_scan_when_crew_required_and_no_pollers(
+    crewai_required,
+):
+    TASK_QUEUE_POLLER_CHECKS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_GRAPH_STRICT_NO_CREW",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_check_task_queue_pollers_unavailable,
+                mock_update_scan_crew_report,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
+                mock_identify_attack_targets,
+                mock_build_sandbox_topology,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_targeted_pentest],
+                ):
+                    scan_id = str(uuid.uuid4())
+                    with pytest.raises(WorkflowFailureError) as exc_info:
+                        await env.client.execute_workflow(
+                            GraphDrivenPentestWorkflow.run,
+                            args=[scan_id, "nginx:latest", "company-1"],
+                            id=f"test-graph-pentest-strict-no-crew-{scan_id}",
+                            task_queue="TEST_QUEUE_GRAPH_STRICT_NO_CREW",
+                        )
+
+    cause = exc_info.value.cause
+    assert isinstance(cause, ApplicationError)
+    assert cause.type == "CrewAIRequiredError"
+
+
+@pytest.mark.asyncio
+async def test_graph_driven_workflow_fails_scan_when_crew_required_and_crew_failed(
+    crewai_required,
+):
+    CREWAI_REQUESTS.clear()
+    async with await WorkflowEnvironment.start_time_skipping() as env:
+        async with Worker(
+            env.client,
+            task_queue="TEST_QUEUE_GRAPH_STRICT_CREW_FAILED",
+            workflows=[GraphDrivenPentestWorkflow],
+            activities=[
+                mock_update_scan_status,
+                mock_check_task_queue_pollers,
+                mock_update_scan_crew_report,
+                mock_save_vulnerabilities,
+                mock_generate_and_store_pdf_report,
+                mock_seed_target_databases,
+                mock_download_minio_artifact,
+                mock_identify_attack_targets,
+                mock_build_sandbox_topology,
+            ],
+        ):
+            async with Worker(
+                env.client,
+                task_queue="DEPLOYER_TASK_QUEUE",
+                activities=[
+                    mock_create_sandbox,
+                    mock_destroy_sandbox,
+                    mock_seed_target_databases,
+                ],
+            ):
+                async with Worker(
+                    env.client,
+                    task_queue="PENTEST_TASK_QUEUE",
+                    activities=[mock_run_targeted_pentest],
+                ):
+                    async with Worker(
+                        env.client,
+                        task_queue="CREWAI_TASK_QUEUE",
+                        activities=[mock_run_crew_pentest_failed],
+                    ):
+                        scan_id = str(uuid.uuid4())
+                        with pytest.raises(WorkflowFailureError) as exc_info:
+                            await env.client.execute_workflow(
+                                GraphDrivenPentestWorkflow.run,
+                                args=[scan_id, "nginx:latest", "company-1"],
+                                id=f"test-graph-pentest-strict-crew-failed-{scan_id}",
+                                task_queue="TEST_QUEUE_GRAPH_STRICT_CREW_FAILED",
+                            )
+
+    assert CREWAI_REQUESTS[-1]["scan_id"] == scan_id
+    cause = exc_info.value.cause
+    assert isinstance(cause, ApplicationError)
+    assert cause.type == "CrewAIRequiredError"
+
+
 def test_graph_driven_workflow_extracts_crewai_markdown_for_report_generation():
     crew_report = {
         "status": "COMPLETED",
@@ -828,8 +946,14 @@ def test_graph_driven_workflow_builds_failed_crew_report_from_error():
     }
 
 
-def test_graph_driven_workflow_crewai_schedule_to_start_timeout_is_short():
-    assert GraphDrivenPentestWorkflow.CREWAI_SCHEDULE_TO_START_TIMEOUT == 30
+def test_graph_driven_workflow_crewai_schedule_to_start_timeout_covers_cold_ollama():
+    # Must be generous enough for a cold Ollama model load, and overridable via env.
+    assert GraphDrivenPentestWorkflow.CREWAI_SCHEDULE_TO_START_TIMEOUT >= 120
+
+
+def test_graph_driven_workflow_is_best_effort_on_crew_by_default():
+    # Default policy: a missing/failed crew must not fail the scan.
+    assert brain_config.CREWAI_REQUIRED is False
 
 
 @pytest.mark.asyncio

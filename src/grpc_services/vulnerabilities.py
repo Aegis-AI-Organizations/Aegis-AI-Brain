@@ -48,7 +48,7 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
             cur = conn.cursor()
             cur.execute(
                 """
-                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at, latest.loot_data, v.source, v.proof_level
+                SELECT v.id, v.vuln_type, v.severity, v.target_endpoint, v.description, v.discovered_at, latest.loot_data, v.source, v.proof_level, v.remediation
                 FROM vulnerabilities v
                 JOIN scans s ON v.scan_id = s.id
                 LEFT JOIN LATERAL (
@@ -82,9 +82,18 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
         rows = await asyncio.to_thread(self._get_vulns_db, request.scan_id, company_id)
         vulns = []
         for row in rows:
-            v_id, v_type, severity, endpoint, desc, disco, loot, source, proof_level = (
-                row
-            )
+            (
+                v_id,
+                v_type,
+                severity,
+                endpoint,
+                desc,
+                disco,
+                loot,
+                source,
+                proof_level,
+                remediation,
+            ) = row
             loot_proof, exfiltrated_data = _extract_loot_fields(loot)
             v = vulnerability_pb2.Vulnerability(
                 id=str(v_id),
@@ -96,6 +105,7 @@ class VulnerabilityService(vulnerability_pb2_grpc.VulnerabilityServiceServicer):
                 exfiltrated_data=exfiltrated_data,
                 source=source or "",
                 proof_level=proof_level or "",
+                remediation=remediation or "",
             )
             if disco:
                 v.discovered_at.CopyFrom(to_pb_timestamp(disco))

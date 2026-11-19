@@ -33,6 +33,33 @@ FLAG_LOOT = {
 }
 
 
+def test_validate_finding_carries_remediation_through_unchanged():
+    finding = validate_finding(
+        _finding(remediation="Use parameterized queries."), "worker-pentest"
+    )
+
+    assert finding["remediation"] == "Use parameterized queries."
+
+
+def test_dedupe_findings_keeps_remediation():
+    [deduped] = dedupe_findings([_finding(remediation="Use parameterized queries.")])
+
+    assert deduped["remediation"] == "Use parameterized queries."
+
+
+def test_dedupe_findings_preserves_remediation_from_the_losing_finding():
+    winner_without_remediation = _finding(source="worker-pentest")
+    loser_with_remediation = _finding(
+        source="agent-crew",
+        remediation="Agent-Crew's specific guidance for this finding.",
+        evidences=[],
+    )
+
+    [deduped] = dedupe_findings([winner_without_remediation, loser_with_remediation])
+
+    assert deduped["remediation"] == "Agent-Crew's specific guidance for this finding."
+
+
 def test_worker_finding_with_extracted_flag_is_exploited():
     finding = validate_finding(
         _finding(evidences=[{"payload_used": "UNION", "loot_data": FLAG_LOOT}]),

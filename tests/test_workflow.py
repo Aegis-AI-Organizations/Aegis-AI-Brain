@@ -780,6 +780,94 @@ def test_ingest_findings_validates_and_merges_both_producers():
     assert exposed["proof_level"] == "unverified"
 
 
+def test_ingest_findings_fills_in_remediation_when_producer_omitted_it():
+    report = {
+        "vulnerabilities": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "CRITICAL",
+                "target_endpoint": "http://sandbox/login",
+                "description": "desc",
+                "evidences": [
+                    {"payload_used": "'", "loot_data": {"status": "SUCCESS"}}
+                ],
+            }
+        ]
+    }
+
+    [finding], _ = _ingest(report, None)
+
+    assert finding["remediation"] != ""
+
+
+def test_ingest_findings_enriches_explicitly_empty_remediation():
+    report = {
+        "vulnerabilities": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "CRITICAL",
+                "target_endpoint": "http://sandbox/login",
+                "description": "desc",
+                "remediation": "",
+                "evidences": [
+                    {"payload_used": "'", "loot_data": {"status": "SUCCESS"}}
+                ],
+            }
+        ]
+    }
+
+    [finding], _ = _ingest(report, None)
+
+    assert finding["remediation"] != ""
+
+
+def test_ingest_findings_keeps_producer_supplied_remediation():
+    crew_report = {
+        "findings": [
+            {
+                "vuln_type": "SQL Injection (SQLi)",
+                "severity": "CRITICAL",
+                "target_endpoint": "http://sandbox/login",
+                "description": "desc",
+                "remediation": "Agent-Crew's specific guidance for this finding.",
+                "evidences": [
+                    {
+                        "payload_used": "'",
+                        "loot_data": {
+                            "status": "SUCCESS",
+                            "response_excerpt": "error",
+                        },
+                    }
+                ],
+            }
+        ]
+    }
+
+    [finding], _ = _ingest(None, crew_report)
+
+    assert finding["remediation"] == "Agent-Crew's specific guidance for this finding."
+
+
+def test_ingest_findings_leaves_remediation_empty_for_unmatched_vuln_type():
+    report = {
+        "vulnerabilities": [
+            {
+                "vuln_type": "Known CVE (template-matched)",
+                "severity": "HIGH",
+                "target_endpoint": "http://sandbox/",
+                "description": "desc",
+                "evidences": [
+                    {"payload_used": "nuclei", "loot_data": {"status": "SUCCESS"}}
+                ],
+            }
+        ]
+    }
+
+    [finding], _ = _ingest(report, None)
+
+    assert finding["remediation"] == ""
+
+
 def test_ingest_findings_logs_and_drops_non_conforming_findings():
     crew_report = {
         "findings": [
@@ -954,6 +1042,36 @@ def test_graph_driven_workflow_crewai_schedule_to_start_timeout_covers_cold_olla
 def test_graph_driven_workflow_is_best_effort_on_crew_by_default():
     # Default policy: a missing/failed crew must not fail the scan.
     assert brain_config.CREWAI_REQUIRED is False
+
+
+@pytest.mark.asyncio
+async def test_build_sandbox_request_sets_jvm_resource_profile_for_cve_2017_5638():
+    workflow_instance = GraphDrivenPentestWorkflow()
+
+    sandbox_request = await workflow_instance._build_sandbox_request(
+        scan_id="scan-1",
+        target_image="aegis-cve-2017-5638:latest",
+        company_id="company-1",
+        selected_target_ids=None,
+        attack_targets=[],
+    )
+
+    assert sandbox_request["resource_profile"] == "jvm"
+
+
+@pytest.mark.asyncio
+async def test_build_sandbox_request_omits_resource_profile_for_other_targets():
+    workflow_instance = GraphDrivenPentestWorkflow()
+
+    sandbox_request = await workflow_instance._build_sandbox_request(
+        scan_id="scan-1",
+        target_image="docker-vuln-sqli:latest",
+        company_id="company-1",
+        selected_target_ids=None,
+        attack_targets=[],
+    )
+
+    assert "resource_profile" not in sandbox_request
 
 
 @pytest.mark.asyncio

@@ -212,5 +212,6 @@ def dedupe_findings(findings: list) -> list:
             "evidences": dedupe_evidences(
                 list(winner.get("evidences") or []) + list(loser.get("evidences") or [])
             ),
+            "remediation": winner.get("remediation") or loser.get("remediation") or "",
         }
     return list(kept.values())
